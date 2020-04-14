@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import { Menu } from "semantic-ui-react";
-import AboutDialog from "./components/AboutDialog";
-import Reader from "./components/Reader";
+import React, { Component } from 'react';
+import { Menu } from 'semantic-ui-react';
+import AboutDialog from './components/AboutDialog';
+import Reader from './components/Reader';
 
 class App extends Component {
   constructor(props) {
@@ -14,15 +14,16 @@ class App extends Component {
   }
 
   openAboutModal() {
-    this.setState({ modal: "about" });
+    this.setState({ modal: 'about' });
   }
 
   render() {
+    const { modal } = this.state;
     return (
       <div className="App">
         <Menu attached="top" inverted>
-          <Menu.Item style={{ backgroundColor: "#009ec2" }}>
-            <img style={{ width: 22, height: 22 }} src="book.png" />
+          <Menu.Item style={{ backgroundColor: '#009ec2' }}>
+            <img alt="" style={{ width: 22, height: 22 }} src="book.png" />
           </Menu.Item>
           <Menu.Item
             name="about"
@@ -45,7 +46,7 @@ class App extends Component {
             </div>
           </Menu.Menu>
         </Menu>
-        {this.state.modal === "about" && (
+        {modal === 'about' && (
           <AboutDialog onClose={() => this.closeModal()} />
         )}
         <div style={{ marginTop: 16, marginLeft: 22, marginRight: 22 }}>
