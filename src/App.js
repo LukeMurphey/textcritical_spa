@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-import { Button, Menu } from "semantic-ui-react";
-import "./App.css";
-// import "./semantic_darkly.css";
+import { Menu } from "semantic-ui-react";
 import AboutDialog from "./components/AboutDialog";
 import Reader from "./components/Reader";
 
@@ -23,14 +21,14 @@ class App extends Component {
     return (
       <div className="App">
         <Menu attached="top" inverted>
-        <Menu.Item style={{backgroundColor: '#1b5de0'}}>
-          <img style={{width: 22, height: 22}} src='book_white.png' />
-        </Menu.Item>
+          <Menu.Item style={{ backgroundColor: "#009ec2" }}>
+            <img style={{ width: 22, height: 22 }} src="book.png" />
+          </Menu.Item>
           <Menu.Item
             name="about"
             active={false}
             content="About"
-            onClick={ () => this.openAboutModal() }
+            onClick={() => this.openAboutModal()}
           />
 
           <Menu.Menu position="right">
@@ -46,12 +44,13 @@ class App extends Component {
               <div className="results" />
             </div>
           </Menu.Menu>
-        </Menu> 
+        </Menu>
         {this.state.modal === "about" && (
           <AboutDialog onClose={() => this.closeModal()} />
         )}
-        <div style={{marginTop: 16}}/>
-        <Reader />
+        <div style={{ marginTop: 16, marginLeft: 22, marginRight: 22 }}>
+          <Reader />
+        </div>
       </div>
     );
   }
