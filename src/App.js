@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 import "./App.css";
 import AboutDialog from "./components/AboutDialog";
+import Reader from "./components/Reader";
 
 class App extends Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class App extends Component {
             onClose={() => this.closeModal()}
           />
         )}
+        <Reader />
       </div>
     );
   }
