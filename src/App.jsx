@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Menu } from 'semantic-ui-react';
-import AboutDialog from './components/AboutDialog';
-import Reader from './components/Reader';
+import AboutDialog from './components/AboutDialog/index';
+import Reader from './components/Reader/index';
 
 class App extends Component {
   constructor(props) {

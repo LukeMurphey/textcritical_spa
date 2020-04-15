@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {
   Button, Input, Icon, Dropdown,
 } from 'semantic-ui-react';
+import './index.css';
+
 // import PropTypes from 'prop-types';
 
 const works = [
@@ -18,6 +20,11 @@ const works = [
 ];
 
 class Reader extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { modal: null };
+  }
+
   closeModal() {
     this.setState({ modal: null });
   }
