@@ -22,7 +22,19 @@ const works = [
 class Reader extends Component {
   constructor(props) {
     super(props);
-    this.state = { modal: null };
+    this.state = {
+      modal: null,
+      html: '',
+    };
+  }
+
+  componentDidMount() {
+    fetch('http://localhost:8080/work/berean-study-bible/Genesis/4?async')
+      .then((res) => res.text())
+      .then((text) => {
+        this.setState({ html: text });
+      })
+      .catch(console.log);
   }
 
   closeModal() {
@@ -34,7 +46,7 @@ class Reader extends Component {
   }
 
   render() {
-    const { modal } = this.state;
+    const { modal, html } = this.state;
     return (
       <div>
         <Input action="Go" placeholder="Jump to reference..." />
@@ -60,7 +72,7 @@ class Reader extends Component {
           </Button>
         </Button.Group>
         {' '}
-        <div style={{ display: 'inline-block', width: 300 }}>
+        <div style={{ display: "inline-block", width: 300 }}>
           <Dropdown text="Other Versions" fluid button>
             <Dropdown.Menu>
               {works.map((work) => (
@@ -73,10 +85,8 @@ class Reader extends Component {
             </Dropdown.Menu>
           </Dropdown>
         </div>
-        {modal === 'aboutWork' && (
-          <Button onClose={() => this.closeModal()} />
-        )}
-        <div>Work goes here</div>
+        {modal === 'aboutWork' && <Button onClose={() => this.closeModal()} />}
+        <div dangerouslySetInnerHTML={{__html: html}} />
       </div>
     );
   }
