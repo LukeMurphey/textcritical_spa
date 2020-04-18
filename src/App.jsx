@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu } from 'semantic-ui-react';
+import { Menu, Container } from 'semantic-ui-react';
 import AboutDialog from './components/AboutDialog/index';
 import Reader from './components/Reader/index';
 
@@ -20,38 +20,40 @@ class App extends Component {
   render() {
     const { modal } = this.state;
     return (
-      <div className="App">
-        <Menu attached="top" inverted>
-          <Menu.Item style={{ backgroundColor: '#009ec2' }}>
-            <img alt="" style={{ width: 22, height: 22 }} src="book.png" />
-          </Menu.Item>
-          <Menu.Item
-            name="about"
-            active={false}
-            content="About"
-            onClick={() => this.openAboutModal()}
-          />
+      <div>
+        <Menu inverted attached='top'>
+          <Container>
+            <Menu.Item style={{ backgroundColor: '#009ec2' }}>
+              <img alt="" style={{ width: 22, height: 22 }} src="book.png" />
+            </Menu.Item>
+            <Menu.Item
+              name="about"
+              active={false}
+              content="About"
+              onClick={() => this.openAboutModal()}
+            />
 
-          <Menu.Menu position="right">
-            <div className="ui right aligned category search item">
-              <div className="ui transparent icon input">
-                <input
-                  className="prompt"
-                  type="text"
-                  placeholder="Search works..."
-                />
-                <i className="search link icon" />
+            <Menu.Menu position="right">
+              <div className="ui right aligned category search item">
+                <div className="ui transparent icon input">
+                  <input
+                    className="prompt"
+                    type="text"
+                    placeholder="Search works..."
+                  />
+                  <i className="search link icon" />
+                </div>
+                <div className="results" />
               </div>
-              <div className="results" />
-            </div>
-          </Menu.Menu>
+            </Menu.Menu>
+          </Container>
         </Menu>
         {modal === 'about' && (
           <AboutDialog onClose={() => this.closeModal()} />
         )}
-        <div style={{ marginTop: 16, marginLeft: 22, marginRight: 22 }}>
+        <Container style={{ marginTop: 12 }}>
           <Reader />
-        </div>
+        </Container>
       </div>
     );
   }

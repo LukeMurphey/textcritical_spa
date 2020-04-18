@@ -44,20 +44,20 @@ class AboutDialog extends Component {
           </p>
           <Table basic="very" celled collapsing>
             <Table.Body>
-              {this.getInfoRow('Version', '4.0')}
-              {this.getInfoLinkRow(
+              {AboutDialog.getInfoRow('Version', '4.0')}
+              {AboutDialog.getInfoLinkRow(
                 'Sources of the works',
                 'https://lukemurphey.net/projects/ancient-text-reader/wiki/Content_Sources',
                 'LukeMurphey.net',
                 'Available at ',
               )}
-              {this.getInfoLinkRow(
+              {AboutDialog.getInfoLinkRow(
                 'Source Code',
                 'https://github.com/LukeMurphey/textcritical_net',
                 'Github.com',
                 'Available at ',
               )}
-              {this.getInfoLinkRow(
+              {AboutDialog.getInfoLinkRow(
                 'Components used',
                 'https://lukemurphey.net/projects/ancient-text-reader/wiki/Dependencies',
                 'LukeMurphey.net',
