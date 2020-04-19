@@ -154,7 +154,6 @@ class Reader extends Component {
                           search={Reader.workSearch}
                           options={Reader.convertDivisionsToOptions(data.divisions)}
                           defaultValue={data.chapter.parent_division.descriptor}
-                          style={{ minWidth: 100 }}
                           onChange={(event, info) => this.changeChapter(event, info)}
                         />
                         <div style={{ display: 'inline-block', paddingLeft: 6 }}>
