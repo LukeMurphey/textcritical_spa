@@ -6,6 +6,7 @@ import { ENDPOINT_READ_WORK } from '../Endpoints';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
+import WorkDownloadDialog from '../WorkDownloadDialog';
 import './index.css';
 
 class Reader extends Component {
@@ -71,6 +72,10 @@ class Reader extends Component {
     this.setState({ modal: 'aboutWork' });
   }
 
+  openDownloadModal() {
+    this.setState({ modal: 'downloadWork' });
+  }
+
   changeWork() {
     this.setState({ modal: 'aboutWork' });
   }
@@ -113,7 +118,7 @@ class Reader extends Component {
             <Icon name="share" />
           </Button>
           <Button basic icon>
-            <Icon name="download" />
+            <Icon name="download" onClick={() => this.openDownloadModal()} />
           </Button>
         </Button.Group>
         {' '}
@@ -131,6 +136,7 @@ class Reader extends Component {
           </Dropdown>
         </div>
         {data && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
+        {data && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
         {data && (
           <>
             <div style={{ marginTop: 6 }} />

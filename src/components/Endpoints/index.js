@@ -29,3 +29,7 @@ export function ENDPOINT_WORK_INFO(work) {
 export function ENDPOINT_WORK_IMAGE(work, width = 100) {
   return `${getHostConfig()}/work_image/${work}?width=${width}`;
 }
+
+export function ENDPOINT_WORK_DOWNLOAD(work, format = 'epub') {
+  return `${getHostConfig()}/download/work/${work}?format=${format}`;
+}
