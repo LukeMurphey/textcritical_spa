@@ -21,3 +21,11 @@ export function getHostConfig(origin = window.location.hostname) {
 export function ENDPOINT_READ_WORK(workReference = '') {
   return `${getHostConfig()}/api/work/${workReference}`;
 }
+
+export function ENDPOINT_WORK_INFO(work) {
+  return `${getHostConfig()}/api/work_info/${work}`;
+}
+
+export function ENDPOINT_WORK_IMAGE(work, width = 100) {
+  return `${getHostConfig()}/work_image/${work}?width=${width}`;
+}

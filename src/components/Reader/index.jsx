@@ -5,6 +5,7 @@ import {
 import { ENDPOINT_READ_WORK } from '../Endpoints';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
+import AboutWorkDialog from '../AboutWorkDialog';
 import './index.css';
 
 class Reader extends Component {
@@ -12,7 +13,7 @@ class Reader extends Component {
     return divisions.map((d) => ({
       key: d.description,
       text: d.full_title,
-      value: d.title_slug,
+      value: d.descriptor,
     }));
   }
 
@@ -38,7 +39,19 @@ class Reader extends Component {
   }
 
   componentDidMount() {
-    fetch(ENDPOINT_READ_WORK('new-testament/Matthew/2'))
+    this.loadChapter('new-testament', 'matthew', '2');
+  }
+
+  /**
+   * Load the given chapter.
+   *
+   * @param {string} work The work to load
+   * @param {...any} divisions The list of division indicators
+   */
+  loadChapter(work, ...divisions) {
+    const divisionReference = divisions.join('/');
+
+    fetch(ENDPOINT_READ_WORK(`${work}/${divisionReference}`))
       .then((res) => res.json())
       .then((data) => {
         this.setState({ data });
@@ -58,13 +71,29 @@ class Reader extends Component {
     this.setState({ modal: 'aboutWork' });
   }
 
+  changeWork() {
+    this.setState({ modal: 'aboutWork' });
+  }
+
+  changeChapter(event, info) {
+    const { data } = this.state;
+    this.loadChapter(data.work.title_slug, info.value);
+  }
+
   render() {
     const { modal, data, error } = this.state;
+    let description = '';
+
+    if (data) {
+      description = data.chapter.description;
+    }
+
     return (
       <div>
         <Input
           action={<Button basic>Go</Button>}
           placeholder="Jump to reference..."
+          defaultValue={description}
         />
         {' '}
         <Button.Group>
@@ -101,7 +130,7 @@ class Reader extends Component {
             </Dropdown.Menu>
           </Dropdown>
         </div>
-        {modal === 'aboutWork' && <Button onClose={() => this.closeModal()} />}
+        {data && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
         {data && (
           <>
             <div style={{ marginTop: 6 }} />
@@ -118,12 +147,13 @@ class Reader extends Component {
                           scrolling
                           search={Reader.workSearch}
                           options={Reader.convertDivisionsToOptions(data.divisions)}
-                          defaultValue={data.chapter.parent_division.title_slug}
+                          defaultValue={data.chapter.parent_division.descriptor}
                           style={{ minWidth: 100 }}
+                          onChange={(event, info) => this.changeChapter(event, info)}
                         />
                         <div style={{ display: 'inline-block', paddingLeft: 6 }}>
                           {data.chapter.type}
-                          {data.chapter.descriptor}
+                          {` ${data.chapter.descriptor}`}
                         </div>
                       </>
                     )}
