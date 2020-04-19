@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Header } from 'semantic-ui-react';
 import './Chapter.css';
 
 /**
  * This class renders the content of chapter of a work.
  */
-function WorkView({ content, chapter }) {
+function WorkView({ content }) {
   return (
     <>
       <div
@@ -19,7 +18,6 @@ function WorkView({ content, chapter }) {
 }
 
 WorkView.propTypes = {
-  chapter: PropTypes.shape.isRequired,
   content: PropTypes.string.isRequired,
 };
 
