@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Menu, Container } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 import AboutDialog from './components/AboutDialog/index';
 import Reader from './components/Reader/index';
 
@@ -19,9 +20,11 @@ class App extends Component {
 
   render() {
     const { modal } = this.state;
+    const { inverted } = this.props;
+
     return (
       <div>
-        <Menu inverted attached='top'>
+        <Menu inverted={!inverted} attached="top">
           <Container>
             <Menu.Item style={{ backgroundColor: '#009ec2' }}>
               <img alt="" style={{ width: 22, height: 22 }} src="book.png" />
@@ -52,11 +55,19 @@ class App extends Component {
           <AboutDialog onClose={() => this.closeModal()} />
         )}
         <Container style={{ marginTop: 12 }}>
-          <Reader />
+          <Reader inverted={inverted} />
         </Container>
       </div>
     );
   }
 }
+
+App.propTypes = {
+  inverted: PropTypes.bool,
+};
+
+App.defaultProps = {
+  inverted: false,
+};
 
 export default App;

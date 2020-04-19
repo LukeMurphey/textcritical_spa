@@ -33,3 +33,7 @@ export function ENDPOINT_WORK_IMAGE(work, width = 100) {
 export function ENDPOINT_WORK_DOWNLOAD(work, format = 'epub') {
   return `${getHostConfig()}/download/work/${work}?format=${format}`;
 }
+
+export function ENDPOINT_RESOLVE_REFERENCE(work, reference) {
+  return `${getHostConfig()}/api/resolve_reference/?work=${work}&ref=${reference}`;
+}

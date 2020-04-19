@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import {
-  Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder,
+  Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Loader, Dimmer, Segment,
 } from 'semantic-ui-react';
-import { ENDPOINT_READ_WORK } from '../Endpoints';
+import PropTypes from 'prop-types';
+import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE } from '../Endpoints';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
@@ -23,8 +24,8 @@ class Reader extends Component {
    * as the key.
    * This is useful because the works often use a Greek name as the description but an English
    * description too and we want both to be searchable (don't want users to have to type Μαρκον).
-   * @param {*} options List of dropdown options
-   * @param {*} query The string that the user entered that we are searching for
+   * @param {array} options List of dropdown options
+   * @param {string} query The string that the user entered that we are searching for
    */
   static workSearch(options, query) {
     return options.filter((opt) => opt.text.includes(query) || opt.key.includes(query));
@@ -36,6 +37,11 @@ class Reader extends Component {
       modal: null,
       data: null,
       error: null,
+      loading: false,
+      divisions: null,
+      loadedWork: null,
+      referenceValid: true,
+      referenceValue: '',
     };
   }
 
@@ -51,11 +57,18 @@ class Reader extends Component {
    */
   loadChapter(work, ...divisions) {
     const divisionReference = divisions.join('/');
+    this.setState({ loading: true });
 
     fetch(ENDPOINT_READ_WORK(`${work}/${divisionReference}`))
       .then((res) => res.json())
       .then((data) => {
-        this.setState({ data });
+        this.setState({
+          data,
+          loading: false,
+          loadedWork: work,
+          divisions,
+          referenceValue: data.chapter.description,
+        });
       })
       .catch((e) => {
         this.setState({
@@ -64,60 +77,133 @@ class Reader extends Component {
       });
   }
 
+  /**
+   * Close any open modal.
+   */
   closeModal() {
     this.setState({ modal: null });
   }
 
+  /**
+   * Open the info modal.
+   */
   openWorkInfoModal() {
     this.setState({ modal: 'aboutWork' });
   }
 
+  /**
+   * Open the modal for downloading a work.
+   */
   openDownloadModal() {
     this.setState({ modal: 'downloadWork' });
   }
 
+  /**
+   * Change the work to another related work.
+   */
   changeWork() {
+    // TODO
     this.setState({ modal: 'aboutWork' });
   }
 
+  /**
+   * Handle the selection of the division.
+   *
+   * @param {*} event React's original SyntheticEvent.
+   * @param {*} info All props.
+   */
   changeChapter(event, info) {
     const { data } = this.state;
     this.loadChapter(data.work.title_slug, info.value);
   }
 
+  /**
+   * Handle a change in the reference input.
+   *
+   * @param {*} event React's original SyntheticEvent.
+   * @param {*} info All props.
+   */
+  changeReference(event, info) {
+    const { data } = this.state;
+    fetch(ENDPOINT_RESOLVE_REFERENCE(data.work.title_slug, info.value))
+      .then((res) => (Promise.all([res.status, res.json()])))
+      .then(([status, referenceInfo]) => {
+        if (status === 200) {
+          this.setState({
+            divisions: referenceInfo.divisions,
+            referenceValue: info.value,
+            referenceValid: true,
+          });
+        } else {
+          this.setState({
+            referenceValue: info.value,
+            referenceValid: false,
+          });
+        }
+      })
+      .catch((e) => {
+        this.setState({
+          error: e.toString(),
+        });
+      });
+  }
+
+  /**
+   * Go to the reference defiend in the input box.
+   */
+  goToReference() {
+    const { divisions, loadedWork } = this.state;
+    this.loadChapter(loadedWork, ...divisions);
+  }
+
   render() {
-    const { modal, data, error } = this.state;
+    const {
+      modal, data, error, loading, referenceValid, referenceValue,
+    } = this.state;
+
+    const { inverted } = this.props;
+
+    // Figure out a description for the chapter
     let description = '';
+    let referenceDescription = referenceValue;
 
     if (data) {
       description = data.chapter.description;
+
+      if (referenceValue === '') {
+        referenceDescription = description;
+      }
     }
 
     return (
-      <div>
+      <Segment inverted={inverted} basic>
         <Input
-          action={<Button basic>Go</Button>}
+          inverted={inverted}
+          action={<Button onClick={() => this.goToReference()} basic>Go</Button>}
           placeholder="Jump to reference..."
           defaultValue={description}
+          value={referenceDescription}
+          error={!referenceValid}
+          onChange={(e, d) => this.changeReference(e, d)}
         />
         {' '}
         <Button.Group>
-          <Button basic icon>
+          <Button inverted={inverted} basic icon>
             <Icon name="folder outline" />
           </Button>
-          <Button basic icon>
+          <Button inverted={inverted} basic icon>
             <Icon name="search" />
           </Button>
-          <Button basic icon>
+          <Button inverted={inverted} basic icon>
             <Icon name="info" onClick={() => this.openWorkInfoModal()} />
           </Button>
         </Button.Group>
         {' '}
         <Button.Group>
-          <Button basic icon>
+          <Button inverted={inverted} basic icon>
             <Icon name="share" />
           </Button>
-          <Button basic icon>
+          <Button inverted={inverted} basic icon>
             <Icon name="download" onClick={() => this.openDownloadModal()} />
           </Button>
         </Button.Group>
@@ -153,7 +239,7 @@ class Reader extends Component {
                           scrolling
                           search={Reader.workSearch}
                           options={Reader.convertDivisionsToOptions(data.divisions)}
-                          defaultValue={data.chapter.parent_division.descriptor}
+                          value={data.chapter.parent_division.descriptor}
                           onChange={(event, info) => this.changeChapter(event, info)}
                         />
                         <div style={{ display: 'inline-block', paddingLeft: 6 }}>
@@ -172,7 +258,14 @@ class Reader extends Component {
               </Grid.Row>
             </Grid>
             <div style={{ marginTop: 6 }} />
-            <Chapter chapter={data.chapter} content={data.content} work={data.work} />
+            <Segment inverted={inverted} basic>
+              {loading && (
+                <Dimmer active>
+                  <Loader inverted={inverted} />
+                </Dimmer>
+              )}
+              <Chapter chapter={data.chapter} content={data.content} work={data.work} />
+            </Segment>
           </>
         )}
         {error && (
@@ -204,9 +297,17 @@ class Reader extends Component {
           </Placeholder>
         )}
 
-      </div>
+      </Segment>
     );
   }
 }
+
+Reader.propTypes = {
+  inverted: PropTypes.bool,
+};
+
+Reader.defaultProps = {
+  inverted: true,
+};
 
 export default Reader;
