@@ -51,7 +51,7 @@ class AboutWorkDialog extends Component {
     return (
       <Modal size="tiny" defaultOpen onClose={onClose} closeIcon>
         {!data && (
-          <Header icon="info" content="About TextCritical.net" />
+          <Header icon="info" content="About this Book" />
         )}
         {data && (
           <Header icon="info" content={`About ${data.title}`} />
