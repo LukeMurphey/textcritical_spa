@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Loader, Dimmer, Segment,
+  Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Loader, Dimmer, Segment, Message,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE } from '../Endpoints';
@@ -100,10 +100,14 @@ class Reader extends Component {
 
   /**
    * Change the work to another related work.
+   *
+   * @param {*} event React's original SyntheticEvent.
+   * @param {*} info All props.
    */
-  changeWork() {
-    // TODO
-    this.setState({ modal: 'aboutWork' });
+  changeWork(work) {
+    const { referenceValue } = this.state;
+    debugger;
+    this.loadChapter(work, referenceValue);
   }
 
   /**
@@ -181,7 +185,6 @@ class Reader extends Component {
           inverted={inverted}
           action={<Button onClick={() => this.goToReference()} basic>Go</Button>}
           placeholder="Jump to reference..."
-          defaultValue={description}
           value={referenceDescription}
           error={!referenceValid}
           onChange={(e, d) => this.changeReference(e, d)}
@@ -209,13 +212,19 @@ class Reader extends Component {
         </Button.Group>
         {' '}
         <div style={{ display: 'inline-block', width: 300 }}>
-          <Dropdown basic text="Other Versions" fluid button>
+          <Dropdown
+            basic
+            text="Other Versions"
+            fluid
+            button
+          >
             <Dropdown.Menu>
               {data && data.related_works.map((work) => (
                 <Dropdown.Item
                   key={work.title_slug}
                   text={work.title}
                   description={work.language}
+                  onClick={() => this.changeWork(work.title_slug)}
                 />
               ))}
             </Dropdown.Menu>
@@ -264,6 +273,15 @@ class Reader extends Component {
                   <Loader inverted={inverted} />
                 </Dimmer>
               )}
+              {data && data.warnings.map((warning) => (
+                <Message
+                  warning
+                  key={warning[0]}
+                  header={warning[0]}
+                  content={warning[1]}
+                />
+              ))}
+
               <Chapter chapter={data.chapter} content={data.content} work={data.work} />
             </Segment>
           </>
