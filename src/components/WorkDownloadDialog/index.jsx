@@ -33,9 +33,10 @@ class WorkDownloadDialog extends Component {
     const { format } = this.state;
 
     return (
-      <Modal defaultOpen onClose={onClose} closeIcon>
+      <Modal size="tiny" defaultOpen onClose={onClose} closeIcon>
         <Header icon="info" content="Download Book" />
         <Modal.Content>
+          <div stryle={{ marginBottom: 12 }}>Select which format you would like to download:</div>
           <Form>
             <Form.Field>
               <Radio
