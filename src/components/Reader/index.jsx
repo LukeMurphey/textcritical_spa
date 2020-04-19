@@ -46,7 +46,7 @@ class Reader extends Component {
   }
 
   componentDidMount() {
-    this.loadChapter('new-testament', 'matthew', '2');
+    this.loadChapter('new-testament', 'matthew', '1');
   }
 
   /**
@@ -105,9 +105,8 @@ class Reader extends Component {
    * @param {*} info All props.
    */
   changeWork(work) {
-    const { referenceValue } = this.state;
-    debugger;
-    this.loadChapter(work, referenceValue);
+    const { divisions } = this.state;
+    this.loadChapter(work, ...divisions);
   }
 
   /**
@@ -156,8 +155,11 @@ class Reader extends Component {
    * Go to the reference defiend in the input box.
    */
   goToReference() {
-    const { divisions, loadedWork } = this.state;
-    this.loadChapter(loadedWork, ...divisions);
+    const { divisions, loadedWork, referenceValid } = this.state;
+
+    if (referenceValid) {
+      this.loadChapter(loadedWork, ...divisions);
+    }
   }
 
   render() {
@@ -183,7 +185,17 @@ class Reader extends Component {
       <Segment inverted={inverted} basic>
         <Input
           inverted={inverted}
-          action={<Button onClick={() => this.goToReference()} basic>Go</Button>}
+          action={
+            (
+              <Button
+                disabled={!referenceValid}
+                onClick={() => this.goToReference()}
+                basic
+              >
+                Go
+              </Button>
+            )
+          }
           placeholder="Jump to reference..."
           value={referenceDescription}
           error={!referenceValid}
@@ -217,6 +229,7 @@ class Reader extends Component {
             text="Other Versions"
             fluid
             button
+            disabled={!referenceValid}
           >
             <Dropdown.Menu>
               {data && data.related_works.map((work) => (
@@ -281,7 +294,6 @@ class Reader extends Component {
                   content={warning[1]}
                 />
               ))}
-
               <Chapter chapter={data.chapter} content={data.content} work={data.work} />
             </Segment>
           </>
