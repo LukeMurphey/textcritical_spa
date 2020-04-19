@@ -49,7 +49,7 @@ class AboutWorkDialog extends Component {
     const { data, error } = this.state;
 
     return (
-      <Modal defaultOpen onClose={onClose} closeIcon>
+      <Modal size="tiny" defaultOpen onClose={onClose} closeIcon>
         {!data && (
           <Header icon="info" content="About TextCritical.net" />
         )}
