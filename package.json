@@ -54,5 +54,11 @@
   "bugs": {
     "url": "https://github.com/LukeMurphey/textcritical_spa/issues"
   },
-  "homepage": "https://github.com/LukeMurphey/textcritical_spa#readme"
+  "homepage": "https://github.com/LukeMurphey/textcritical_spa#readme",
+  "jest":{
+    "moduleNameMapper":{
+         "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js",
+         "\\.(gif|ttf|eot|svg)$": "<rootDir>/__mocks__/fileMock.js"
+    }
+  }
 }
