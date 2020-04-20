@@ -37,3 +37,8 @@ export function ENDPOINT_WORK_DOWNLOAD(work, format = 'epub') {
 export function ENDPOINT_RESOLVE_REFERENCE(work, reference) {
   return `${getHostConfig()}/api/resolve_reference/?work=${work}&ref=${reference}`;
 }
+
+export function ENDPOINT_WIKI_INFO(search, search2 = null, search3 = null) {
+  const searchParams = [search, search2, search3].filter((e) => e != null);
+  return `${getHostConfig()}/api/wikipedia_info/${searchParams.join('/')}`;
+}
