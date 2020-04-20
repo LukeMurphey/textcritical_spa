@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
-  Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Loader, Dimmer, Segment, Message,
+  Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Loader, Dimmer, Segment,
+  Message,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE } from '../Endpoints';
@@ -280,22 +281,20 @@ class Reader extends Component {
               </Grid.Row>
             </Grid>
             <div style={{ marginTop: 6 }} />
-            <Segment inverted={inverted} basic>
-              {loading && (
-                <Dimmer active>
-                  <Loader inverted={inverted} />
-                </Dimmer>
-              )}
-              {data && data.warnings.map((warning) => (
-                <Message
-                  warning
-                  key={warning[0]}
-                  header={warning[0]}
-                  content={warning[1]}
-                />
-              ))}
-              <Chapter chapter={data.chapter} content={data.content} work={data.work} />
-            </Segment>
+            {loading && (
+              <Dimmer active>
+                <Loader inverted={inverted} />
+              </Dimmer>
+            )}
+            {data && data.warnings.map((warning) => (
+              <Message
+                warning
+                key={warning[0]}
+                header={warning[0]}
+                content={warning[1]}
+              />
+            ))}
+            <Chapter chapter={data.chapter} content={data.content} work={data.work} />
           </>
         )}
         {error && (
