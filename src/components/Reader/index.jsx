@@ -12,13 +12,13 @@ import WorkDownloadDialog from '../WorkDownloadDialog';
 import './index.css';
 
 const NextPageStyle = {
-  top: '90%',
+  bottom: '20px',
   right: '10px',
   position: 'fixed',
 };
 
 const PriorPageStyle = {
-  top: '90%',
+  bottom: '20px',
   left: '10px',
   position: 'fixed',
 };
@@ -382,7 +382,6 @@ class Reader extends Component {
         {loading && !error && (
           Reader.getPlaceholder()
         )}
-
       </Segment>
     );
   }
