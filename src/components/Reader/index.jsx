@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Loader, Dimmer, Segment,
-  Message,
+  Message, Pagination,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE } from '../Endpoints';
@@ -12,6 +12,11 @@ import WorkDownloadDialog from '../WorkDownloadDialog';
 import './index.css';
 
 class Reader extends Component {
+  /**
+   * Convert the list of divisions to options that can be processed by the dropdown menu.
+   *
+   * @param {array} divisions The list of divisions.
+   */
   static convertDivisionsToOptions(divisions) {
     return divisions.map((d) => ({
       key: d.description,
@@ -30,6 +35,37 @@ class Reader extends Component {
    */
   static workSearch(options, query) {
     return options.filter((opt) => opt.text.includes(query) || opt.key.includes(query));
+  }
+
+  /**
+   * Get a placeholder for the content.
+   */
+  static getPlaceholder() {
+    return (
+      <Placeholder style={{ marginTop: 32 }}>
+        <Placeholder.Header>
+          <Placeholder.Line />
+        </Placeholder.Header>
+        <Placeholder.Paragraph>
+          <Placeholder.Line />
+          <Placeholder.Line />
+          <Placeholder.Line />
+          <Placeholder.Line />
+        </Placeholder.Paragraph>
+        <Placeholder.Paragraph>
+          <Placeholder.Line />
+          <Placeholder.Line />
+          <Placeholder.Line />
+          <Placeholder.Line />
+          <Placeholder.Line />
+        </Placeholder.Paragraph>
+        <Placeholder.Paragraph>
+          <Placeholder.Line />
+          <Placeholder.Line />
+          <Placeholder.Line />
+        </Placeholder.Paragraph>
+      </Placeholder>
+    );
   }
 
   constructor(props) {
@@ -163,6 +199,26 @@ class Reader extends Component {
     }
   }
 
+  /**
+   * Go to the next chapter.
+   */
+  goToNextChapter() {
+    const { data } = this.state;
+    if (data.next_chapter) {
+      this.loadChapter(data.work.title_slug, data.next_chapter.full_descriptor);
+    }
+  }
+
+  /**
+   * Go to the prior chapter.
+   */
+  goToPriorChapter() {
+    const { data } = this.state;
+    if (data.previous_chapter) {
+      this.loadChapter(data.work.title_slug, data.previous_chapter.full_descriptor);
+    }
+  }
+
   render() {
     const {
       modal, data, error, loading, referenceValid, referenceValue,
@@ -246,7 +302,7 @@ class Reader extends Component {
         </div>
         {data && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
         {data && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-        {data && (
+        {data && !loading && (
           <>
             <div style={{ marginTop: 6 }} />
             <Grid>
@@ -281,11 +337,6 @@ class Reader extends Component {
               </Grid.Row>
             </Grid>
             <div style={{ marginTop: 6 }} />
-            {loading && (
-              <Dimmer active>
-                <Loader inverted={inverted} />
-              </Dimmer>
-            )}
             {data && data.warnings.map((warning) => (
               <Message
                 warning
@@ -295,35 +346,17 @@ class Reader extends Component {
               />
             ))}
             <Chapter chapter={data.chapter} content={data.content} work={data.work} />
+            <Button.Group style={{ marginTop: 16 }}>
+              <Button disabled={data.previous_chapter === null} labelPosition="left" icon="left chevron" content="Prior Chapter" onClick={() => this.goToPriorChapter()} />
+              <Button disabled={data.next_chapter === null} labelPosition="right" icon="right chevron" content="Next Chapter" onClick={() => this.goToNextChapter()} />
+            </Button.Group>
           </>
         )}
         {error && (
           <ErrorMessage title="Unable to load the content" description="The given chapter could not be loaded from the server" message={error} />
         )}
-        {!data && !error && (
-          <Placeholder style={{ marginTop: 32 }}>
-            <Placeholder.Header>
-              <Placeholder.Line />
-            </Placeholder.Header>
-            <Placeholder.Paragraph>
-              <Placeholder.Line />
-              <Placeholder.Line />
-              <Placeholder.Line />
-              <Placeholder.Line />
-            </Placeholder.Paragraph>
-            <Placeholder.Paragraph>
-              <Placeholder.Line />
-              <Placeholder.Line />
-              <Placeholder.Line />
-              <Placeholder.Line />
-              <Placeholder.Line />
-            </Placeholder.Paragraph>
-            <Placeholder.Paragraph>
-              <Placeholder.Line />
-              <Placeholder.Line />
-              <Placeholder.Line />
-            </Placeholder.Paragraph>
-          </Placeholder>
+        {loading && !error && (
+          Reader.getPlaceholder()
         )}
 
       </Segment>
