@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
-  Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Loader, Dimmer, Segment,
-  Message, Pagination,
+  Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Segment,
+  Message,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE } from '../Endpoints';
@@ -10,6 +10,18 @@ import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
 import WorkDownloadDialog from '../WorkDownloadDialog';
 import './index.css';
+
+const NextPageStyle = {
+  top: '90%',
+  right: '10px',
+  position: 'fixed',
+};
+
+const PriorPageStyle = {
+  top: '90%',
+  left: '10px',
+  position: 'fixed',
+};
 
 class Reader extends Component {
   /**
@@ -346,10 +358,22 @@ class Reader extends Component {
               />
             ))}
             <Chapter chapter={data.chapter} content={data.content} work={data.work} />
-            <Button.Group style={{ marginTop: 16 }}>
-              <Button disabled={data.previous_chapter === null} labelPosition="left" icon="left chevron" content="Prior Chapter" onClick={() => this.goToPriorChapter()} />
-              <Button disabled={data.next_chapter === null} labelPosition="right" icon="right chevron" content="Next Chapter" onClick={() => this.goToNextChapter()} />
-            </Button.Group>
+            <Button
+              icon
+              style={PriorPageStyle}
+              disabled={data.previous_chapter === null}
+              onClick={() => this.goToPriorChapter()}
+            >
+              <Icon name="left chevron" />
+            </Button>
+            <Button
+              icon
+              style={NextPageStyle}
+              disabled={data.next_chapter === null}
+              onClick={() => this.goToNextChapter()}
+            >
+              <Icon name="right chevron" />
+            </Button>
           </>
         )}
         {error && (
