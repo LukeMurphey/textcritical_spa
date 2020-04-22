@@ -9,6 +9,7 @@ import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
 import WorkDownloadDialog from '../WorkDownloadDialog';
+import WordInformation from '../WordInformation';
 import './index.css';
 
 const NextPageStyle = {
@@ -91,6 +92,7 @@ class Reader extends Component {
       loadedWork: null,
       referenceValid: true,
       referenceValue: '',
+      selectedWord: null,
     };
   }
 
@@ -104,8 +106,11 @@ class Reader extends Component {
     });
   }
 
-  onWordClick(word, x, y){
-
+  onWordClick(word, x, y) {
+    this.setState({
+      selectedWord: word,
+      modal: 'word',
+    });
   }
 
   /**
@@ -243,13 +248,17 @@ class Reader extends Component {
 
   render() {
     const {
-      modal, data, error, loading, referenceValid, referenceValue,
+      modal, data, error, loading, referenceValid, referenceValue, selectedWord,
     } = this.state;
 
     const { inverted } = this.props;
 
     const onVerseClick = (verseDescriptor, verse, id, href, x, y) => {
       this.onVerseClick(verseDescriptor, verse, id, href, x, y);
+    };
+
+    const onWordClick = (word, x, y) => {
+      this.onWordClick(word, x, y);
     };
 
     // Figure out a description for the chapter
@@ -328,6 +337,7 @@ class Reader extends Component {
         </div>
         {data && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
         {data && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
+        {data && modal === 'word' && <WordInformation word={selectedWord} onClose={() => this.closeModal()} />}
         {data && !loading && (
           <>
             <div style={{ marginTop: 6 }} />
@@ -376,6 +386,7 @@ class Reader extends Component {
               content={data.content}
               work={data.work}
               onVerseClick={onVerseClick}
+              onWordClick={onWordClick}
             />
             <Button
               icon

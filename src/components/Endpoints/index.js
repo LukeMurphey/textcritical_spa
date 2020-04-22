@@ -42,3 +42,7 @@ export function ENDPOINT_WIKI_INFO(search, search2 = null, search3 = null) {
   const searchParams = [search, search2, search3].filter((e) => e != null);
   return `${getHostConfig()}/api/wikipedia_info/${searchParams.join('/')}`;
 }
+
+export function ENDPOINT_WORD_PARSE(word) {
+  return `${getHostConfig()}/api/word_parse/${word}`;
+}
