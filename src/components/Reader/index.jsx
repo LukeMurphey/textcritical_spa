@@ -98,6 +98,16 @@ class Reader extends Component {
     this.loadChapter('new-testament', 'matthew', '1');
   }
 
+  onVerseClick(verseDescriptor, verse, id, href, x, y) {
+    this.setState({
+      referenceValue: verseDescriptor,
+    });
+  }
+
+  onWordClick(word, x, y){
+
+  }
+
   /**
    * Load the given chapter.
    *
@@ -238,6 +248,10 @@ class Reader extends Component {
 
     const { inverted } = this.props;
 
+    const onVerseClick = (verseDescriptor, verse, id, href, x, y) => {
+      this.onVerseClick(verseDescriptor, verse, id, href, x, y);
+    };
+
     // Figure out a description for the chapter
     let description = '';
     let referenceDescription = referenceValue;
@@ -357,7 +371,12 @@ class Reader extends Component {
                 content={warning[1]}
               />
             ))}
-            <Chapter chapter={data.chapter} content={data.content} work={data.work} />
+            <Chapter
+              chapter={data.chapter}
+              content={data.content}
+              work={data.work}
+              onVerseClick={onVerseClick}
+            />
             <Button
               icon
               style={PriorPageStyle}
