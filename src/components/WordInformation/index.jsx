@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Header, Modal, Button, Placeholder,
-} from 'semantic-ui-react';
+import { Placeholder } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_WORD_PARSE } from '../Endpoints';
 import ErrorMessage from '../ErrorMessage';
@@ -46,50 +44,37 @@ class WordInformation extends Component {
   }
 
   render() {
-    const { word, onClose } = this.props;
+    const { word } = this.props;
     const { wordInfo, loading, error } = this.state;
     return (
-      <Modal defaultOpen onClose={onClose}>
-        <Modal.Header>{word}</Modal.Header>
-        <Modal.Content>
-          <Modal.Description>
-            <Header>
-              Information on
-              {word}
-            </Header>
-            {!loading && wordInfo && (
-              <div>
-                {word}
-              </div>
-            )}
-            {!loading && error && (
-              <div>
-                <ErrorMessage title="Unable to get word information" description="Information for the given word could not be obtained." message={error} />
-              </div>
-            )}
-            {loading && (
-              <Placeholder style={{ marginTop: 32 }}>
-                <Placeholder.Header>
-                  <Placeholder.Line />
-                </Placeholder.Header>
-                <Placeholder.Paragraph>
-                  <Placeholder.Line />
-                </Placeholder.Paragraph>
-              </Placeholder>
-            )}
-          </Modal.Description>
-        </Modal.Content>
-        <Modal.Actions>
-          <Button onClick={onClose}>Close</Button>
-        </Modal.Actions>
-      </Modal>
+      <>
+        {!loading && wordInfo && <div>{word}</div>}
+        {!loading && error && (
+          <div>
+            <ErrorMessage
+              title="Unable to get word information"
+              description="Information for the given word could not be obtained."
+              message={error}
+            />
+          </div>
+        )}
+        {loading && (
+          <Placeholder style={{ marginTop: 32 }}>
+            <Placeholder.Header>
+              <Placeholder.Line />
+            </Placeholder.Header>
+            <Placeholder.Paragraph>
+              <Placeholder.Line />
+            </Placeholder.Paragraph>
+          </Placeholder>
+        )}
+      </>
     );
   }
 }
 
 WordInformation.propTypes = {
   word: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired,
 };
 
 export default WordInformation;

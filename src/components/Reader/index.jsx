@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Segment,
-  Message,
+  Message, Popup,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE } from '../Endpoints';
@@ -9,7 +9,7 @@ import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
 import WorkDownloadDialog from '../WorkDownloadDialog';
-import WordInformation from '../WordInformation';
+import WordInformation from '../WordInformation/WordInformationPopup';
 import './index.css';
 
 const NextPageStyle = {
@@ -93,6 +93,8 @@ class Reader extends Component {
       referenceValid: true,
       referenceValue: '',
       selectedWord: null,
+      popupX: null,
+      popupY: null,
     };
   }
 
@@ -110,6 +112,8 @@ class Reader extends Component {
     this.setState({
       selectedWord: word,
       modal: 'word',
+      popupX: x,
+      popupY: y,
     });
   }
 
@@ -248,7 +252,7 @@ class Reader extends Component {
 
   render() {
     const {
-      modal, data, error, loading, referenceValid, referenceValue, selectedWord,
+      modal, data, error, loading, referenceValid, referenceValue, selectedWord, popupX, popupY,
     } = this.state;
 
     const { inverted } = this.props;
@@ -337,9 +341,16 @@ class Reader extends Component {
         </div>
         {data && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
         {data && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-        {data && modal === 'word' && <WordInformation word={selectedWord} onClose={() => this.closeModal()} />}
+        {data && modal === 'word' && <WordInformation x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
         {data && !loading && (
           <>
+            {popupX && popupY && (
+              <Popup
+                content="I will not flip!"
+                pinned
+                offset
+              />
+            )}
             <div style={{ marginTop: 6 }} />
             <Grid>
               <Grid.Row>

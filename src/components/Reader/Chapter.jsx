@@ -60,7 +60,8 @@ class Chapter extends Component {
   handleClickWord(event) {
     const word = event.currentTarget.textContent;
     const { onWordClick } = this.props;
-    onWordClick(word, event.x, event.y);
+
+    onWordClick(word, event.layerX, event.layerY);
   }
 
   /**
