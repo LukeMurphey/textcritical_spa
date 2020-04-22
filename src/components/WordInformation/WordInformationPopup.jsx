@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Segment } from 'semantic-ui-react';
+import { Button, Segment, Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import WordInformation from '.';
 
@@ -16,10 +16,18 @@ const WordInformationDialog = (props) => {
     height: 300,
   };
 
+  const closeButtonStyle = {
+    float: 'right',
+    '-webkit-box-shadow': '0 0 0 0',
+    boxShadow: '0 0 0 0',
+  };
+
   return (
     <Segment style={segmentStyle}>
+      <Button basic style={closeButtonStyle} icon onClick={onClose}>
+        <Icon name="close" />
+      </Button>
       <WordInformation word={word} />
-      <Button onClick={onClose}>Close</Button>
     </Segment>
   );
 };
