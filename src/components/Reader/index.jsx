@@ -103,7 +103,7 @@ class Reader extends Component {
   }
 
   componentDidMount() {
-    this.loadChapter('new-testament', 'matthew', '1');
+    this.loadChapter('new-testament', 'John', '1');
   }
 
   onVerseClick(verseDescriptor, verse, id, href, x, y) {
@@ -140,6 +140,7 @@ class Reader extends Component {
           loadedWork: work,
           divisions,
           referenceValue: data.chapter.description,
+          modal: null,
         });
       })
       .catch((e) => {
@@ -343,9 +344,9 @@ class Reader extends Component {
             </Dropdown.Menu>
           </Dropdown>
         </div>
-        {data && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-        {data && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-        {data && modal === 'word' && <WordInformation x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
+        {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
+        {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
+        {data && !loading && modal === 'word' && <WordInformation x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
         {data && !loading && (
           <>
             <div style={{ marginTop: 6 }} />
