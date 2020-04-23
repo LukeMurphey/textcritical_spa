@@ -3,6 +3,7 @@ import { Placeholder } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_WORD_PARSE } from '../Endpoints';
 import ErrorMessage from '../ErrorMessage';
+import WordLemma from './WordLemma';
 
 class WordInformation extends Component {
   constructor(props) {
@@ -46,9 +47,36 @@ class WordInformation extends Component {
   render() {
     const { word } = this.props;
     const { wordInfo, loading, error } = this.state;
+
     return (
       <>
-        {!loading && wordInfo && <div>{word}</div>}
+        {!loading && wordInfo && (
+          <>
+            Found
+            { ' ' }
+            {wordInfo.length}
+            { ' ' }
+            parses for
+            { ' ' }
+            {word}
+            :
+            {wordInfo.ignore_diacritics && (
+              <>
+                An exact match could not be found, so similar words with different diacritical marks
+                are being returned.
+              </>
+            )}
+            {wordInfo.map((entry) => (
+              <WordLemma
+                lemma={entry.lemma}
+                meaning={entry.meaning}
+                description={entry.description}
+                lexiconEntries={entry.lexiconEntries}
+                key={`${entry.form}::${entry.description}`}
+              />
+            ))}
+          </>
+        )}
         {!loading && error && (
           <div>
             <ErrorMessage

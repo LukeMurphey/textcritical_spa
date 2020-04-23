@@ -16,9 +16,13 @@ const WordInformationDialog = (props) => {
     height: 300,
   };
 
+  /**
+   * This is done to get rid of the outline around the close button and get it to show up at the
+   * right of the screen.
+   */
   const closeButtonStyle = {
     float: 'right',
-    '-webkit-box-shadow': '0 0 0 0',
+    WebkitBoxShadow: '0 0 0 0',
     boxShadow: '0 0 0 0',
   };
 
