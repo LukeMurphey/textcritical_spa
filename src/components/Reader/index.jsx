@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Segment,
-  Message, Popup,
+  Message,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE } from '../Endpoints';
@@ -47,7 +47,11 @@ class Reader extends Component {
    * @param {string} query The string that the user entered that we are searching for
    */
   static workSearch(options, query) {
-    return options.filter((opt) => opt.text.includes(query) || opt.key.includes(query));
+    const queryLower = query.toLowerCase();
+    return options.filter((opt) => (
+      opt.text.toLowerCase().includes(queryLower)
+      || opt.key.toLowerCase().includes(queryLower)
+    ));
   }
 
   /**
@@ -344,13 +348,6 @@ class Reader extends Component {
         {data && modal === 'word' && <WordInformation x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
         {data && !loading && (
           <>
-            {popupX && popupY && (
-              <Popup
-                content="I will not flip!"
-                pinned
-                offset
-              />
-            )}
             <div style={{ marginTop: 6 }} />
             <Grid>
               <Grid.Row>
