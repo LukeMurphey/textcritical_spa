@@ -12,6 +12,7 @@ class WordInformation extends Component {
       loading: false,
       wordInfo: null,
       error: null,
+      activeIndex: null,
     };
   }
 
@@ -42,6 +43,7 @@ class WordInformation extends Component {
           wordInfo: data,
           loading: false,
           error: null,
+          activeIndex: null,
         });
       })
       .catch((e) => {
@@ -68,17 +70,23 @@ class WordInformation extends Component {
     return (
       <>
         {!loading && wordInfo && (
-          <>
+          <div>
             Found
             { ' ' }
             {wordInfo.length}
             { ' ' }
-            parses for
+            {wordInfo.length > 1 && (
+              <>parses for</>
+            )}
+            {wordInfo.length <= 1 && (
+              <>parse for</>
+            )}
             { ' ' }
             {word}
-            :
-            {wordInfo.ignore_diacritics && (
+            .
+            {wordInfo && wordInfo.length > 0 && wordInfo[0].ignoring_diacritics && (
               <>
+                {' '}
                 An exact match could not be found, so similar words with different diacritical marks
                 are being returned.
               </>
@@ -109,7 +117,24 @@ class WordInformation extends Component {
                 </>
               ))}
             </Accordion>
-          </>
+            <div style={{ marginTop: 12 }}>
+              Look up at
+              {' '}
+              <a target="_blank" rel="noopener noreferrer" href={`http://www.perseus.tufts.edu/hopper/morph?l=${word}&la=greek`}>
+                Perseus
+              </a>
+              ,
+              {' '}
+              <a target="_blank" rel="noopener noreferrer" href={`https://logeion.uchicago.edu/${word}`}>
+                Logeion
+              </a>
+              , or
+              {' '}
+              <a target="_blank" rel="noopener noreferrer" href={`https://www.google.com/search?q=${word}`}>
+                Google
+              </a>
+            </div>
+          </div>
         )}
         {!loading && error && (
           <div>
