@@ -13,7 +13,7 @@ const WordLemma = (props) => {
       {lexiconEntries.length === 0 && (
         <Message warning>
           <Icon name="warning" />
-          No definition available
+          No definition available from Liddel and Scott.
         </Message>
       )}
       {lexiconEntries && (
