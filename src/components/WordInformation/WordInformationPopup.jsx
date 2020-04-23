@@ -14,6 +14,7 @@ const WordInformationDialog = (props) => {
     position: 'absolute',
     width: 500,
     height: 300,
+    overflowY: 'auto',
   };
 
   /**

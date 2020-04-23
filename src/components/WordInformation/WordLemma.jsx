@@ -1,25 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import '../Reader/Chapter.css';
 
 const WordLemma = (props) => {
   const {
-    lemma, meaning, description, lexiconEntries,
+    lexiconEntries,
   } = props;
 
   return (
     <>
-      <div>
-        {lemma}
-        (
-        {description}
-        ) :
-        {meaning}
-      </div>
+      {lexiconEntries.length === 0 && (
+        <>No definition available</>
+      )}
       {lexiconEntries && (
         lexiconEntries.map((lexiconEntry) => (
-          <>
-            {lexiconEntry.definition}
-          </>
+          <div
+            key={lexiconEntry.lemma_lexical_form}
+            className="view_read_work"
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: lexiconEntry.definition }}
+          />
         ))
       )}
     </>
@@ -27,9 +27,6 @@ const WordLemma = (props) => {
 };
 
 WordLemma.propTypes = {
-  lemma: PropTypes.string.isRequired,
-  meaning: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
   lexiconEntries: PropTypes.arrayOf(PropTypes.shape),
 };
 

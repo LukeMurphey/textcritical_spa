@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Placeholder } from 'semantic-ui-react';
+import { Placeholder, Accordion, Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_WORD_PARSE } from '../Endpoints';
 import ErrorMessage from '../ErrorMessage';
@@ -18,6 +18,13 @@ class WordInformation extends Component {
   componentDidMount() {
     const { word } = this.props;
     this.getWordInfo(word);
+  }
+
+  componentDidUpdate(prevProps) {
+    const { word } = this.props;
+    if (word !== prevProps.word) {
+      this.getWordInfo(word);
+    }
   }
 
   /**
@@ -44,9 +51,19 @@ class WordInformation extends Component {
       });
   }
 
+  handleClick(e, titleProps) {
+    const { index } = titleProps;
+    const { activeIndex } = this.state;
+    const newIndex = activeIndex === index ? -1 : index;
+
+    this.setState({ activeIndex: newIndex });
+  }
+
   render() {
     const { word } = this.props;
-    const { wordInfo, loading, error } = this.state;
+    const {
+      wordInfo, loading, error, activeIndex,
+    } = this.state;
 
     return (
       <>
@@ -66,15 +83,32 @@ class WordInformation extends Component {
                 are being returned.
               </>
             )}
-            {wordInfo.map((entry) => (
-              <WordLemma
-                lemma={entry.lemma}
-                meaning={entry.meaning}
-                description={entry.description}
-                lexiconEntries={entry.lexiconEntries}
-                key={`${entry.form}::${entry.description}`}
-              />
-            ))}
+            <Accordion style={{ marginTop: 18 }} fluid>
+              {wordInfo.map((entry, index) => (
+                <>
+                  <Accordion.Title
+                    key={`${entry.form}::${entry.description}`}
+                    active={activeIndex === index}
+                    index={index}
+                    onClick={(e, titleProps) => this.handleClick(e, titleProps)}
+                  >
+                    <Icon name="dropdown" />
+                    {entry.lemma}
+                    {' '}
+                    (
+                    {entry.description}
+                    ):
+                    {' '}
+                    {entry.meaning}
+                  </Accordion.Title>
+                  <Accordion.Content active={activeIndex === index}>
+                    <WordLemma
+                      lexiconEntries={entry.lexicon_entries}
+                    />
+                  </Accordion.Content>
+                </>
+              ))}
+            </Accordion>
           </>
         )}
         {!loading && error && (
