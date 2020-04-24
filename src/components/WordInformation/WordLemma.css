@@ -58,50 +58,83 @@
   margin-top: 16px;
   display: block;
 }
+
 .view_lexicon .lb {
   display: block;
 }
+
 .view_lexicon .div3 {
   padding-top: 16px;
   display: block;
 }
+
 .view_lexicon .quote > .title {
   font-weight: bold;
   display: block;
 }
-.view_lexicon .castlist:before {
-  content: "Cast list: ";
-}
-.view_lexicon .castlist > .castitem:after {
-  content: ", ";
-}
-.view_lexicon .castlist > .castitem:last-child:after {
-  content: "";
-}
-.view_lexicon .argument {
-  font-style: italic;
-}
+
 .view_lexicon .p {
   margin-bottom: 16px;
   display: block;
 }
+
 .view_lexicon .lemma {
   text-decoration: underline;
   font-weight: bold;
 }
+
 .view_lexicon .orth {
   font-weight: bold;
   display: block;
 }
+
 .view_lexicon .etym {
   display: block;
   margin-top: 12px;
   font-weight: bold;
 }
+
+/**
+ * Style the sense entries so that they are nested accordingly
+ */
 .view_lexicon .sense {
   display: block;
-  margin-left: 32px;
+  margin-left: 15px;
   margin-top: 8px;
+}
+
+/**
+ * Set the margins
+ */
+.view_lexicon .sense[data-level="2"] {
+  margin-left: 30px;
+}
+
+.view_lexicon .sense[data-level="3"] {
+  margin-left: 45px;
+}
+
+.view_lexicon .sense[data-level="4"] {
+  margin-left: 60px;
+}
+
+.view_lexicon .sense[data-level="5"] {
+  margin-left: 75px;
+}
+
+.view_lexicon .sense[data-level="6"] {
+  margin-left: 90px;
+}
+
+/**
+ * Show the N indicator ("1.", "2.", etc.)
+ */
+.view_lexicon .sense[data-level]:before {
+  content: "" attr(data-n) ". ";
+}
+
+.view_lexicon .sense[data-level="0"]:before {
+  content: "";
 }
 
 /* -----------------------------------------
@@ -127,19 +160,6 @@
   margin-top: 12px;
 }
 
-.verse-link:visited {
-  color: #eee;
-}
-.verse-link:active {
-  color: #eee;
-}
-.verse-link:link {
-  color: #eee;
-}
-.verse-link:hover {
-  color: #08c;
-}
-
 .no_definition_entries {
   font-style: italic;
 }
@@ -160,28 +180,5 @@
 @media print {
   .view_lexicon .note-tag {
     display: none;
-  }
-}
-#small-message {
-  margin-bottom: 0;
-}
-
-@media (max-width: 1199px) {
-  .visible-large-desktop {
-    display: none;
-  }
-}
-@media (min-width: 768px) and (max-width: 979px) {
-  #small-message {
-    margin-top: 20px;
-    margin-left: 8px;
-    margin-bottom: 0;
-  }
-}
-@media (max-width: 450px) {
-  #small-message {
-    margin-top: 20px;
-    margin-left: 8px;
-    margin-bottom: 0;
   }
 }

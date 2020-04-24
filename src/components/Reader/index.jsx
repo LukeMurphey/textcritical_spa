@@ -112,12 +112,14 @@ class Reader extends Component {
     });
   }
 
-  onWordClick(word, x, y) {
+  onWordClick(word, x, y, positionRight, positionBelow) {
     this.setState({
       selectedWord: word,
       modal: 'word',
       popupX: x,
       popupY: y,
+      popupPositionRight: positionRight,
+      popupPositionBelow: positionBelow,
     });
   }
 
@@ -258,6 +260,7 @@ class Reader extends Component {
   render() {
     const {
       modal, data, error, loading, referenceValid, referenceValue, selectedWord, popupX, popupY,
+      popupPositionRight, popupPositionBelow,
     } = this.state;
 
     const { inverted } = this.props;
@@ -266,8 +269,8 @@ class Reader extends Component {
       this.onVerseClick(verseDescriptor, verse, id, href, x, y);
     };
 
-    const onWordClick = (word, x, y) => {
-      this.onWordClick(word, x, y);
+    const onWordClick = (word, x, y, positionRight, positionBelow) => {
+      this.onWordClick(word, x, y, positionRight, positionBelow);
     };
 
     // Figure out a description for the chapter
@@ -346,7 +349,7 @@ class Reader extends Component {
         </div>
         {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
         {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-        {data && !loading && modal === 'word' && <WordInformation x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
+        {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
         {data && !loading && (
           <>
             <div style={{ marginTop: 6 }} />

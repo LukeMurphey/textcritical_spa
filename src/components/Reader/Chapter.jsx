@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { createRef, Component } from 'react';
+import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import './Chapter.css';
 
@@ -31,6 +32,7 @@ class Chapter extends Component {
     // See https://dev.to/em4nl/function-identity-in-javascript-or-how-to-remove-event-listeners-properly-1ll3
     this.clickWordListener = null;
     this.clickVerseListener = null;
+    this.node = null;
   }
 
   /**
@@ -61,7 +63,11 @@ class Chapter extends Component {
     const word = event.currentTarget.textContent;
     const { onWordClick } = this.props;
 
-    onWordClick(word, event.layerX, event.layerY);
+    const rect = this.wrapper.current.getBoundingClientRect();
+    const positionRight = event.layerX < (rect.width / 2);
+    const positionBelow = event.layerY < (rect.height / 2);
+
+    onWordClick(word, event.layerX, event.layerY, positionRight, positionBelow);
   }
 
   /**
@@ -91,10 +97,15 @@ class Chapter extends Component {
 
   render() {
     const { content } = this.props;
+
+    // We are keeping a reference to the wrapper so that math can be done regarding client rectangle
+    // See https://medium.com/trabe/getting-rid-of-finddomnode-method-in-your-react-application-a0d7093b2660
+    this.wrapper = createRef();
     return (
       <>
         <div
           className="view_read_work"
+          ref={this.wrapper}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: content }}
         />

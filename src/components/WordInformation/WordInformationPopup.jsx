@@ -5,17 +5,8 @@ import WordInformation from '.';
 
 const WordInformationDialog = (props) => {
   const {
-    word, onClose, x, y,
+    word, onClose, x, y, positionBelow, positionRight,
   } = props;
-
-  const segmentStyle = {
-    top: y,
-    left: x,
-    position: 'absolute',
-    width: 500,
-    height: 300,
-    overflowY: 'auto',
-  };
 
   /**
    * This is done to get rid of the outline around the close button and get it to show up at the
@@ -26,6 +17,26 @@ const WordInformationDialog = (props) => {
     WebkitBoxShadow: '0 0 0 0',
     boxShadow: '0 0 0 0',
   };
+
+  // Correct for the cases where the dialog is off of the bottom of the screen.
+  const segmentStyle = {
+    position: 'absolute',
+    width: 500,
+    height: 300,
+    overflowY: 'auto',
+  };
+
+  if (positionBelow) {
+    segmentStyle.top = y;
+  } else {
+    segmentStyle.top = y - segmentStyle.height - 20;
+  }
+
+  if (positionRight) {
+    segmentStyle.left = x;
+  } else {
+    segmentStyle.left = x - segmentStyle.width - 10;
+  }
 
   return (
     <Segment style={segmentStyle}>
@@ -42,6 +53,13 @@ WordInformationDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
+  positionBelow: PropTypes.bool,
+  positionRight: PropTypes.bool,
+};
+
+WordInformationDialog.defaultProps = {
+  positionBelow: true,
+  positionRight: true,
 };
 
 export default WordInformationDialog;

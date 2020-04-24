@@ -93,9 +93,8 @@ class WordInformation extends Component {
             )}
             <Accordion style={{ marginTop: 18 }} fluid>
               {wordInfo.map((entry, index) => (
-                <>
+                <React.Fragment key={`${entry.form}::${entry.description}`}>
                   <Accordion.Title
-                    key={`${entry.form}::${entry.description}`}
                     active={activeIndex === index}
                     index={index}
                     onClick={(e, titleProps) => this.handleClick(e, titleProps)}
@@ -109,12 +108,14 @@ class WordInformation extends Component {
                     {' '}
                     {entry.meaning}
                   </Accordion.Title>
-                  <Accordion.Content active={activeIndex === index}>
+                  <Accordion.Content
+                    active={activeIndex === index}
+                  >
                     <WordLemma
                       lexiconEntries={entry.lexicon_entries}
                     />
                   </Accordion.Content>
-                </>
+                </React.Fragment>
               ))}
             </Accordion>
             <div style={{ marginTop: 12 }}>
