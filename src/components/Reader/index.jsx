@@ -286,73 +286,74 @@ class Reader extends Component {
     }
 
     return (
-      <Segment inverted={inverted} basic>
-        <Input
-          inverted={inverted}
-          action={
-            (
-              <Button
-                disabled={!referenceValid}
-                onClick={() => this.goToReference()}
-                basic
-              >
-                Go
-              </Button>
-            )
-          }
-          placeholder="Jump to reference..."
-          value={referenceDescription}
-          error={!referenceValid}
-          onChange={(e, d) => this.changeReference(e, d)}
-        />
-        {' '}
-        <Button.Group>
-          <Button inverted={inverted} basic icon>
-            <Icon name="folder outline" />
-          </Button>
-          <Button inverted={inverted} basic icon>
-            <Icon name="search" />
-          </Button>
-          <Button inverted={inverted} basic icon>
-            <Icon name="info" onClick={() => this.openWorkInfoModal()} />
-          </Button>
-        </Button.Group>
-        {' '}
-        <Button.Group>
-          <Button inverted={inverted} basic icon>
-            <Icon name="share" />
-          </Button>
-          <Button inverted={inverted} basic icon>
-            <Icon name="download" onClick={() => this.openDownloadModal()} />
-          </Button>
-        </Button.Group>
-        {' '}
-        <div style={{ display: 'inline-block', width: 300 }}>
-          <Dropdown
-            basic
-            text="Other Versions"
-            fluid
-            button
-            disabled={!referenceValid}
-          >
-            <Dropdown.Menu>
-              {data && data.related_works.map((work) => (
-                <Dropdown.Item
-                  key={work.title_slug}
-                  text={work.title}
-                  description={work.language}
-                  onClick={() => this.changeWork(work.title_slug)}
-                />
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-        {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-        {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-        {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
+      <>
+        <Segment inverted={inverted} basic compact>
+          <Input
+            inverted={inverted}
+            action={
+              (
+                <Button
+                  disabled={!referenceValid}
+                  onClick={() => this.goToReference()}
+                  basic
+                >
+                  Go
+                </Button>
+              )
+            }
+            placeholder="Jump to reference..."
+            value={referenceDescription}
+            error={!referenceValid}
+            onChange={(e, d) => this.changeReference(e, d)}
+          />
+          {' '}
+          <Button.Group>
+            <Button inverted={inverted} basic icon>
+              <Icon name="folder outline" />
+            </Button>
+            <Button inverted={inverted} basic icon>
+              <Icon name="search" />
+            </Button>
+            <Button inverted={inverted} basic icon>
+              <Icon name="info" onClick={() => this.openWorkInfoModal()} />
+            </Button>
+          </Button.Group>
+          {' '}
+          <Button.Group>
+            <Button inverted={inverted} basic icon>
+              <Icon name="share" />
+            </Button>
+            <Button inverted={inverted} basic icon>
+              <Icon name="download" onClick={() => this.openDownloadModal()} />
+            </Button>
+          </Button.Group>
+          {' '}
+          <div style={{ display: 'inline-block', width: 300 }}>
+            <Dropdown
+              basic
+              text="Other Versions"
+              fluid
+              button
+              disabled={!referenceValid}
+            >
+              <Dropdown.Menu>
+                {data && data.related_works.map((work) => (
+                  <Dropdown.Item
+                    key={work.title_slug}
+                    text={work.title}
+                    description={work.language}
+                    onClick={() => this.changeWork(work.title_slug)}
+                  />
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+          {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
+          {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
+          {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
+        </Segment>
         {data && !loading && (
-          <>
-            <div style={{ marginTop: 6 }} />
+          <Segment style={{ marginTop: 0, paddingTop: 0 }} inverted={inverted} basic>
             <Grid>
               <Grid.Row>
                 <Grid.Column width={8}>
@@ -416,7 +417,7 @@ class Reader extends Component {
             >
               <Icon name="right chevron" />
             </Button>
-          </>
+          </Segment>
         )}
         {error && (
           <ErrorMessage title="Unable to load the content" description="The given chapter could not be loaded from the server" message={error} />
@@ -424,7 +425,7 @@ class Reader extends Component {
         {loading && !error && (
           Reader.getPlaceholder()
         )}
-      </Segment>
+      </>
     );
   }
 }

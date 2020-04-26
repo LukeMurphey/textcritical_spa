@@ -20,37 +20,39 @@ class App extends Component {
 
   render() {
     const { modal } = this.state;
-    const { inverted } = this.props;
+    const { inverted, includeMenu } = this.props;
 
     return (
       <div>
-        <Menu inverted={!inverted} attached="top">
-          <Container>
-            <Menu.Item style={{ backgroundColor: '#009ec2' }}>
-              <img alt="" style={{ width: 22, height: 22 }} src="book.png" />
-            </Menu.Item>
-            <Menu.Item
-              name="about"
-              active={false}
-              content="About"
-              onClick={() => this.openAboutModal()}
-            />
+        { includeMenu && (
+          <Menu inverted={!inverted} attached="top">
+            <Container>
+              <Menu.Item style={{ backgroundColor: '#009ec2' }}>
+                <img alt="" style={{ width: 22, height: 22 }} src="book.png" />
+              </Menu.Item>
+              <Menu.Item
+                name="about"
+                active={false}
+                content="About"
+                onClick={() => this.openAboutModal()}
+              />
 
-            <Menu.Menu position="right">
-              <div className="ui right aligned category search item">
-                <div className="ui transparent icon input">
-                  <input
-                    className="prompt"
-                    type="text"
-                    placeholder="Search works..."
-                  />
-                  <i className="search link icon" />
+              <Menu.Menu position="right">
+                <div className="ui right aligned category search item">
+                  <div className="ui transparent icon input">
+                    <input
+                      className="prompt"
+                      type="text"
+                      placeholder="Search works..."
+                    />
+                    <i className="search link icon" />
+                  </div>
+                  <div className="results" />
                 </div>
-                <div className="results" />
-              </div>
-            </Menu.Menu>
-          </Container>
-        </Menu>
+              </Menu.Menu>
+            </Container>
+          </Menu>
+        )}
         {modal === 'about' && (
           <AboutDialog onClose={() => this.closeModal()} />
         )}
@@ -64,10 +66,12 @@ class App extends Component {
 
 App.propTypes = {
   inverted: PropTypes.bool,
+  includeMenu: PropTypes.bool,
 };
 
 App.defaultProps = {
   inverted: false,
+  includeMenu: false,
 };
 
 export default App;
