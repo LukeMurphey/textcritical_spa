@@ -71,6 +71,14 @@ class Chapter extends Component {
   }
 
   /**
+   * Unhighlight existing verses.
+   */
+  unhighlistVerses() {
+    const highlights = Array.from(this.wrapper.current.getElementsByClassName('highlighted'));
+    highlights.map((highlight) => highlight.classList.remove('highlighted'));
+  }
+
+  /**
    * Handle the clicking of a verse.
    *
    * @param {*} event The event object
@@ -78,6 +86,9 @@ class Chapter extends Component {
   handleClickVerse(event) {
     // Don't follow the link
     event.preventDefault();
+
+    // Unhighlight existing verses
+    this.unhighlistVerses();
 
     // Get the descriptor of the verse
     const verseDescriptorElem = Array.from(event.currentTarget.attributes).find((element) => element.name === 'data-verse-descriptor');
@@ -93,6 +104,9 @@ class Chapter extends Component {
     // Fire off the handler
     const { onVerseClick } = this.props;
     onVerseClick(verseDescriptor, verse, id, href, event.x, event.y);
+
+    // Highlight the verse
+    event.currentTarget.parentElement.classList.toggle('highlighted');
   }
 
   render() {

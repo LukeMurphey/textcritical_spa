@@ -139,12 +139,15 @@
 .verse-link:visited {
   color: #eee;
 }
+
 .verse-link:active {
   color: #eee;
 }
+
 .verse-link:link {
   color: #eee;
 }
+
 .verse-link:hover {
   color: #08c;
 }
@@ -165,10 +168,10 @@
 
 @-webkit-keyframes highlighted {
   0% {
-    background: #b94a48;
+    background: #149bdf;
   }
   50% {
-    background: #b94a48;
+    background: #149bdf;
   }
   100% {
     background: #eee;
@@ -176,10 +179,10 @@
 }
 @-moz-keyframes highlighted {
   0% {
-    background: #b94a48;
+    background: #149bdf;
   }
   50% {
-    background: #b94a48;
+    background: #149bdf;
   }
   100% {
     background: #eee;
@@ -187,10 +190,10 @@
 }
 @-ms-keyframes highlighted {
   0% {
-    background: #b94a48;
+    background: #149bdf;
   }
   50% {
-    background: #b94a48;
+    background: #149bdf;
   }
   100% {
     background: #eee;
@@ -198,10 +201,10 @@
 }
 @keyframes highlighted {
   0% {
-    background: #b94a48;
+    background: #149bdf;
   }
   50% {
-    background: #b94a48;
+    background: #149bdf;
   }
   100% {
     background: #eee;
@@ -251,6 +254,7 @@
     background: #454545;
   }
 }
+
 .verse-container.highlighted {
   background-color: #eee;
   border-radius: 3px;
