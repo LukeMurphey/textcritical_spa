@@ -72,16 +72,16 @@ class WordInformation extends Component {
         {!loading && wordInfo && (
           <div>
             Found
-            { ' ' }
+            {' '}
             {wordInfo.length}
-            { ' ' }
+            {' '}
             {wordInfo.length !== 1 && (
               <>parses for</>
             )}
             {wordInfo.length === 1 && (
               <>parse for</>
             )}
-            { ' ' }
+            {' '}
             {word}
             .
             {wordInfo && wordInfo.length > 0 && wordInfo[0].ignoring_diacritics && (
