@@ -357,11 +357,13 @@ class Reader extends Component {
                 </Dropdown.Menu>
               </Dropdown>
             </div>
-            <Button.Group floated="right" style={{ marginLeft: 'auto' }}>
-              <Button inverted={inverted} basic icon>
-                <Icon name="ellipsis vertical" onClick={() => this.openWorkInfoModal()} />
-              </Button>
-            </Button.Group>
+            <div style={{ float: 'right', marginLeft: 'auto', marginTop: 11 }}>
+              <Dropdown icon="ellipsis vertical">
+                <Dropdown.Menu>
+                  <Dropdown.Item text="About TextCritical.net" />
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
           </Menu>
         </Segment>
         {data && !loading && (
