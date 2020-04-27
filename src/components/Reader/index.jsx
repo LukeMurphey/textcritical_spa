@@ -357,6 +357,11 @@ class Reader extends Component {
                 </Dropdown.Menu>
               </Dropdown>
             </div>
+            <Button.Group floated="right" style={{ marginLeft: 'auto' }}>
+              <Button inverted={inverted} basic icon>
+                <Icon name="ellipsis vertical" onClick={() => this.openWorkInfoModal()} />
+              </Button>
+            </Button.Group>
           </Menu>
         </Segment>
         {data && !loading && (
@@ -410,6 +415,7 @@ class Reader extends Component {
               work={data.work}
               onVerseClick={onVerseClick}
               onWordClick={onWordClick}
+              onClickAway={() => this.closeModal()}
             />
             <Button
               icon

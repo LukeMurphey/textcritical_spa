@@ -30,28 +30,22 @@ class Chapter extends Component {
 
     // We need to track the event listener with the bind call so that it can be removed
     // See https://dev.to/em4nl/function-identity-in-javascript-or-how-to-remove-event-listeners-properly-1ll3
-    this.clickWordListener = null;
-    this.clickVerseListener = null;
-    this.node = null;
+    this.clickListener = null;
   }
 
   /**
    * Wire up handlers for the clicking of the words and verses.
    */
   componentDidMount() {
-    this.clickWordListener = (event) => this.handleClickWord(event);
-    Chapter.addHandler('word', this.clickWordListener);
-
-    this.clickVerseListener = (event) => this.handleClickVerse(event);
-    Chapter.addHandler('verse-link', (event) => this.handleClickVerse(event));
+    this.clickListener = (event) => this.handleClick(event);
+    Chapter.addHandler('view_read_work', this.clickListener);
   }
 
   /**
    * Un wire the handlers to save memory.
    */
   componentWillUnmount() {
-    Chapter.removeHandler('word', this.clickWordListener);
-    Chapter.removeHandler('verse-link', this.clickVerseListener);
+    Chapter.removeHandler('view_read_work', this.clickListener);
   }
 
   /**
@@ -60,7 +54,7 @@ class Chapter extends Component {
    * @param {*} event The event object
    */
   handleClickWord(event) {
-    const word = event.currentTarget.textContent;
+    const word = event.target.textContent;
     const { onWordClick } = this.props;
 
     const rect = this.wrapper.current.getBoundingClientRect();
@@ -87,18 +81,21 @@ class Chapter extends Component {
     // Don't follow the link
     event.preventDefault();
 
+    // Get the target containing the verse info
+    const target = event.target.parentElement;
+
     // Unhighlight existing verses
     this.unhighlistVerses();
 
     // Get the descriptor of the verse
-    const verseDescriptorElem = Array.from(event.currentTarget.attributes).find((element) => element.name === 'data-verse-descriptor');
+    const verseDescriptorElem = Array.from(target.attributes).find((element) => element.name === 'data-verse-descriptor');
     const verseDescriptor = verseDescriptorElem ? verseDescriptorElem.nodeValue : null;
 
     // Get the ID and the href
-    const { id, href } = event.currentTarget;
+    const { id, href } = target;
 
     // Get the verse number
-    const verseElem = Array.from(event.currentTarget.attributes).find((element) => element.name === 'data-verse');
+    const verseElem = Array.from(target.attributes).find((element) => element.name === 'data-verse');
     const verse = verseElem ? verseElem.nodeValue : null;
 
     // Fire off the handler
@@ -106,7 +103,23 @@ class Chapter extends Component {
     onVerseClick(verseDescriptor, verse, id, href, event.x, event.y);
 
     // Highlight the verse
-    event.currentTarget.parentElement.classList.toggle('highlighted');
+    target.parentElement.classList.toggle('highlighted');
+  }
+
+  handleClickEmpty() {
+    const { onClickAway } = this.props;
+    onClickAway();
+  }
+
+  handleClick(event) {
+    // Determine if we are clicking a word, verse, or just empty space
+    if (event.target.className.includes('word')) {
+      this.handleClickWord(event);
+    } else if (event.target.className.includes('verse')) {
+      this.handleClickVerse(event);
+    } else {
+      this.handleClickEmpty();
+    }
   }
 
   render() {
@@ -132,11 +145,13 @@ Chapter.propTypes = {
   content: PropTypes.string.isRequired,
   onVerseClick: PropTypes.func,
   onWordClick: PropTypes.func,
+  onClickAway: PropTypes.func,
 };
 
 Chapter.defaultProps = {
   onVerseClick: () => { },
   onWordClick: () => { },
+  onClickAway: () => { },
 };
 
 export default Chapter;
