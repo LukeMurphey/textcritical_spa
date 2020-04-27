@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Segment,
-  Message,
+  Message, Menu,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE } from '../Endpoints';
@@ -22,6 +22,13 @@ const PriorPageStyle = {
   bottom: '20px',
   left: '10px',
   position: 'fixed',
+};
+
+const ToolbarBarStyle = {
+  marginTop: 0,
+  marginBottom: 0,
+  paddingTop: 0,
+  paddingBottom: 0,
 };
 
 class Reader extends Component {
@@ -287,73 +294,76 @@ class Reader extends Component {
 
     return (
       <>
-        <Segment inverted={inverted} basic compact>
-          <Input
-            inverted={inverted}
-            action={
-              (
-                <Button
-                  disabled={!referenceValid}
-                  onClick={() => this.goToReference()}
-                  basic
-                >
-                  Go
-                </Button>
-              )
-            }
-            placeholder="Jump to reference..."
-            value={referenceDescription}
-            error={!referenceValid}
-            onChange={(e, d) => this.changeReference(e, d)}
-          />
-          {' '}
-          <Button.Group>
-            <Button inverted={inverted} basic icon>
-              <Icon name="folder outline" />
-            </Button>
-            <Button inverted={inverted} basic icon>
-              <Icon name="search" />
-            </Button>
-            <Button inverted={inverted} basic icon>
-              <Icon name="info" onClick={() => this.openWorkInfoModal()} />
-            </Button>
-          </Button.Group>
-          {' '}
-          <Button.Group>
-            <Button inverted={inverted} basic icon>
-              <Icon name="share" />
-            </Button>
-            <Button inverted={inverted} basic icon>
-              <Icon name="download" onClick={() => this.openDownloadModal()} />
-            </Button>
-          </Button.Group>
-          {' '}
-          <div style={{ display: 'inline-block', width: 300 }}>
-            <Dropdown
-              basic
-              text="Other Versions"
-              fluid
-              button
-              disabled={!referenceValid}
-            >
-              <Dropdown.Menu>
-                {data && data.related_works.map((work) => (
-                  <Dropdown.Item
-                    key={work.title_slug}
-                    text={work.title}
-                    description={work.language}
-                    onClick={() => this.changeWork(work.title_slug)}
-                  />
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-          </div>
-          {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-          {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-          {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
+        <Segment style={ToolbarBarStyle} inverted={inverted} basic>
+          <Menu inverted={inverted} text>
+            <Input
+              inverted={inverted}
+              action={
+                (
+                  <Button
+                    disabled={!referenceValid}
+                    onClick={() => this.goToReference()}
+                    basic
+                  >
+                    Go
+                  </Button>
+                )
+              }
+              placeholder="Jump to reference..."
+              value={referenceDescription}
+              error={!referenceValid}
+              onChange={(e, d) => this.changeReference(e, d)}
+            />
+            {' '}
+            <Button.Group>
+              <Button inverted={inverted} basic icon>
+                <Icon name="folder outline" />
+              </Button>
+              <Button inverted={inverted} basic icon>
+                <Icon name="search" />
+              </Button>
+              <Button inverted={inverted} basic icon>
+                <Icon name="info" onClick={() => this.openWorkInfoModal()} />
+              </Button>
+            </Button.Group>
+            {' '}
+            <Button.Group>
+              <Button inverted={inverted} basic icon>
+                <Icon name="share" />
+              </Button>
+              <Button inverted={inverted} basic icon>
+                <Icon name="download" onClick={() => this.openDownloadModal()} />
+              </Button>
+            </Button.Group>
+            {' '}
+            <div style={{ display: 'inline-block', width: 300 }}>
+              <Dropdown
+                basic
+                text="Other Versions"
+                fluid
+                button
+                disabled={!referenceValid}
+                style={{ marginTop: 2 }}
+              >
+                <Dropdown.Menu>
+                  {data && data.related_works.map((work) => (
+                    <Dropdown.Item
+                      key={work.title_slug}
+                      text={work.title}
+                      description={work.language}
+                      onClick={() => this.changeWork(work.title_slug)}
+                    />
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+          </Menu>
         </Segment>
         {data && !loading && (
           <Segment style={{ marginTop: 0, paddingTop: 0 }} inverted={inverted} basic>
+            {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
+            {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
+            {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
             <Grid>
               <Grid.Row>
                 <Grid.Column width={8}>
