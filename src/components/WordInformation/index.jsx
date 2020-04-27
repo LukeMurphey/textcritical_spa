@@ -75,10 +75,10 @@ class WordInformation extends Component {
             { ' ' }
             {wordInfo.length}
             { ' ' }
-            {wordInfo.length > 1 && (
+            {wordInfo.length !== 1 && (
               <>parses for</>
             )}
-            {wordInfo.length <= 1 && (
+            {wordInfo.length === 1 && (
               <>parse for</>
             )}
             { ' ' }
