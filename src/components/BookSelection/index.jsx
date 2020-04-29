@@ -7,6 +7,10 @@ import PropTypes from 'prop-types';
 import { ENDPOINT_WORKS_LISTS, ENDPOINT_WORK_IMAGE } from '../Endpoints';
 import ErrorMessage from '../ErrorMessage';
 
+const ClickStyle = {
+  cursor: 'pointer',
+};
+
 class BookSelection extends Component {
   static workMatchesSearch(work, search) {
     return work.title.toLowerCase().includes(search)
@@ -41,12 +45,12 @@ class BookSelection extends Component {
 
     return (
       <Table.Row>
-        <Table.Cell onClick={handler}>
+        <Table.Cell style={ClickStyle} onClick={handler}>
           <LazyLoad>
             <Image src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)} />
           </LazyLoad>
         </Table.Cell>
-        <Table.Cell onClick={handler}>
+        <Table.Cell style={ClickStyle} onClick={handler}>
           <div>{work.title}</div>
           <div style={{ color: '#888' }}>
             {work.language}
