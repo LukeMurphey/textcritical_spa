@@ -7,18 +7,10 @@ import { ENDPOINT_WORKS_LISTS, ENDPOINT_WORK_IMAGE } from '../Endpoints';
 import ErrorMessage from '../ErrorMessage';
 
 class BookSelection extends Component {
-  static getWorkRow(work) {
-    return (
-      <Table.Row>
-        <Table.Cell>
-          <Image src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)} />
-        </Table.Cell>
-        <Table.Cell>
-          <div>{work.title}</div>
-          <div style={{ color: '#888' }}>{work.language}</div>
-        </Table.Cell>
-      </Table.Row>
-    );
+  static workMatchesSearch(work, search) {
+    return work.title.toLowerCase().includes(search)
+    || work.title_slug.toLowerCase().includes(search)
+    || work.language.toLowerCase().includes(search);
   }
 
   constructor(props) {
@@ -26,11 +18,35 @@ class BookSelection extends Component {
     this.state = {
       works: null,
       error: null,
+      search: '',
     };
   }
 
   componentDidMount() {
     this.loadInfo();
+  }
+
+  onSearchChange(data) {
+    this.setState({
+      search: data.value,
+    });
+  }
+
+  getWorkRow(work) {
+    const { onSelectWork } = this.props;
+    const handler = () => { onSelectWork(work.title_slug); };
+
+    return (
+      <Table.Row>
+        <Table.Cell onClick={handler}>
+          <Image src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)} />
+        </Table.Cell>
+        <Table.Cell onClick={handler}>
+          <div>{work.title}</div>
+          <div style={{ color: '#888' }}>{work.language}</div>
+        </Table.Cell>
+      </Table.Row>
+    );
   }
 
   loadInfo() {
@@ -47,13 +63,14 @@ class BookSelection extends Component {
   }
 
   render() {
-    const { onClose, onSelectWork } = this.props;
-    const { works, error } = this.state;
+    const { works, error, search } = this.state;
+
+    let searchLowerCase = search.toLowerCase();
 
     return (
       <>
         <div>
-          <Input style={{ width: 500 }} placeholder="Search..." />
+          <Input onChange={(event, data) => { this.onSearchChange(data); }} style={{ width: 500 }} placeholder="Search..." />
         </div>
         <div style={{ maxHeight: 400, width: 500, overflowY: 'auto' }}>
           {error && (
@@ -66,8 +83,8 @@ class BookSelection extends Component {
           {!error && works && (
           <Table basic="very" celled collapsing>
             <Table.Body>
-              {works.map((work) => (
-                BookSelection.getWorkRow(work)
+              {works.filter((work) => BookSelection.workMatchesSearch(work, searchLowerCase)).map((work) => (
+                this.getWorkRow(work)
               ))}
             </Table.Body>
           </Table>
@@ -89,6 +106,7 @@ class BookSelection extends Component {
 
 BookSelection.propTypes = {
   onClose: PropTypes.func.isRequired,
+  onSelectWork: PropTypes.func.isRequired,
 };
 
 export default BookSelection;

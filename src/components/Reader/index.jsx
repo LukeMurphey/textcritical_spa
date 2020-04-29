@@ -131,6 +131,10 @@ class Reader extends Component {
     });
   }
 
+  onSelectWork(work) {
+    this.loadChapter(work);
+  }
+
   /**
    * Load the given chapter.
    *
@@ -151,6 +155,7 @@ class Reader extends Component {
           divisions,
           referenceValue: data.chapter.description,
           modal: null,
+          error: null,
         });
       })
       .catch((e) => {
@@ -318,13 +323,13 @@ class Reader extends Component {
             {' '}
             <Button.Group>
               <Popup
-                content={<BookSelection />}
+                content={<BookSelection onSelectWork={(work) => this.onSelectWork(work)} />}
                 on="click"
                 position="bottom left"
                 pinned
                 trigger={(
                   <Button inverted={inverted} basic icon>
-                    <Icon name="folder outline" />
+                    <Icon name="book" />
                   </Button>
                 )}
               />
