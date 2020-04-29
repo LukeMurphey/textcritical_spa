@@ -46,3 +46,7 @@ export function ENDPOINT_WIKI_INFO(search, search2 = null, search3 = null) {
 export function ENDPOINT_WORD_PARSE(word) {
   return `${getHostConfig()}/api/word_parse/${word}`;
 }
+
+export function ENDPOINT_WORKS_LISTS() {
+  return `${getHostConfig()}/api/works`;
+}

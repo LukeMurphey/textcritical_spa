@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Segment,
-  Message, Menu,
+  Message, Menu, Popup,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE } from '../Endpoints';
@@ -10,6 +10,7 @@ import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
 import WorkDownloadDialog from '../WorkDownloadDialog';
 import WordInformation from '../WordInformation/WordInformationPopup';
+import BookSelection from '../BookSelection';
 import './index.css';
 
 const NextPageStyle = {
@@ -316,9 +317,17 @@ class Reader extends Component {
             />
             {' '}
             <Button.Group>
-              <Button inverted={inverted} basic icon>
-                <Icon name="folder outline" />
-              </Button>
+              <Popup
+                content={<BookSelection />}
+                on="click"
+                position="bottom left"
+                pinned
+                trigger={(
+                  <Button inverted={inverted} basic icon>
+                    <Icon name="folder outline" />
+                  </Button>
+                )}
+              />
               <Button inverted={inverted} basic icon>
                 <Icon name="search" />
               </Button>
