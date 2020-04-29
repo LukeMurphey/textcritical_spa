@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Table, Placeholder, Image, Input,
 } from 'semantic-ui-react';
+import LazyLoad from 'react-lazy-load';
 import PropTypes from 'prop-types';
 import { ENDPOINT_WORKS_LISTS, ENDPOINT_WORK_IMAGE } from '../Endpoints';
 import ErrorMessage from '../ErrorMessage';
@@ -10,6 +11,8 @@ class BookSelection extends Component {
   static workMatchesSearch(work, search) {
     return work.title.toLowerCase().includes(search)
     || work.title_slug.toLowerCase().includes(search)
+    || work.author.toLowerCase().includes(search)
+    || work.editor.toLowerCase().includes(search)
     || work.language.toLowerCase().includes(search);
   }
 
@@ -39,11 +42,17 @@ class BookSelection extends Component {
     return (
       <Table.Row>
         <Table.Cell onClick={handler}>
-          <Image src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)} />
+          <LazyLoad>
+            <Image src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)} />
+          </LazyLoad>
         </Table.Cell>
         <Table.Cell onClick={handler}>
           <div>{work.title}</div>
-          <div style={{ color: '#888' }}>{work.language}</div>
+          <div style={{ color: '#888' }}>
+            {work.language}
+            {work.author && ` by ${work.author}`}
+            {work.editor && ` (${work.editor})`}
+          </div>
         </Table.Cell>
       </Table.Row>
     );
@@ -64,8 +73,7 @@ class BookSelection extends Component {
 
   render() {
     const { works, error, search } = this.state;
-
-    let searchLowerCase = search.toLowerCase();
+    const searchLowerCase = search.toLowerCase();
 
     return (
       <>
@@ -83,9 +91,11 @@ class BookSelection extends Component {
           {!error && works && (
           <Table basic="very" celled collapsing>
             <Table.Body>
-              {works.filter((work) => BookSelection.workMatchesSearch(work, searchLowerCase)).map((work) => (
-                this.getWorkRow(work)
-              ))}
+              {works
+                .filter((work) => BookSelection.workMatchesSearch(work, searchLowerCase))
+                .map((work) => (
+                  this.getWorkRow(work)
+                ))}
             </Table.Body>
           </Table>
           )}

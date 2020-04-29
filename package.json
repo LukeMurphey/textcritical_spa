@@ -5,12 +5,13 @@
   "main": "index.js",
   "dependencies": {
     "@babel/preset-react": "^7.9.4",
+    "clean-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^4.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "semantic-ui-react": "^0.88.2",
-    "clean-webpack-plugin": "^3.0.0",
-    "html-webpack-plugin": "^4.2.0"
+    "react-lazy-load": "^3.0.13",
+    "semantic-ui-react": "^0.88.2"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -55,10 +56,10 @@
     "url": "https://github.com/LukeMurphey/textcritical_spa/issues"
   },
   "homepage": "https://github.com/LukeMurphey/textcritical_spa#readme",
-  "jest":{
-    "moduleNameMapper":{
-         "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js",
-         "\\.(gif|ttf|eot|svg)$": "<rootDir>/__mocks__/fileMock.js"
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js",
+      "\\.(gif|ttf|eot|svg)$": "<rootDir>/__mocks__/fileMock.js"
     }
   }
 }
