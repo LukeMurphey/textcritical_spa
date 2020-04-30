@@ -6,11 +6,13 @@
   "dependencies": {
     "@babel/preset-react": "^7.9.4",
     "clean-webpack-plugin": "^3.0.0",
+    "history": "^4.10.1",
     "html-webpack-plugin": "^4.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-lazy-load": "^3.0.13",
+    "react-router-dom": "^5.1.2",
     "semantic-ui-react": "^0.88.2"
   },
   "devDependencies": {
@@ -50,7 +52,7 @@
     "url": "git+https://github.com/LukeMurphey/textcritical_spa.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Luke Murphey",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/LukeMurphey/textcritical_spa/issues"
