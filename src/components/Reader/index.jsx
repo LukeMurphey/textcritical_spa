@@ -142,6 +142,16 @@ class Reader extends Component {
   }
 
   /**
+   * Open or close the book selection dialog.
+   * @param {bool} open Whether the dialog for selecting a book ought to be open.
+   */
+  setBookSelectionOpen(open = true) {
+    this.setState({
+      bookSelectionOpen: open,
+    });
+  }
+
+  /**
    * Load the given chapter.
    *
    * @param {string} work The work to load
@@ -149,7 +159,12 @@ class Reader extends Component {
    */
   loadChapter(work, ...divisions) {
     const divisionReference = divisions.join('/');
-    this.setState({ loading: true });
+    this.setState({
+      loading: true,
+      bookSelectionOpen: false,
+      modal: null,
+      error: null,
+    });
 
     fetch(ENDPOINT_READ_WORK(`${work}/${divisionReference}`))
       .then((res) => res.json())
@@ -160,8 +175,6 @@ class Reader extends Component {
           loadedWork: work,
           divisions,
           referenceValue: data.chapter.description,
-          modal: null,
-          error: null,
         });
       })
       .catch((e) => {
@@ -279,7 +292,7 @@ class Reader extends Component {
   render() {
     const {
       modal, data, error, loading, referenceValid, referenceValue, selectedWord, popupX, popupY,
-      popupPositionRight, popupPositionBelow,
+      popupPositionRight, popupPositionBelow, bookSelectionOpen,
     } = this.state;
 
     const { inverted } = this.props;
@@ -333,6 +346,9 @@ class Reader extends Component {
                 on="click"
                 position="bottom left"
                 pinned
+                onClose={() => this.setBookSelectionOpen(false)}
+                onOpen={() => this.setBookSelectionOpen(true)}
+                open={bookSelectionOpen}
                 trigger={(
                   <Button inverted={inverted} basic icon>
                     <Icon name="book" />
