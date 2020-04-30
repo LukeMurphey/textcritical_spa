@@ -3,7 +3,7 @@
  * The following provides a way to map REST calls to another service (for development).
  */
 const config = {
-  localhost: 'http://localhost:8080',
+  // localhost: 'http://localhost:8080',
 };
 
 /**
