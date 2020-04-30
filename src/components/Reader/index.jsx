@@ -111,7 +111,13 @@ class Reader extends Component {
   }
 
   componentDidMount() {
-    this.loadChapter('new-testament', 'John', '1');
+    const { defaultWork } = this.props;
+
+    if (defaultWork) {
+      this.loadChapter(defaultWork);
+    } else {
+      this.loadChapter('new-testament', 'John', '1');
+    }
   }
 
   onVerseClick(verseDescriptor, verse, id, href, x, y) {
@@ -464,10 +470,12 @@ class Reader extends Component {
 
 Reader.propTypes = {
   inverted: PropTypes.bool,
+  defaultWork: PropTypes.string,
 };
 
 Reader.defaultProps = {
   inverted: true,
+  defaultWork: null,
 };
 
 export default Reader;

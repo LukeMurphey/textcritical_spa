@@ -21,7 +21,8 @@ class App extends Component {
 
   render() {
     const { modal } = this.state;
-    const { inverted, includeMenu, match, location, history } = this.props;
+    const { inverted, includeMenu, match } = this.props;
+    const { work: defaultWork } = match.params;
 
     return (
       <div>
@@ -58,60 +59,12 @@ class App extends Component {
           <AboutDialog onClose={() => this.closeModal()} />
         )}
         <Container style={{ marginTop: 12 }}>
-          <Reader inverted={inverted} />
+          <Reader defaultWork={defaultWork} inverted={inverted} />
         </Container>
       </div>
     );
   }
 }
-
-/*
-const App = () => (
-  <div>
-    { includeMenu && (
-      <Menu inverted={!inverted} attached="top">
-        <Container>
-          <Menu.Item style={{ backgroundColor: '#009ec2' }}>
-            <img alt="" style={{ width: 22, height: 22 }} src="book.png" />
-          </Menu.Item>
-          <Menu.Item
-            name="about"
-            active={false}
-            content="About"
-            onClick={() => this.openAboutModal()}
-          />
-
-          <Menu.Menu position="right">
-            <div className="ui right aligned category search item">
-              <div className="ui transparent icon input">
-                <input
-                  className="prompt"
-                  type="text"
-                  placeholder="Search works..."
-                />
-                <i className="search link icon" />
-              </div>
-              <div className="results" />
-            </div>
-          </Menu.Menu>
-        </Container>
-      </Menu>
-    )}
-    {modal === 'about' && (
-      <AboutDialog onClose={() => this.closeModal()} />
-    )}
-    <Container style={{ marginTop: 12 }}>
-      <Router>
-        <Switch>
-          <Route path="work/:work">
-            {App.getReader(inverted)}
-          </Route>
-        </Switch>
-      </Router>
-    </Container>
-  </div>
-);
-*/
 
 App.propTypes = {
   inverted: PropTypes.bool,
