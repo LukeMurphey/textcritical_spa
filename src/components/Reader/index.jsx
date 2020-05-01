@@ -98,7 +98,9 @@ class Reader extends Component {
     this.state = {
       modal: null,
       data: null,
-      error: null,
+      errorTitle: null,
+      errorMessage: null,
+      errorDescription: null,
       loading: false,
       divisions: null,
       loadedWork: null,
@@ -192,6 +194,21 @@ class Reader extends Component {
   }
 
   /**
+   * Set an error state.
+   *
+   * @param {string} errorTitle The title
+   * @param {string} errorDescription The description
+   * @param {string} errorMessage The detailed error message (like from an AJAX call)
+   */
+  setErrorState(errorTitle, errorDescription = '', errorMessage = null) {
+    this.setState({
+      errorMessage,
+      errorDescription,
+      errorTitle,
+    });
+  }
+
+  /**
    * Load the given chapter.
    *
    * @param {string} work The work to load
@@ -204,24 +221,35 @@ class Reader extends Component {
       loading: true,
       bookSelectionOpen: false,
       modal: null,
-      error: null,
+      errorTitle: null,
+      errorMessage: null,
+      errorDescription: null,
     });
 
     fetch(ENDPOINT_READ_WORK(`${work}/${divisionReference}`))
-      .then((res) => res.json())
-      .then((data) => {
-        this.setState({
-          data,
-          loading: false,
-          loadedWork: work,
-          divisions,
-          referenceValue: data.chapter.description,
-        });
+      .then((res) => (Promise.all([res.status, res.json()])))
+      .then(([status, data]) => {
+        if (status === 200) {
+          this.setState({
+            data,
+            loading: false,
+            loadedWork: work,
+            divisions,
+            referenceValue: data.chapter.description,
+          });
+        } else {
+          this.setErrorState(
+            'Work could not be found',
+            'Yikes. The given work is not recognized as a valid work.',
+          );
+        }
       })
       .catch((e) => {
-        this.setState({
-          error: e.toString(),
-        });
+        this.setErrorState(
+          'Unable to load the content',
+          'The given chapter could not be loaded from the server',
+          e.toString(),
+        );
       });
   }
 
@@ -332,8 +360,9 @@ class Reader extends Component {
 
   render() {
     const {
-      modal, data, error, loading, referenceValid, referenceValue, selectedWord, popupX, popupY,
-      popupPositionRight, popupPositionBelow, bookSelectionOpen,
+      modal, data, errorDescription, loading, referenceValid, referenceValue, selectedWord,
+      popupX, popupY, popupPositionRight, popupPositionBelow, bookSelectionOpen, errorTitle,
+      errorMessage,
     } = this.state;
 
     const { inverted } = this.props;
@@ -514,10 +543,10 @@ class Reader extends Component {
             </Button>
           </Segment>
         )}
-        {error && (
-          <ErrorMessage title="Unable to load the content" description="The given chapter could not be loaded from the server" message={error} />
+        {errorTitle && (
+          <ErrorMessage title={errorTitle} description={errorDescription} message={errorMessage} />
         )}
-        {loading && !error && (
+        {loading && !errorTitle && (
           Reader.getPlaceholder()
         )}
       </>
