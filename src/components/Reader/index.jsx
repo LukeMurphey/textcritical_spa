@@ -111,21 +111,57 @@ class Reader extends Component {
   }
 
   componentDidMount() {
-    const { defaultWork } = this.props;
+    const {
+      defaultWork,
+      division0,
+      division1,
+      division2,
+      division3,
+      division4,
+      leftovers,
+    } = this.props;
+
+    const divisions = [
+      division0,
+      division1,
+      division2,
+      division3,
+      division4,
+      leftovers,
+    ].filter((entry) => entry);
 
     if (defaultWork) {
-      this.loadChapter(defaultWork);
+      this.loadChapter(defaultWork, divisions);
     } else {
       this.loadChapter('new-testament', 'John', '1');
     }
   }
 
+  /**
+   * Handle the clicking of a verse.
+   *
+   * @param {string} verseDescriptor The descriptor that can be used to recognize a verse
+   * @param {string} verse The verse number
+   * @param {string} id An ID that designates the verse
+   * @param {string} href A href for the verse
+   * @param {int} x The x coordinate of the verse marker
+   * @param {int} y The y coordinate of the verse marker
+   */
   onVerseClick(verseDescriptor, verse, id, href, x, y) {
     this.setState({
       referenceValue: verseDescriptor,
     });
   }
 
+  /**
+   * Handle the clicking of a word.
+   *
+   * @param {string} word The word to get information on
+   * @param {int} x The x coordinate designating where to show the popup
+   * @param {int} y The y coordinate designating where to show the popup
+   * @param {bool} positionRight Indicates it is best to show the popup to the right of the offset
+   * @param {bool} positionBelow Indicates it is best to show the popup below the offset
+   */
   onWordClick(word, x, y, positionRight, positionBelow) {
     this.setState({
       selectedWord: word,
@@ -137,6 +173,10 @@ class Reader extends Component {
     });
   }
 
+  /**
+   * Handle the selection of a work.
+   * @param {string} work the title slug of a work to load
+   */
   onSelectWork(work) {
     this.loadChapter(work);
   }
@@ -155,10 +195,11 @@ class Reader extends Component {
    * Load the given chapter.
    *
    * @param {string} work The work to load
-   * @param {...any} divisions The list of division indicators
+   * @param {array} divisions The list of division indicators
    */
-  loadChapter(work, ...divisions) {
+  loadChapter(work, divisions) {
     const divisionReference = divisions.join('/');
+
     this.setState({
       loading: true,
       bookSelectionOpen: false,
@@ -487,11 +528,23 @@ class Reader extends Component {
 Reader.propTypes = {
   inverted: PropTypes.bool,
   defaultWork: PropTypes.string,
+  division0: PropTypes.string,
+  division1: PropTypes.string,
+  division2: PropTypes.string,
+  division3: PropTypes.string,
+  division4: PropTypes.string,
+  leftovers: PropTypes.string,
 };
 
 Reader.defaultProps = {
   inverted: true,
   defaultWork: null,
+  division0: null,
+  division1: null,
+  division2: null,
+  division3: null,
+  division4: null,
+  leftovers: null,
 };
 
 export default Reader;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter, Route } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Menu, Container } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import AboutDialog from './components/AboutDialog/index';
@@ -22,7 +22,15 @@ class App extends Component {
   render() {
     const { modal } = this.state;
     const { inverted, includeMenu, match } = this.props;
-    const { work: defaultWork } = match.params;
+    const {
+      work: defaultWork,
+      division0,
+      division1,
+      division2,
+      division3,
+      division4,
+      leftovers,
+    } = match.params;
 
     return (
       <div>
@@ -59,7 +67,16 @@ class App extends Component {
           <AboutDialog onClose={() => this.closeModal()} />
         )}
         <Container style={{ marginTop: 12 }}>
-          <Reader defaultWork={defaultWork} inverted={inverted} />
+          <Reader
+            defaultWork={defaultWork}
+            inverted={inverted}
+            division0={division0}
+            division1={division1}
+            division2={division2}
+            division3={division3}
+            division4={division4}
+            leftovers={leftovers}
+          />
         </Container>
       </div>
     );

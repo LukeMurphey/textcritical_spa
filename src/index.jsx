@@ -9,10 +9,7 @@ const history = createBrowserHistory();
 ReactDOM.render((
   <Router history={history}>
     <Switch>
-      <Route exact path="/work/:work">
-        <App />
-      </Route>
-      <Route exact path="/work/">
+      <Route path="/work/:work?/:division0?/:division1?/:division2?/:division3?/:division4?/:leftovers?">
         <App />
       </Route>
       <Route path="/">
