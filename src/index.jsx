@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import { Router, Route, Switch } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import NotFound from './components/NotFound';
+import About from './components/About';
+import ContactMe from './components/ContactMe';
 import App from './App';
 
 const history = createBrowserHistory();
@@ -15,6 +17,12 @@ ReactDOM.render((
       </Route>
       <Route exact path="/">
         <App />
+      </Route>
+      <Route exact path="/about">
+        <About />
+      </Route>
+      <Route exact path="/contact">
+        <ContactMe />
       </Route>
       <Route>
         <NotFound />
