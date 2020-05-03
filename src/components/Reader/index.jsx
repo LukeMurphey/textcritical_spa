@@ -133,7 +133,7 @@ class Reader extends Component {
     ].filter((entry) => entry);
 
     if (defaultWork) {
-      this.loadChapter(defaultWork, divisions);
+      this.loadChapter(defaultWork, ...divisions);
     } else {
       this.loadChapter('new-testament', 'John', '1');
     }
@@ -214,8 +214,11 @@ class Reader extends Component {
    * @param {string} work The work to load
    * @param {array} divisions The list of division indicators
    */
-  loadChapter(work, divisions) {
-    const divisionReference = divisions.join('/');
+  loadChapter(work, ...divisions) {
+    let divisionReference = '';
+    if (divisions) {
+      divisionReference = divisions.join('/');
+    }
 
     this.setState({
       loading: true,
