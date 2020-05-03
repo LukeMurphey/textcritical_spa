@@ -119,7 +119,6 @@ class BookSelection extends Component {
 }
 
 BookSelection.propTypes = {
-  onClose: PropTypes.func.isRequired,
   onSelectWork: PropTypes.func.isRequired,
 };
 
