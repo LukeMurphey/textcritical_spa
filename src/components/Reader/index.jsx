@@ -324,9 +324,11 @@ class Reader extends Component {
         }
       })
       .catch((e) => {
-        this.setState({
-          error: e.toString(),
-        });
+        this.setErrorState(
+          'Unable to load the content',
+          'The given chapter could not be loaded from the server',
+          e.toString(),
+        );
       });
   }
 
