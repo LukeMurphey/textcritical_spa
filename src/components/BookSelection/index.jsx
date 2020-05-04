@@ -4,6 +4,9 @@ import {
 } from 'semantic-ui-react';
 import LazyLoad from 'react-lazy-load';
 import PropTypes from 'prop-types';
+// eslint-disable-next-line no-unused-vars
+import regeneratorRuntime from "regenerator-runtime";
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_WORKS_LISTS, ENDPOINT_WORK_IMAGE } from '../Endpoints';
 import ErrorMessage from '../ErrorMessage';
 
@@ -44,7 +47,7 @@ class BookSelection extends Component {
     const handler = () => { onSelectWork(work.title_slug); };
 
     return (
-      <Table.Row>
+      <Table.Row key={work.title_slug}>
         <Table.Cell style={ClickStyle} onClick={handler}>
           <LazyLoad>
             <Image src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)} />
@@ -79,11 +82,14 @@ class BookSelection extends Component {
     const { works, error, search } = this.state;
     const searchLowerCase = search.toLowerCase();
 
+    const onChange = (event, data) => { this.onSearchChange(data); };
+    const onChangeDebounced = AwesomeDebouncePromise(onChange, 500);
+
     return (
       <>
         {!error && works && (
         <div>
-          <Input onChange={(event, data) => { this.onSearchChange(data); }} style={{ width: 500 }} placeholder="Search..." />
+          <Input onChange={onChangeDebounced} style={{ width: 500 }} placeholder="Search..." />
         </div>
         )}
         <div style={{ maxHeight: 400, width: 500, overflowY: 'auto' }}>
