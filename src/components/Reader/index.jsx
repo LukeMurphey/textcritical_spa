@@ -155,6 +155,8 @@ class Reader extends Component {
     this.setState({
       referenceValue: verseDescriptor,
     });
+
+    history.push(href);
   }
 
   /**

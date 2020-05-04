@@ -86,8 +86,17 @@ class Chapter extends Component {
     const verseDescriptorElem = Array.from(target.attributes).find((element) => element.name === 'data-verse-descriptor');
     const verseDescriptor = verseDescriptorElem ? verseDescriptorElem.nodeValue : null;
 
-    // Get the ID and the href
-    const { id, href } = target;
+    // Get the ID
+    const { id } = target;
+
+    // Get the the href
+    let href;
+
+    if (target.attributes.href) {
+      href = target.attributes.href.nodeValue;
+    } else {
+      href = null;
+    }
 
     // Get the verse number
     const verseElem = Array.from(target.attributes).find((element) => element.name === 'data-verse');
@@ -109,9 +118,12 @@ class Chapter extends Component {
     const { id } = event.target;
 
     // Get the contents for the given ID
-    const contents = `content_for_${id}`;
+    const contentsElem = document.getElementById(`content_for_${id}`);
+    let contents = 'Note content could not be found';
 
-    debugger;
+    if (contentsElem) {
+      contents = contentsElem.textContent;
+    }
 
     const rect = this.wrapper.current.getBoundingClientRect();
     const positionRight = event.layerX < (rect.width / 2);
