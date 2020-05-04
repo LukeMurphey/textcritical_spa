@@ -7,6 +7,22 @@
 }
 */
 
+/**
+ * The following style the note icon.
+ */
+.view_read_work .hide {
+  display: none;
+}
+
+.view_read_work .icon-info-sign {
+  font-family: "Icons";
+  font-style: normal;
+}
+
+.view_read_work .icon-info-sign:before{
+  content: "\f129";
+}
+
 .view_read_work .speaker {
   font-weight: bold;
   display: block;

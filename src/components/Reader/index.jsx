@@ -10,6 +10,7 @@ import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
 import WorkDownloadDialog from '../WorkDownloadDialog';
 import WordInformation from '../WordInformation/WordInformationPopup';
+import FootnotePopup from '../FootnotePopup';
 import BookSelection from '../BookSelection';
 import './index.css';
 
@@ -149,7 +150,7 @@ class Reader extends Component {
    * @param {int} x The x coordinate of the verse marker
    * @param {int} y The y coordinate of the verse marker
    */
-  onVerseClick(verseDescriptor, verse, id, href, x, y) {
+  onVerseClick(verseDescriptor, verse, id, href) {
     this.setState({
       referenceValue: verseDescriptor,
     });
@@ -168,6 +169,27 @@ class Reader extends Component {
     this.setState({
       selectedWord: word,
       modal: 'word',
+      popupX: x,
+      popupY: y,
+      popupPositionRight: positionRight,
+      popupPositionBelow: positionBelow,
+    });
+  }
+
+  /**
+   * Handle the clicking of a note.
+   *
+   * @param {string} note The note's contents
+   * @param {string} id The ID of the note
+   * @param {int} x The x coordinate designating where to show the popup
+   * @param {int} y The y coordinate designating where to show the popup
+   * @param {bool} positionRight Indicates it is best to show the popup to the right of the offset
+   * @param {bool} positionBelow Indicates it is best to show the popup below the offset
+   */
+  onNoteClick(note, id, x, y, positionRight, positionBelow) {
+    this.setState({
+      selectedNote: note,
+      modal: 'note',
       popupX: x,
       popupY: y,
       popupPositionRight: positionRight,
@@ -367,7 +389,7 @@ class Reader extends Component {
     const {
       modal, data, errorDescription, loading, referenceValid, referenceValue, selectedWord,
       popupX, popupY, popupPositionRight, popupPositionBelow, bookSelectionOpen, errorTitle,
-      errorMessage,
+      errorMessage, selectedNote,
     } = this.state;
 
     const { inverted } = this.props;
@@ -378,6 +400,10 @@ class Reader extends Component {
 
     const onWordClick = (word, x, y, positionRight, positionBelow) => {
       this.onWordClick(word, x, y, positionRight, positionBelow);
+    };
+
+    const onNoteClick = (word, x, y, positionRight, positionBelow) => {
+      this.onNoteClick(word, x, y, positionRight, positionBelow);
     };
 
     // Figure out a description for the chapter
@@ -482,6 +508,7 @@ class Reader extends Component {
             {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
             {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
             {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
+            {data && !loading && modal === 'note' && <FootnotePopup positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} note={selectedNote} onClose={() => this.closeModal()} />}
             <Grid>
               <Grid.Row>
                 <Grid.Column width={8}>
@@ -528,6 +555,7 @@ class Reader extends Component {
               work={data.work}
               onVerseClick={onVerseClick}
               onWordClick={onWordClick}
+              onNoteClick={onNoteClick}
               onClickAway={() => this.closeModal()}
             />
             <Button

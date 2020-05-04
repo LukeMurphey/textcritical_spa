@@ -12,18 +12,6 @@ import './Chapter.css';
  * the content into HTML chunks and then caches so that it can be loaded quickly.
  */
 class Chapter extends Component {
-  static addHandler(className, handler, type = 'click') {
-    let matches = document.getElementsByClassName(className);
-    matches = Array.from(matches); // Convert to array
-    matches.map((elem) => elem.addEventListener(type, (event) => handler(event)));
-  }
-
-  static removeHandler(className, handler, type = 'click') {
-    let matches = document.getElementsByClassName(className);
-    matches = Array.from(matches); // Convert to array
-    matches.map((elem) => elem.removeEventListener(type, (event) => handler(event)));
-  }
-
   constructor(props) {
     super(props);
 
@@ -37,14 +25,22 @@ class Chapter extends Component {
    */
   componentDidMount() {
     this.clickListener = (event) => this.handleClick(event);
-    Chapter.addHandler('view_read_work', this.clickListener);
+    this.addHandler(this.clickListener);
   }
 
   /**
    * Un wire the handlers to save memory.
    */
   componentWillUnmount() {
-    Chapter.removeHandler('view_read_work', this.clickListener);
+    this.removeHandler(this.clickListener);
+  }
+
+  addHandler(handler, type = 'click') {
+    this.wrapper.current.addEventListener(type, (event) => handler(event));
+  }
+
+  removeHandler(handler, type = 'click') {
+    this.wrapper.current.removeEventListener(type, (event) => handler(event));
   }
 
   /**
@@ -105,17 +101,40 @@ class Chapter extends Component {
     target.parentElement.classList.toggle('highlighted');
   }
 
+  /**
+   * handle the clicking of a note.
+   */
+  handleClickNote(event) {
+    // Get the ID
+    const { id } = event.target;
+
+    // Get the contents for the given ID
+    const contents = `content_for_${id}`;
+
+    debugger;
+
+    const rect = this.wrapper.current.getBoundingClientRect();
+    const positionRight = event.layerX < (rect.width / 2);
+    const positionBelow = event.layerY < (rect.height / 2);
+
+    // Fire off the handler
+    const { onNoteClick } = this.props;
+    onNoteClick(contents, id, event.layerX, event.layerY, positionRight, positionBelow);
+  }
+
   handleClickEmpty() {
     const { onClickAway } = this.props;
     onClickAway();
   }
 
   handleClick(event) {
-    // Determine if we are clicking a word, verse, or just empty space
+    // Determine if we are clicking a word, verse, note, or just empty space
     if (event.target.className.includes('word')) {
       this.handleClickWord(event);
     } else if (event.target.className.includes('verse')) {
       this.handleClickVerse(event);
+    } else if (event.target.className.includes('note-tag')) {
+      this.handleClickNote(event);
     } else {
       this.handleClickEmpty();
     }
@@ -145,12 +164,14 @@ Chapter.propTypes = {
   onVerseClick: PropTypes.func,
   onWordClick: PropTypes.func,
   onClickAway: PropTypes.func,
+  onNoteClick: PropTypes.func,
 };
 
 Chapter.defaultProps = {
   onVerseClick: () => { },
   onWordClick: () => { },
   onClickAway: () => { },
+  onNoteClick: () => { },
 };
 
 export default Chapter;
