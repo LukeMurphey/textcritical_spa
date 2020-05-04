@@ -79,9 +79,6 @@ class Chapter extends Component {
     // Get the target containing the verse info
     const target = event.target.parentElement;
 
-    // Unhighlight existing verses
-    this.unhighlistVerses();
-
     // Get the descriptor of the verse
     const verseDescriptorElem = Array.from(target.attributes).find((element) => element.name === 'data-verse-descriptor');
     const verseDescriptor = verseDescriptorElem ? verseDescriptorElem.nodeValue : null;
@@ -102,9 +99,17 @@ class Chapter extends Component {
     const verseElem = Array.from(target.attributes).find((element) => element.name === 'data-verse');
     const verse = verseElem ? verseElem.nodeValue : null;
 
+    // Stop if we didn't get what we needed to continue
+    if (!verseDescriptor) {
+      return;
+    }
+
     // Fire off the handler
     const { onVerseClick } = this.props;
     onVerseClick(verseDescriptor, verse, id, href, event.x, event.y);
+
+    // Unhighlight existing verses
+    this.unhighlistVerses();
 
     // Highlight the verse
     target.parentElement.classList.toggle('highlighted');
@@ -144,6 +149,7 @@ class Chapter extends Component {
     if (event.target.className.includes('word')) {
       this.handleClickWord(event);
     } else if (event.target.className.includes('verse')) {
+      this.handleClickEmpty();
       this.handleClickVerse(event);
     } else if (event.target.className.includes('note-tag')) {
       this.handleClickNote(event);
