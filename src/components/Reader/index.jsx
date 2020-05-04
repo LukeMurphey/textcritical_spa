@@ -111,6 +111,7 @@ class Reader extends Component {
       selectedWord: null,
       popupX: null,
       popupY: null,
+      redirected: false,
     };
   }
 
@@ -254,18 +255,27 @@ class Reader extends Component {
       errorTitle: null,
       errorMessage: null,
       errorDescription: null,
+      redirected: false,
     });
 
     fetch(ENDPOINT_READ_WORK(`${work}/${divisionReference}`))
       .then((res) => (Promise.all([res.status, res.json()])))
       .then(([status, data]) => {
         if (status === 200) {
+          let redirected = false;
+          // If the work alias didn't match, then update the URL accordingly
+          if (data.work.title_slug !== work) {
+            redirected = true;
+            history.push(`/work/${data.work.title_slug}/${divisionReference}`);
+          }
+
           this.setState({
             data,
             loading: false,
             loadedWork: work,
             divisions,
             referenceValue: data.chapter.description,
+            redirected,
           });
         } else {
           this.setErrorState(
@@ -394,7 +404,7 @@ class Reader extends Component {
     const {
       modal, data, errorDescription, loading, referenceValid, referenceValue, selectedWord,
       popupX, popupY, popupPositionRight, popupPositionBelow, bookSelectionOpen, errorTitle,
-      errorMessage, selectedNote,
+      errorMessage, selectedNote, redirected,
     } = this.state;
 
     const { inverted } = this.props;
@@ -554,6 +564,14 @@ class Reader extends Component {
                 content={warning[1]}
               />
             ))}
+            {redirected && (
+            <Message info>
+              <p>
+                The URL you were using was old so you were redirected to the new one. You may want
+                to update your shortcuts.
+              </p>
+            </Message>
+            )}
             <Chapter
               chapter={data.chapter}
               content={data.content}
