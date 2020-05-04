@@ -1,13 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, Switch } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
+import history from './history';
 import NotFound from './components/NotFound';
 import About from './components/About';
 import ContactMe from './components/ContactMe';
 import App from './App';
-
-const history = createBrowserHistory();
 
 ReactDOM.render((
   <Router history={history}>

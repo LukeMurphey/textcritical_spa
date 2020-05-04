@@ -12,6 +12,7 @@ import WorkDownloadDialog from '../WorkDownloadDialog';
 import WordInformation from '../WordInformation/WordInformationPopup';
 import FootnotePopup from '../FootnotePopup';
 import BookSelection from '../BookSelection';
+import history from '../../history';
 import './index.css';
 
 const NextPageStyle = {
@@ -241,6 +242,8 @@ class Reader extends Component {
     if (divisions) {
       divisionReference = divisions.join('/');
     }
+
+    history.push(`/work/${work}/${divisionReference}`);
 
     this.setState({
       loading: true,
