@@ -81,9 +81,11 @@ class BookSelection extends Component {
 
     return (
       <>
+        {!error && works && (
         <div>
           <Input onChange={(event, data) => { this.onSearchChange(data); }} style={{ width: 500 }} placeholder="Search..." />
         </div>
+        )}
         <div style={{ maxHeight: 400, width: 500, overflowY: 'auto' }}>
           {error && (
           <ErrorMessage
