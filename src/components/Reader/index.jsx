@@ -597,8 +597,8 @@ class Reader extends Component {
                 {redirected && (
                 <Message info>
                   <p>
-                    The URL you were using was old so you were redirected to the new one. You may want
-                    to update your shortcuts.
+                    The URL you were using was old so you were redirected to the new one.
+                    You may want to update your shortcuts.
                   </p>
                 </Message>
                 )}
