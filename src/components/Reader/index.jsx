@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import {
   Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Segment,
-  Message, Menu, Popup,
+  Message, Menu, Popup, Sidebar, Image,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE } from '../Endpoints';
+import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from '../Endpoints';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
@@ -441,171 +441,186 @@ class Reader extends Component {
     return (
       <>
         <Menu text inverted={inverted} fixed="top" style={MenuStyle}>
+          <Button.Group>
+            <Button inverted={inverted} basic icon>
+              <Icon name="bars" />
+            </Button>
+          </Button.Group>
           <Container>
-            <>
-              <Input
-                inverted={inverted}
-                action={
-                  (
-                    <Button
-                      disabled={!referenceValid}
-                      onClick={() => this.goToReference()}
-                      basic
-                    >
-                      Go
-                    </Button>
-                  )
-                }
-                placeholder="Jump to reference..."
-                value={referenceDescription}
-                error={!referenceValid}
-                onChange={(e, d) => this.changeReference(e, d)}
+            <Button.Group>
+              <Popup
+                content={<BookSelection onSelectWork={(work) => this.onSelectWork(work)} />}
+                on="click"
+                position="bottom left"
+                pinned
+                onClose={() => this.setBookSelectionOpen(false)}
+                onOpen={() => this.setBookSelectionOpen(true)}
+                open={bookSelectionOpen}
+                trigger={(
+                  <Button inverted={inverted} basic>
+                    <Icon name="book" />
+                  </Button>
+                )}
               />
-              {' '}
-              <Button.Group>
-                <Popup
-                  content={<BookSelection onSelectWork={(work) => this.onSelectWork(work)} />}
-                  on="click"
-                  position="bottom left"
-                  pinned
-                  onClose={() => this.setBookSelectionOpen(false)}
-                  onOpen={() => this.setBookSelectionOpen(true)}
-                  open={bookSelectionOpen}
-                  trigger={(
-                    <Button inverted={inverted} basic icon>
-                      <Icon name="book" />
-                    </Button>
-                  )}
-                />
-                <Button inverted={inverted} basic icon>
-                  <Icon name="search" />
-                </Button>
-                <Button inverted={inverted} basic icon>
-                  <Icon name="info" onClick={() => this.openWorkInfoModal()} />
-                </Button>
-              </Button.Group>
-              {' '}
-              <Button.Group>
-                <Button inverted={inverted} basic icon>
-                  <Icon name="share" />
-                </Button>
-                <Button inverted={inverted} basic icon>
-                  <Icon name="download" onClick={() => this.openDownloadModal()} />
-                </Button>
-              </Button.Group>
-              {' '}
-              <div style={{ display: 'inline-block', width: 300 }}>
-                <Dropdown
-                  basic
-                  text="Other Versions"
-                  fluid
-                  button
-                  inverted={inverted}
-                  disabled={!referenceValid || !data || data.related_works.length === 0}
-                  style={{ marginTop: 2 }}
-                >
-                  <Dropdown.Menu>
-                    {data && data.related_works.map((work) => (
-                      <Dropdown.Item
-                        key={work.title_slug}
-                        text={work.title}
-                        description={work.language}
-                        onClick={() => this.changeWork(work.title_slug)}
-                      />
-                    ))}
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-              <div style={{ float: 'right', marginLeft: 'auto', marginTop: 11 }}>
-                <Dropdown icon="ellipsis vertical">
-                  <Dropdown.Menu>
-                    <Dropdown.Item text="About TextCritical.net" />
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-            </>
+            </Button.Group>
+            <Input
+              inverted={inverted}
+              action={
+                (
+                  <Button
+                    disabled={!referenceValid}
+                    onClick={() => this.goToReference()}
+                    basic
+                  >
+                    Go
+                  </Button>
+                )
+              }
+              placeholder="Jump to reference..."
+              value={referenceDescription}
+              error={!referenceValid}
+              onChange={(e, d) => this.changeReference(e, d)}
+            />
+            {' '}
+            <div style={{ display: 'inline-block', width: 300 }}>
+              <Dropdown
+                basic
+                text="Other Versions"
+                fluid
+                button
+                inverted={inverted}
+                disabled={!referenceValid || !data || data.related_works.length === 0}
+                style={{ marginTop: 2 }}
+              >
+                <Dropdown.Menu>
+                  {data && data.related_works.map((work) => (
+                    <Dropdown.Item
+                      key={work.title_slug}
+                      text={work.title}
+                      description={work.language}
+                      onClick={() => this.changeWork(work.title_slug)}
+                    />
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+            <div style={{ float: 'right', marginLeft: 'auto', marginTop: 11 }}>
+              <Dropdown icon="ellipsis vertical">
+                <Dropdown.Menu>
+                  <Dropdown.Item text="About TextCritical.net" />
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
           </Container>
         </Menu>
         {data && !loading && (
-          <Container style={ContainerStyle} inverted={inverted} basic>
-            {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-            {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-            {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
-            {data && !loading && modal === 'note' && <FootnotePopup positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} note={selectedNote} onClose={() => this.closeModal()} />}
-            <Grid>
-              <Grid.Row>
-                <Grid.Column width={8}>
-                  <Header floated="left" as="h3">
-                    {data.chapter.parent_division && (
-                      <>
-                        <Dropdown
-                          inline
-                          floating
-                          deburr
-                          scrolling
-                          search={Reader.workSearch}
-                          options={Reader.convertDivisionsToOptions(data.divisions)}
-                          value={data.chapter.parent_division.descriptor}
-                          onChange={(event, info) => this.changeChapter(event, info)}
-                        />
-                        <div style={{ display: 'inline-block', paddingLeft: 6 }}>
-                          {data.chapter.type}
-                          {` ${data.chapter.descriptor}`}
-                        </div>
-                      </>
-                    )}
-                  </Header>
-                </Grid.Column>
-                <Grid.Column width={8}>
-                  <Container textAlign="right">
-                    <Header floated="right" as="h3">{data.work.title}</Header>
-                  </Container>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-            <div style={{ marginTop: 6 }} />
-            {data && data.warnings.map((warning) => (
-              <Message
-                warning
-                key={warning[0]}
-                header={warning[0]}
-                content={warning[1]}
-              />
-            ))}
-            {redirected && (
-            <Message info>
-              <p>
-                The URL you were using was old so you were redirected to the new one. You may want
-                to update your shortcuts.
-              </p>
-            </Message>
-            )}
-            <Chapter
-              chapter={data.chapter}
-              content={data.content}
-              work={data.work}
-              onVerseClick={onVerseClick}
-              onWordClick={onWordClick}
-              onNoteClick={onNoteClick}
-              onClickAway={() => this.closeModal()}
-            />
-            <Button
-              icon
-              style={PriorPageStyle}
-              disabled={data.previous_chapter === null}
-              onClick={() => this.goToPriorChapter()}
+          <Sidebar.Pushable as={Segment} style={{ marginTop: 48, borderLeft: 0 }}>
+            <Sidebar
+              as={Menu}
+              animation="overlay"
+              icon="labeled"
+              style={{ width: 200 }}
+              inverted
+              visible
+              vertical
+              width="thin"
             >
-              <Icon name="left chevron" />
-            </Button>
-            <Button
-              icon
-              style={NextPageStyle}
-              disabled={data.next_chapter === null}
-              onClick={() => this.goToNextChapter()}
-            >
-              <Icon name="right chevron" />
-            </Button>
-          </Container>
+              <Image src={ENDPOINT_WORK_IMAGE(data.work.title_slug, 200)} />
+              <Menu.Item as="a" onClick={() => this.openWorkInfoModal()} style={{ textAlign: 'left' }}>
+                Information
+              </Menu.Item>
+              <Menu.Item as="a" onClick={() => this.openDownloadModal()} style={{ textAlign: 'left' }}>
+                Download
+              </Menu.Item>
+              <Menu.Item as="a" style={{ textAlign: 'left' }}>
+                Share
+              </Menu.Item>
+              <Menu.Item as="a" style={{ textAlign: 'left' }}>
+                Search
+              </Menu.Item>
+            </Sidebar>
+            <Sidebar.Pusher>
+              <Container style={ContainerStyle} inverted={inverted} basic>
+                {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
+                {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
+                {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
+                {data && !loading && modal === 'note' && <FootnotePopup positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} note={selectedNote} onClose={() => this.closeModal()} />}
+                <Grid>
+                  <Grid.Row>
+                    <Grid.Column width={8}>
+                      <Header floated="left" as="h3">
+                        {data.chapter.parent_division && (
+                          <>
+                            <Dropdown
+                              inline
+                              floating
+                              deburr
+                              scrolling
+                              search={Reader.workSearch}
+                              options={Reader.convertDivisionsToOptions(data.divisions)}
+                              value={data.chapter.parent_division.descriptor}
+                              onChange={(event, info) => this.changeChapter(event, info)}
+                            />
+                            <div style={{ display: 'inline-block', paddingLeft: 6 }}>
+                              {data.chapter.type}
+                              {` ${data.chapter.descriptor}`}
+                            </div>
+                          </>
+                        )}
+                      </Header>
+                    </Grid.Column>
+                    <Grid.Column width={8}>
+                      <Container textAlign="right">
+                        <Header floated="right" as="h3">{data.work.title}</Header>
+                      </Container>
+                    </Grid.Column>
+                  </Grid.Row>
+                </Grid>
+                <div style={{ marginTop: 6 }} />
+                {data && data.warnings.map((warning) => (
+                  <Message
+                    warning
+                    key={warning[0]}
+                    header={warning[0]}
+                    content={warning[1]}
+                  />
+                ))}
+                {redirected && (
+                <Message info>
+                  <p>
+                    The URL you were using was old so you were redirected to the new one. You may want
+                    to update your shortcuts.
+                  </p>
+                </Message>
+                )}
+                <Chapter
+                  chapter={data.chapter}
+                  content={data.content}
+                  work={data.work}
+                  onVerseClick={onVerseClick}
+                  onWordClick={onWordClick}
+                  onNoteClick={onNoteClick}
+                  onClickAway={() => this.closeModal()}
+                />
+                <Button
+                  icon
+                  style={PriorPageStyle}
+                  disabled={data.previous_chapter === null}
+                  onClick={() => this.goToPriorChapter()}
+                >
+                  <Icon name="left chevron" />
+                </Button>
+                <Button
+                  icon
+                  style={NextPageStyle}
+                  disabled={data.next_chapter === null}
+                  onClick={() => this.goToNextChapter()}
+                >
+                  <Icon name="right chevron" />
+                </Button>
+              </Container>
+            </Sidebar.Pusher>
+          </Sidebar.Pushable>
         )}
         {errorTitle && (
           <ErrorMessage title={errorTitle} description={errorDescription} message={errorMessage} />
