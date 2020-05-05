@@ -494,7 +494,7 @@ class Reader extends Component {
                 text="Other Versions"
                 fluid
                 button
-                disabled={!referenceValid}
+                disabled={!referenceValid || !data || data.related_works.length === 0}
                 style={{ marginTop: 2 }}
               >
                 <Dropdown.Menu>
