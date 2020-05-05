@@ -27,11 +27,16 @@ const PriorPageStyle = {
   position: 'fixed',
 };
 
-const ToolbarBarStyle = {
+const ContainerStyle = {
   marginTop: 0,
-  marginBottom: 0,
-  paddingTop: 0,
-  paddingBottom: 0,
+  paddingTop: 56,
+};
+
+const MenuStyle = {
+  paddingTop: 4,
+  paddingBottom: 4,
+  borderBottom: '1px solid #e2e2e2',
+  backgroundColor: 'white',
 };
 
 class Reader extends Component {
@@ -435,91 +440,94 @@ class Reader extends Component {
 
     return (
       <>
-        <Segment style={ToolbarBarStyle} inverted={inverted} basic>
-          <Menu inverted={inverted} text>
-            <Input
-              inverted={inverted}
-              action={
-                (
-                  <Button
-                    disabled={!referenceValid}
-                    onClick={() => this.goToReference()}
-                    basic
-                  >
-                    Go
-                  </Button>
-                )
-              }
-              placeholder="Jump to reference..."
-              value={referenceDescription}
-              error={!referenceValid}
-              onChange={(e, d) => this.changeReference(e, d)}
-            />
-            {' '}
-            <Button.Group>
-              <Popup
-                content={<BookSelection onSelectWork={(work) => this.onSelectWork(work)} />}
-                on="click"
-                position="bottom left"
-                pinned
-                onClose={() => this.setBookSelectionOpen(false)}
-                onOpen={() => this.setBookSelectionOpen(true)}
-                open={bookSelectionOpen}
-                trigger={(
-                  <Button inverted={inverted} basic icon>
-                    <Icon name="book" />
-                  </Button>
-                )}
+        <Menu text inverted={inverted} fixed="top" style={MenuStyle}>
+          <Container>
+            <>
+              <Input
+                inverted={inverted}
+                action={
+                  (
+                    <Button
+                      disabled={!referenceValid}
+                      onClick={() => this.goToReference()}
+                      basic
+                    >
+                      Go
+                    </Button>
+                  )
+                }
+                placeholder="Jump to reference..."
+                value={referenceDescription}
+                error={!referenceValid}
+                onChange={(e, d) => this.changeReference(e, d)}
               />
-              <Button inverted={inverted} basic icon>
-                <Icon name="search" />
-              </Button>
-              <Button inverted={inverted} basic icon>
-                <Icon name="info" onClick={() => this.openWorkInfoModal()} />
-              </Button>
-            </Button.Group>
-            {' '}
-            <Button.Group>
-              <Button inverted={inverted} basic icon>
-                <Icon name="share" />
-              </Button>
-              <Button inverted={inverted} basic icon>
-                <Icon name="download" onClick={() => this.openDownloadModal()} />
-              </Button>
-            </Button.Group>
-            {' '}
-            <div style={{ display: 'inline-block', width: 300 }}>
-              <Dropdown
-                basic
-                text="Other Versions"
-                fluid
-                button
-                disabled={!referenceValid || !data || data.related_works.length === 0}
-                style={{ marginTop: 2 }}
-              >
-                <Dropdown.Menu>
-                  {data && data.related_works.map((work) => (
-                    <Dropdown.Item
-                      key={work.title_slug}
-                      text={work.title}
-                      description={work.language}
-                      onClick={() => this.changeWork(work.title_slug)}
-                    />
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-            <div style={{ float: 'right', marginLeft: 'auto', marginTop: 11 }}>
-              <Dropdown icon="ellipsis vertical">
-                <Dropdown.Menu>
-                  <Dropdown.Item text="About TextCritical.net" />
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-          </Menu>
-        </Segment>
+              {' '}
+              <Button.Group>
+                <Popup
+                  content={<BookSelection onSelectWork={(work) => this.onSelectWork(work)} />}
+                  on="click"
+                  position="bottom left"
+                  pinned
+                  onClose={() => this.setBookSelectionOpen(false)}
+                  onOpen={() => this.setBookSelectionOpen(true)}
+                  open={bookSelectionOpen}
+                  trigger={(
+                    <Button inverted={inverted} basic icon>
+                      <Icon name="book" />
+                    </Button>
+                  )}
+                />
+                <Button inverted={inverted} basic icon>
+                  <Icon name="search" />
+                </Button>
+                <Button inverted={inverted} basic icon>
+                  <Icon name="info" onClick={() => this.openWorkInfoModal()} />
+                </Button>
+              </Button.Group>
+              {' '}
+              <Button.Group>
+                <Button inverted={inverted} basic icon>
+                  <Icon name="share" />
+                </Button>
+                <Button inverted={inverted} basic icon>
+                  <Icon name="download" onClick={() => this.openDownloadModal()} />
+                </Button>
+              </Button.Group>
+              {' '}
+              <div style={{ display: 'inline-block', width: 300 }}>
+                <Dropdown
+                  basic
+                  text="Other Versions"
+                  fluid
+                  button
+                  inverted={inverted}
+                  disabled={!referenceValid || !data || data.related_works.length === 0}
+                  style={{ marginTop: 2 }}
+                >
+                  <Dropdown.Menu>
+                    {data && data.related_works.map((work) => (
+                      <Dropdown.Item
+                        key={work.title_slug}
+                        text={work.title}
+                        description={work.language}
+                        onClick={() => this.changeWork(work.title_slug)}
+                      />
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+              <div style={{ float: 'right', marginLeft: 'auto', marginTop: 11 }}>
+                <Dropdown icon="ellipsis vertical">
+                  <Dropdown.Menu>
+                    <Dropdown.Item text="About TextCritical.net" />
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+            </>
+          </Container>
+        </Menu>
         {data && !loading && (
-          <Segment style={{ marginTop: 0, paddingTop: 0 }} inverted={inverted} basic>
+          <Container style={ContainerStyle} inverted={inverted} basic>
             {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
             {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
             {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
@@ -597,13 +605,15 @@ class Reader extends Component {
             >
               <Icon name="right chevron" />
             </Button>
-          </Segment>
+          </Container>
         )}
         {errorTitle && (
           <ErrorMessage title={errorTitle} description={errorDescription} message={errorMessage} />
         )}
         {loading && !errorTitle && (
-          Reader.getPlaceholder()
+          <Container style={ContainerStyle} inverted={inverted} basic>
+            {Reader.getPlaceholder()}
+          </Container>
         )}
       </>
     );

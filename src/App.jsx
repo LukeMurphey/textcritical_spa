@@ -66,18 +66,16 @@ class App extends Component {
         {modal === 'about' && (
           <AboutDialog onClose={() => this.closeModal()} />
         )}
-        <Container style={{ marginTop: 12 }}>
-          <Reader
-            defaultWork={defaultWork}
-            inverted={inverted}
-            division0={division0}
-            division1={division1}
-            division2={division2}
-            division3={division3}
-            division4={division4}
-            leftovers={leftovers}
-          />
-        </Container>
+        <Reader
+          defaultWork={defaultWork}
+          inverted={inverted}
+          division0={division0}
+          division1={division1}
+          division2={division2}
+          division3={division3}
+          division4={division4}
+          leftovers={leftovers}
+        />
       </div>
     );
   }
