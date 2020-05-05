@@ -117,6 +117,7 @@ class Reader extends Component {
       popupX: null,
       popupY: null,
       redirected: false,
+      sidebarVisible: false,
     };
   }
 
@@ -236,6 +237,16 @@ class Reader extends Component {
       errorMessage,
       errorDescription,
       errorTitle,
+    });
+  }
+
+  /**
+   * Opens or closes the sidebar.
+   * @param {bool} visible Whether the sidebad should be open.
+   */
+  setSidebarVisible(visible = true) {
+    this.setState({
+      sidebarVisible: visible,
     });
   }
 
@@ -409,7 +420,7 @@ class Reader extends Component {
     const {
       modal, data, errorDescription, loading, referenceValid, referenceValue, selectedWord,
       popupX, popupY, popupPositionRight, popupPositionBelow, bookSelectionOpen, errorTitle,
-      errorMessage, selectedNote, redirected,
+      errorMessage, selectedNote, redirected, sidebarVisible,
     } = this.state;
 
     const { inverted } = this.props;
@@ -440,57 +451,54 @@ class Reader extends Component {
 
     return (
       <>
-        <Menu text inverted={inverted} fixed="top" style={MenuStyle}>
-          <Button.Group>
-            <Button inverted={inverted} basic icon>
-              <Icon name="bars" />
-            </Button>
-          </Button.Group>
+        <Menu inverted={inverted} fixed="top">
           <Container>
-            <Button.Group>
-              <Popup
-                content={<BookSelection onSelectWork={(work) => this.onSelectWork(work)} />}
-                on="click"
-                position="bottom left"
-                pinned
-                onClose={() => this.setBookSelectionOpen(false)}
-                onOpen={() => this.setBookSelectionOpen(true)}
-                open={bookSelectionOpen}
-                trigger={(
-                  <Button inverted={inverted} basic>
-                    <Icon name="book" />
-                  </Button>
-                )}
-              />
-            </Button.Group>
-            <Input
-              inverted={inverted}
-              action={
-                (
-                  <Button
-                    disabled={!referenceValid}
-                    onClick={() => this.goToReference()}
-                    basic
-                  >
-                    Go
-                  </Button>
-                )
-              }
-              placeholder="Jump to reference..."
-              value={referenceDescription}
-              error={!referenceValid}
-              onChange={(e, d) => this.changeReference(e, d)}
+            <Menu.Item
+              name="works"
+              onClick={() => this.setSidebarVisible(true)}
+            >
+              <Icon name="bars" />
+            </Menu.Item>
+            <Popup
+              content={<BookSelection onSelectWork={(work) => this.onSelectWork(work)} />}
+              on="click"
+              position="bottom left"
+              pinned
+              onClose={() => this.setBookSelectionOpen(false)}
+              onOpen={() => this.setBookSelectionOpen(true)}
+              open={bookSelectionOpen}
+              trigger={(
+                <Menu.Item
+                  name="Library"
+                />
+              )}
             />
-            {' '}
-            <div style={{ display: 'inline-block', width: 300 }}>
+            <Menu.Item>
+              <Input
+                inverted={inverted}
+                action={
+                  (
+                    <Button
+                      disabled={!referenceValid}
+                      onClick={() => this.goToReference()}
+                      basic
+                    >
+                      Go
+                    </Button>
+                  )
+                }
+                placeholder="Jump to reference..."
+                value={referenceDescription}
+                error={!referenceValid}
+                onChange={(e, d) => this.changeReference(e, d)}
+              />
+            </Menu.Item>
+            <Menu.Menu position="left">
               <Dropdown
-                basic
                 text="Other Versions"
-                fluid
-                button
                 inverted={inverted}
                 disabled={!referenceValid || !data || data.related_works.length === 0}
-                style={{ marginTop: 2 }}
+                item
               >
                 <Dropdown.Menu>
                   {data && data.related_works.map((work) => (
@@ -503,7 +511,7 @@ class Reader extends Component {
                   ))}
                 </Dropdown.Menu>
               </Dropdown>
-            </div>
+            </Menu.Menu>
             <div style={{ float: 'right', marginLeft: 'auto', marginTop: 11 }}>
               <Dropdown icon="ellipsis vertical">
                 <Dropdown.Menu>
@@ -521,21 +529,22 @@ class Reader extends Component {
               icon="labeled"
               style={{ width: 200 }}
               inverted
-              visible
+              visible={sidebarVisible}
+              onHide={() => this.setSidebarVisible(false)}
               vertical
               width="thin"
             >
               <Image src={ENDPOINT_WORK_IMAGE(data.work.title_slug, 200)} />
-              <Menu.Item as="a" onClick={() => this.openWorkInfoModal()} style={{ textAlign: 'left' }}>
+              <Menu.Item as="a" onClick={() => this.openWorkInfoModal()}>
                 Information
               </Menu.Item>
-              <Menu.Item as="a" onClick={() => this.openDownloadModal()} style={{ textAlign: 'left' }}>
+              <Menu.Item as="a" onClick={() => this.openDownloadModal()}>
                 Download
               </Menu.Item>
-              <Menu.Item as="a" style={{ textAlign: 'left' }}>
+              <Menu.Item as="a">
                 Share
               </Menu.Item>
-              <Menu.Item as="a" style={{ textAlign: 'left' }}>
+              <Menu.Item as="a">
                 Search
               </Menu.Item>
             </Sidebar>
