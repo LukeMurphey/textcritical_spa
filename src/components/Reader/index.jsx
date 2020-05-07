@@ -4,7 +4,6 @@ import {
   Message, Menu, Popup, Sidebar, Image,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from '../Endpoints';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
@@ -121,6 +120,10 @@ class Reader extends Component {
       redirected: false,
       sidebarVisible: false,
     };
+
+    // This will store the last reference set so that we make sure not to replace the reference
+    // we did a reference resolution check against the server for.
+    this.lastSetReference = null;
   }
 
   componentDidMount() {
@@ -362,9 +365,23 @@ class Reader extends Component {
    */
   changeReference(event, info) {
     const { data } = this.state;
+
+    this.setState({
+      referenceValue: info.value,
+    });
+
+    // Store this entry so that we can avoid updating the reference if the user entered another
+    // reference before the server's response came back
+    this.lastSetReference = info.value;
+
     fetch(ENDPOINT_RESOLVE_REFERENCE(data.work.title_slug, info.value))
       .then((res) => (Promise.all([res.status, res.json()])))
       .then(([status, referenceInfo]) => {
+        // If the user already changed the value again, just ignore it
+        if (this.lastSetReference !== info.value) {
+          return;
+        }
+
         if (status === 200) {
           this.setState({
             divisions: referenceInfo.divisions,
