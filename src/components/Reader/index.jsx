@@ -534,7 +534,7 @@ class Reader extends Component {
               vertical
               width="thin"
             >
-              <Image src={ENDPOINT_WORK_IMAGE(data.work.title_slug, 200)} />
+              <Image src={ENDPOINT_WORK_IMAGE(data.work.title_slug, 400)} />
               <Menu.Item as="a" onClick={() => this.openWorkInfoModal()}>
                 Information
               </Menu.Item>
