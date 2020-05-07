@@ -4,6 +4,7 @@ import {
   Message, Menu, Popup, Sidebar, Image,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from '../Endpoints';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
@@ -39,6 +40,8 @@ const MenuStyle = {
   borderBottom: '1px solid #e2e2e2',
   backgroundColor: 'white',
 };
+
+const resolveReferenceDebounced = AwesomeDebouncePromise((titleSlug, reference) => fetch(ENDPOINT_RESOLVE_REFERENCE(titleSlug, reference)), 500);
 
 class Reader extends Component {
   /**
@@ -166,6 +169,7 @@ class Reader extends Component {
   onVerseClick(verseDescriptor, verse, id, href) {
     this.setState({
       referenceValue: verseDescriptor,
+      referenceValid: true,
     });
 
     history.push(href);
@@ -296,6 +300,7 @@ class Reader extends Component {
             loadedWork: work,
             divisions,
             referenceValue: data.chapter.description,
+            referenceValid: true,
             redirected,
           });
         } else {
@@ -368,13 +373,14 @@ class Reader extends Component {
 
     this.setState({
       referenceValue: info.value,
+      referenceValid: true,
     });
 
     // Store this entry so that we can avoid updating the reference if the user entered another
     // reference before the server's response came back
     this.lastSetReference = info.value;
 
-    fetch(ENDPOINT_RESOLVE_REFERENCE(data.work.title_slug, info.value))
+    resolveReferenceDebounced(data.work.title_slug, info.value)
       .then((res) => (Promise.all([res.status, res.json()])))
       .then(([status, referenceInfo]) => {
         // If the user already changed the value again, just ignore it
