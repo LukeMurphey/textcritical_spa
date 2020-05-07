@@ -15,6 +15,8 @@ const PopupDialog = (props) => {
     float: 'right',
     WebkitBoxShadow: '0 0 0 0',
     boxShadow: '0 0 0 0',
+    paddingTop: 0,
+    paddingRight: 0,
   };
 
   // Correct for the cases where the dialog is off of the bottom of the screen.
