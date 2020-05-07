@@ -4,6 +4,7 @@ import {
   Message, Menu, Popup, Sidebar, Image,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from '../Endpoints';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
@@ -30,6 +31,7 @@ const PriorPageStyle = {
 const ContainerStyle = {
   marginTop: 0,
   paddingTop: 56,
+  minHeight: 500,
 };
 
 const MenuStyle = {
@@ -522,12 +524,12 @@ class Reader extends Component {
           </Container>
         </Menu>
         {data && !loading && (
-          <Sidebar.Pushable as={Segment} style={{ marginTop: 48, borderLeft: 0 }}>
+          <Sidebar.Pushable as={Segment} basic style={{ marginTop: 8, borderLeft: 0 }}>
             <Sidebar
               as={Menu}
               animation="overlay"
               icon="labeled"
-              style={{ width: 200 }}
+              style={{ width: 200, paddingTop: 42 }}
               inverted
               visible={sidebarVisible}
               onHide={() => this.setSidebarVisible(false)}
