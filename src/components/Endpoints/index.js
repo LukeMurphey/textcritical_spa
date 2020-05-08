@@ -50,3 +50,7 @@ export function ENDPOINT_WORD_PARSE(word) {
 export function ENDPOINT_WORKS_LISTS() {
   return `${getHostConfig()}/api/works`;
 }
+
+export function ENDPOINT_VERSION_INFO() {
+  return `${getHostConfig()}/api/version_info`;
+}
