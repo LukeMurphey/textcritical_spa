@@ -28,20 +28,15 @@ const PriorPageStyle = {
   position: 'fixed',
 };
 
+
 const ContainerStyle = {
-  marginTop: 0,
-  paddingTop: 56,
-  minHeight: 500,
+  marginTop: 60,
 };
 
-const MenuStyle = {
-  paddingTop: 4,
-  paddingBottom: 4,
-  borderBottom: '1px solid #e2e2e2',
-  backgroundColor: 'white',
-};
-
-const resolveReferenceDebounced = AwesomeDebouncePromise((titleSlug, reference) => fetch(ENDPOINT_RESOLVE_REFERENCE(titleSlug, reference)), 500);
+const resolveReferenceDebounced = AwesomeDebouncePromise(
+  (titleSlug, reference) => fetch(ENDPOINT_RESOLVE_REFERENCE(titleSlug, reference)),
+  500,
+);
 
 class Reader extends Component {
   /**
@@ -78,7 +73,7 @@ class Reader extends Component {
    */
   static getPlaceholder() {
     return (
-      <Placeholder style={{ marginTop: 32 }}>
+      <Placeholder style={ContainerStyle}>
         <Placeholder.Header>
           <Placeholder.Line />
         </Placeholder.Header>
@@ -547,12 +542,12 @@ class Reader extends Component {
           </Container>
         </Menu>
         {data && !loading && (
-          <Sidebar.Pushable as={Segment} basic style={{ marginTop: 8, borderLeft: 0 }}>
+          <Sidebar.Pushable as={Segment} basic>
             <Sidebar
               as={Menu}
               animation="overlay"
               icon="labeled"
-              style={{ width: 200, paddingTop: 42 }}
+              style={{ width: 200 }}
               inverted
               visible={sidebarVisible}
               onHide={() => this.setSidebarVisible(false)}
@@ -657,7 +652,13 @@ class Reader extends Component {
           </Sidebar.Pushable>
         )}
         {errorTitle && (
-          <ErrorMessage title={errorTitle} description={errorDescription} message={errorMessage} />
+          <Container style={ContainerStyle}>
+            <ErrorMessage
+              title={errorTitle}
+              description={errorDescription}
+              message={errorMessage}
+            />
+          </Container>
         )}
         {loading && !errorTitle && (
           <Container style={ContainerStyle} inverted={inverted} basic>
