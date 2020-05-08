@@ -1,5 +1,6 @@
 import React, { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
+import { getPositionRecommendation } from '../PopupDialog';
 import './Chapter.css';
 
 /**
@@ -52,9 +53,7 @@ class Chapter extends Component {
     const word = event.target.textContent;
     const { onWordClick } = this.props;
 
-    const rect = this.wrapper.current.getBoundingClientRect();
-    const positionRight = event.layerX < (rect.width / 2);
-    const positionBelow = event.layerY < (rect.height / 2);
+    const [positionRight, positionBelow] = getPositionRecommendation(event);
 
     onWordClick(word, event.layerX, event.layerY, positionRight, positionBelow);
   }
@@ -130,9 +129,7 @@ class Chapter extends Component {
       contents = contentsElem.textContent;
     }
 
-    const rect = this.wrapper.current.getBoundingClientRect();
-    const positionRight = event.layerX < (rect.width / 2);
-    const positionBelow = event.layerY < (rect.height / 2);
+    const [positionRight, positionBelow] = getPositionRecommendation(event);
 
     // Fire off the handler
     const { onNoteClick } = this.props;

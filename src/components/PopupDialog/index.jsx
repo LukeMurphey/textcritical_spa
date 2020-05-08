@@ -2,6 +2,18 @@ import React from 'react';
 import { Button, Segment, Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
+/**
+ * Determines a recommendation about where to show a popup.
+ *
+ * @param {object} event The event from the handler with the dimensions
+ */
+export const getPositionRecommendation = (event) => {
+  const positionRight = event.clientX < (window.innerWidth / 2);
+  const positionBelow = event.clientY < (window.innerHeight / 2);
+
+  return [positionRight, positionBelow];
+};
+
 const PopupDialog = (props) => {
   const {
     children, onClose, x, y, positionBelow, positionRight,
