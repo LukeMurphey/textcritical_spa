@@ -542,7 +542,7 @@ class Reader extends Component {
           </Container>
         </Menu>
         {data && !loading && (
-          <Sidebar.Pushable as={Segment} basic>
+          <Sidebar.Pushable as={Segment} basic style={{ marginTop: 0 }}>
             <Sidebar
               as={Menu}
               animation="overlay"
