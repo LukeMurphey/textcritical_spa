@@ -33,6 +33,11 @@ const ContainerStyle = {
   marginTop: 60,
 };
 
+const sidebarStyle = {
+  height: '100vh',
+  marginTop: 0,
+};
+
 const resolveReferenceDebounced = AwesomeDebouncePromise(
   (titleSlug, reference) => fetch(ENDPOINT_RESOLVE_REFERENCE(titleSlug, reference)),
   500,
@@ -542,12 +547,12 @@ class Reader extends Component {
           </Container>
         </Menu>
         {data && !loading && (
-          <Sidebar.Pushable as={Segment} basic style={{ marginTop: 0 }}>
+          <Sidebar.Pushable as={Segment} basic style={sidebarStyle}>
             <Sidebar
               as={Menu}
               animation="overlay"
               icon="labeled"
-              style={{ width: 200 }}
+              style={{ width: 200, paddingTop: 50 }}
               inverted
               visible={sidebarVisible}
               onHide={() => this.setSidebarVisible(false)}

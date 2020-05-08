@@ -33,7 +33,7 @@ class App extends Component {
     } = match.params;
 
     return (
-      <div>
+      <>
         { includeMenu && (
           <Menu inverted={!inverted} attached="top">
             <Container>
@@ -76,7 +76,7 @@ class App extends Component {
           division4={division4}
           leftovers={leftovers}
         />
-      </div>
+      </>
     );
   }
 }
