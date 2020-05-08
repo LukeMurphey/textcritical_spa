@@ -18,16 +18,15 @@ import './index.css';
 
 const NextPageStyle = {
   bottom: '20px',
-  right: '10px',
+  right: '20px',
   position: 'fixed',
 };
 
 const PriorPageStyle = {
   bottom: '20px',
-  left: '10px',
+  left: '20px',
   position: 'fixed',
 };
-
 
 const ContainerStyle = {
   marginTop: 60,
@@ -545,6 +544,26 @@ class Reader extends Component {
               </Dropdown>
             </div>
           </Container>
+          {data && !loading && (
+            <>
+              <Button
+                icon
+                style={PriorPageStyle}
+                disabled={data.previous_chapter === null}
+                onClick={() => this.goToPriorChapter()}
+              >
+                <Icon name="left chevron" />
+              </Button>
+              <Button
+                icon
+                style={NextPageStyle}
+                disabled={data.next_chapter === null}
+                onClick={() => this.goToNextChapter()}
+              >
+                <Icon name="right chevron" />
+              </Button>
+            </>
+          )}
         </Menu>
         {data && !loading && (
           <Sidebar.Pushable as={Segment} basic style={sidebarStyle}>
@@ -636,22 +655,6 @@ class Reader extends Component {
                   onNoteClick={onNoteClick}
                   onClickAway={() => this.closeModal()}
                 />
-                <Button
-                  icon
-                  style={PriorPageStyle}
-                  disabled={data.previous_chapter === null}
-                  onClick={() => this.goToPriorChapter()}
-                >
-                  <Icon name="left chevron" />
-                </Button>
-                <Button
-                  icon
-                  style={NextPageStyle}
-                  disabled={data.next_chapter === null}
-                  onClick={() => this.goToNextChapter()}
-                >
-                  <Icon name="right chevron" />
-                </Button>
               </Container>
             </Sidebar.Pusher>
           </Sidebar.Pushable>
