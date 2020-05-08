@@ -5,7 +5,7 @@ import {
 import LazyLoad from 'react-lazy-load';
 import PropTypes from 'prop-types';
 // eslint-disable-next-line no-unused-vars
-import regeneratorRuntime from "regenerator-runtime";
+import regeneratorRuntime from 'regenerator-runtime';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_WORKS_LISTS, ENDPOINT_WORK_IMAGE } from '../Endpoints';
 import ErrorMessage from '../ErrorMessage';
