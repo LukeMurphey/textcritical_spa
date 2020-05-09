@@ -51,7 +51,7 @@ class Reader extends Component {
   static convertDivisionsToOptions(divisions) {
     return divisions.map((d) => ({
       key: d.description,
-      text: d.full_title,
+      text: d.label,
       value: d.descriptor,
     }));
   }
