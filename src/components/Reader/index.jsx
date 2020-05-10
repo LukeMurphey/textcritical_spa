@@ -302,6 +302,10 @@ class Reader extends Component {
             referenceValid: true,
             redirected,
           });
+
+          // Preload the next chapter so that it is cached
+          this.preloadNextChapter();
+
         } else {
           this.setErrorState(
             'Work could not be found',
@@ -316,6 +320,36 @@ class Reader extends Component {
           e.toString(),
         );
       });
+  }
+
+  /**
+   * Preload the next chapter.
+   */
+  preloadNextChapter() {
+    const { data } = this.state;
+
+    if (data.next_chapter) {
+      fetch(ENDPOINT_READ_WORK(`${data.work.title_slug}/${data.next_chapter.full_descriptor}`));
+    }
+  }
+
+  /**
+   * Preload the prior chapter.
+   */
+  preloadPriorChapter() {
+    const { data } = this.state;
+
+    if (data.previous_chapter) {
+      fetch(ENDPOINT_READ_WORK(`${data.work.title_slug}/${data.previous_chapter.full_descriptor}`));
+    }
+  }
+
+  /**
+   * Preload the next and prior chapter
+   */
+  preloadChapters() {
+    this.preloadNextChapter();
+    this.preloadPriorChapter();
   }
 
   /**
