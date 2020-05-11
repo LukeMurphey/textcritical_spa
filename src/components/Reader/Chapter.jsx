@@ -36,12 +36,50 @@ class Chapter extends Component {
     this.removeHandler(this.clickListener);
   }
 
+  /**
+   * Get the text for the node separated into lines.
+   *
+   * @param {object} element The element to get the text from
+   */
+  getText(element) {
+    try {
+      const children = [];
+
+      // If the node is text, then add the line
+      if (element.nodeType === 3) {
+        if (element.textContent && element.textContent.length > 0) {
+          children.push(element.textContent);
+        }
+      }
+
+      // Accumulate the children entries
+      const childEntries = Array.from(element.childNodes).reduce(
+        (accum, child) => accum.concat(...this.getText(child)),
+        [],
+      );
+
+      children.push(...childEntries);
+
+      // Return the content
+      if (children) {
+        return children;
+      }
+    } catch (err) {
+      // If an exception happens, then just use the text content
+      return [element.textContent];
+    }
+
+    return [element.textContent];
+  }
+
   addHandler(handler, type = 'click') {
     this.wrapper.current.addEventListener(type, (event) => handler(event));
   }
 
   removeHandler(handler, type = 'click') {
-    this.wrapper.current.removeEventListener(type, (event) => handler(event));
+    if (this.wrapper.current) {
+      this.wrapper.current.removeEventListener(type, (event) => handler(event));
+    }
   }
 
   /**
@@ -123,10 +161,10 @@ class Chapter extends Component {
 
     // Get the contents for the given ID
     const contentsElem = document.getElementById(`content_for_${id}`);
-    let contents = 'Note content could not be found';
+    let contents = ['Note content could not be found'];
 
     if (contentsElem) {
-      contents = contentsElem.textContent;
+      contents = this.getText(contentsElem);
     }
 
     const [positionRight, positionBelow] = getPositionRecommendation(event);

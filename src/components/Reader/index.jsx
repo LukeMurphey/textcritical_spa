@@ -631,7 +631,7 @@ class Reader extends Component {
                 {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
                 {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
                 {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
-                {data && !loading && modal === 'note' && <FootnotePopup positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} note={selectedNote} onClose={() => this.closeModal()} />}
+                {data && !loading && modal === 'note' && <FootnotePopup positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} notes={selectedNote} onClose={() => this.closeModal()} />}
                 <Grid>
                   <Grid.Row>
                     <Grid.Column width={8}>

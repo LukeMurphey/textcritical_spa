@@ -4,7 +4,7 @@ import PopupDialog from '../PopupDialog';
 
 const FootnoteDialog = (props) => {
   const {
-    note, onClose, x, y, positionBelow, positionRight,
+    notes, onClose, x, y, positionBelow, positionRight,
   } = props;
 
   return (
@@ -15,13 +15,18 @@ const FootnoteDialog = (props) => {
       positionBelow={positionBelow}
       positionRight={positionRight}
     >
-      <div>{note}</div>
+      <div>
+        {notes.map((note, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <div key={index}>{note}</div>
+        ))}
+      </div>
     </PopupDialog>
   );
 };
 
 FootnoteDialog.propTypes = {
-  note: PropTypes.string.isRequired,
+  notes: PropTypes.arrayOf(PropTypes.string).isRequired,
   onClose: PropTypes.func.isRequired,
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
