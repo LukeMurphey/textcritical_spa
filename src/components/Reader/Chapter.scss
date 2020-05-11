@@ -32,54 +32,39 @@
     margin-top: 12px;
 }
 
+/**
+ * Verse link.
+ */
 .verse-link{
+    padding: 0 4px;
     &:visited { color: #EEE; }
     &:active { color: #EEE; }
     &:link { color: #EEE; }
     &:hover { color: #08C; }
 }
 
-.no_definition_entries{
-	font-style: italic;
-}
+.verse-container.highlighted {
+    .verse-link{
+        background-color: red;
+        border-radius: 2px;
+    }
 
-$highlightColor: #149bdf;
-
-@include keyframes(highlighted){
-    0% {
-        background: $highlightColor;
+    .verse.number {
+        color: white;
     }
-    50% {
-        background: $highlightColor;
-    }
-    100% {
-        background: #EEE;
-    }
-}
-
-@include keyframes(highlighted-dark){
-    0% {
-        background: $highlightColor;
-    }
-    25% {
-        background: $highlightColor;
-    }
-    100% {
-        background: #454545;
-    }
-}
-
-.verse-container.highlighted{
-    background-color: #EEE;
-    @include rounded(3px);
-    @include animation(highlighted, 2.5s);
 }
 
 body.dark .verse-container.highlighted{
     background-color: #454545;
-    @include animation(highlighted-dark, 2.5s);
 }
 
+.no_definition_entries{
+	font-style: italic;
+}
+
+/**
+ * Words.
+ */
 .word.highlighted, .word.searched{
     @include rounded(3px);
     color: white;
@@ -107,7 +92,6 @@ body.dark .verse-container.highlighted{
 	.word:hover{
 		text-decoration: underline;
 	}
-
 }
 
 @media print {

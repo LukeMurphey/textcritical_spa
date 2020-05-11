@@ -19,6 +19,9 @@ class Chapter extends Component {
     // We need to track the event listener with the bind call so that it can be removed
     // See https://dev.to/em4nl/function-identity-in-javascript-or-how-to-remove-event-listeners-properly-1ll3
     this.clickListener = null;
+
+    // We need to track when a verse was selected for highlight
+    this.highlightOverridden = false;
   }
 
   /**
@@ -125,7 +128,7 @@ class Chapter extends Component {
         target.parentElement.classList.toggle('highlighted');
       }
     } else {
-      setTimeout(() => this.highlightVerse(verse), 200);
+      setTimeout(() => this.highlightVerse(verse), 100);
     }
   }
 
@@ -165,6 +168,8 @@ class Chapter extends Component {
     if (!verseDescriptor) {
       return;
     }
+
+    this.highlightOverridden = true;
 
     // Fire off the handler
     const { onVerseClick } = this.props;
@@ -209,8 +214,8 @@ class Chapter extends Component {
     if (event.target.className.includes('word')) {
       this.handleClickWord(event);
     } else if (event.target.className.includes('verse')) {
-      this.handleClickEmpty();
       this.handleClickVerse(event);
+      this.handleClickEmpty();
     } else if (event.target.className.includes('note-tag')) {
       this.handleClickNote(event);
     } else {
@@ -221,8 +226,8 @@ class Chapter extends Component {
   render() {
     const { content, highlightedVerse } = this.props;
 
-    if (highlightedVerse) {
-      setTimeout(() => this.highlightVerse(highlightedVerse), 500);
+    if (highlightedVerse && !this.highlightOverridden) {
+      setTimeout(() => this.highlightVerse(highlightedVerse), 100);
     }
 
     // We are keeping a reference to the wrapper so that math can be done regarding client rectangle
