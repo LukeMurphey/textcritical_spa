@@ -56,7 +56,7 @@ class AboutWorkDialog extends Component {
         {data && (
           <Header icon="info" content={`About ${data.title}`} />
         )}
-        <Modal.Content>
+        <Modal.Content scrolling>
           {error && (
             <ErrorMessage
               title="Unable to load work information"
