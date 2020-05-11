@@ -1,0 +1,119 @@
+
+@import "shortcuts.scss";
+@import "perseus.scss";
+
+/**
+ * The following styles the note icon.
+ */
+ .view_read_work .hide {
+    display: none;
+}
+
+.view_read_work .icon-info-sign {
+    font-family: "Icons";
+    font-style: normal;
+}
+
+.view_read_work .icon-info-sign:before{
+    content: "\f129";
+}
+
+.verse.number{
+    font-weight: bold;
+}
+
+.verse-container{
+    display: inline;
+    line-height: 25px;
+}
+
+.block{
+    display: block;
+    margin-top: 12px;
+}
+
+.verse-link{
+    &:visited { color: #EEE; }
+    &:active { color: #EEE; }
+    &:link { color: #EEE; }
+    &:hover { color: #08C; }
+}
+
+.no_definition_entries{
+	font-style: italic;
+}
+
+$highlightColor: #149bdf;
+
+@include keyframes(highlighted){
+    0% {
+        background: $highlightColor;
+    }
+    50% {
+        background: $highlightColor;
+    }
+    100% {
+        background: #EEE;
+    }
+}
+
+@include keyframes(highlighted-dark){
+    0% {
+        background: $highlightColor;
+    }
+    25% {
+        background: $highlightColor;
+    }
+    100% {
+        background: #454545;
+    }
+}
+
+.verse-container.highlighted{
+    background-color: #EEE;
+    @include rounded(3px);
+    @include animation(highlighted, 2.5s);
+}
+
+body.dark .verse-container.highlighted{
+    background-color: #454545;
+    @include animation(highlighted-dark, 2.5s);
+}
+
+.word.highlighted, .word.searched{
+    @include rounded(3px);
+    color: white;
+}
+
+.word.highlighted{
+    background-color: #49AFCD;
+}
+
+.word.searched{
+    background-color: #468847;
+}
+
+@for $i from 2 through 5 {
+    .division-#{$i} { padding-left: 24px * ($i - 1); }
+}
+
+.verse{
+    
+	.word{
+		cursor:pointer;
+		cursor:hand;		
+	}
+	
+	.word:hover{
+		text-decoration: underline;
+	}
+
+}
+
+@media print {
+
+	.view_read_work .note-tag{
+		display: none;
+	}
+
+}

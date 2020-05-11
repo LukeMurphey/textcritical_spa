@@ -1,7 +1,7 @@
 import React, { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
 import { getPositionRecommendation } from '../PopupDialog';
-import './Chapter.css';
+import './Chapter.scss';
 
 /**
  * This class renders the content of chapter of a work.
