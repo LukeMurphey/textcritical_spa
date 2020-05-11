@@ -7,6 +7,7 @@ module.exports = merge(common, {
     contentBase: './dist',
     port: 8081,
     historyApiFallback: {
+      disableDotRule: true,
       index: 'index.html',
     },
     proxy: {
