@@ -688,6 +688,7 @@ class Reader extends Component {
                   onWordClick={onWordClick}
                   onNoteClick={onNoteClick}
                   onClickAway={() => this.closeModal()}
+                  highlightedVerse={data.verse_to_highlight}
                 />
               </Container>
             </Sidebar.Pusher>

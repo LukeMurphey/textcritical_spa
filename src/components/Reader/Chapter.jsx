@@ -105,6 +105,31 @@ class Chapter extends Component {
   }
 
   /**
+   * Highlight the verse.
+   * @param {string} verse The ID of the verse.
+   */
+  highlightVerse(verse) {
+    if (this.wrapper && this.wrapper.current) {
+      const verses = Array.from(this.wrapper.current.getElementsByClassName('verse-link'));
+
+      // Find the element with the verse
+      const target = verses.find((element) => {
+        if (element.attributes['data-verse'] && element.attributes['data-verse'].nodeValue === verse) {
+          return true;
+        }
+        return false;
+      });
+
+      // Mark it if we found it
+      if (target) {
+        target.parentElement.classList.toggle('highlighted');
+      }
+    } else {
+      setTimeout(() => this.highlightVerse(verse), 200);
+    }
+  }
+
+  /**
    * Handle the clicking of a verse.
    *
    * @param {*} event The event object
@@ -194,7 +219,11 @@ class Chapter extends Component {
   }
 
   render() {
-    const { content } = this.props;
+    const { content, highlightedVerse } = this.props;
+
+    if (highlightedVerse) {
+      setTimeout(() => this.highlightVerse(highlightedVerse), 500);
+    }
 
     // We are keeping a reference to the wrapper so that math can be done regarding client rectangle
     // See https://medium.com/trabe/getting-rid-of-finddomnode-method-in-your-react-application-a0d7093b2660
@@ -214,6 +243,7 @@ class Chapter extends Component {
 
 Chapter.propTypes = {
   content: PropTypes.string.isRequired,
+  highlightedVerse: PropTypes.string,
   onVerseClick: PropTypes.func,
   onWordClick: PropTypes.func,
   onClickAway: PropTypes.func,
@@ -221,6 +251,7 @@ Chapter.propTypes = {
 };
 
 Chapter.defaultProps = {
+  highlightedVerse: null,
   onVerseClick: () => { },
   onWordClick: () => { },
   onClickAway: () => { },
