@@ -164,7 +164,7 @@ class Chapter extends Component {
     let contents = ['Note content could not be found'];
 
     if (contentsElem) {
-      contents = this.getText(contentsElem);
+      contents = [contentsElem.textContent];
     }
 
     const [positionRight, positionBelow] = getPositionRecommendation(event);
