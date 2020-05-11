@@ -49,7 +49,7 @@ class AboutWorkDialog extends Component {
     const { data, error } = this.state;
 
     return (
-      <Modal size="tiny" defaultOpen onClose={onClose} closeIcon>
+      <Modal size="small" defaultOpen onClose={onClose} closeIcon>
         {!data && (
           <Header icon="info" content="About this Book" />
         )}
@@ -83,6 +83,11 @@ class AboutWorkDialog extends Component {
                   data.source_description
                 )}
               </div>
+              {data.wiki_info && (
+                <div style={{ marginTop: 16 }}>
+                  {data.wiki_info.summary}
+                </div>
+              )}
             </>
           )}
           {!error && !data && (
@@ -101,6 +106,9 @@ class AboutWorkDialog extends Component {
           )}
         </Modal.Content>
         <Modal.Actions>
+          {data && data.wiki_info && (
+            <a target="_blank" style={{ marginTop: 10, float: 'left' }} rel="noopener noreferrer" href={data.wiki_info.url}>View on wikipedia</a>
+          )}
           <Button onClick={onClose}>Close</Button>
         </Modal.Actions>
       </Modal>
