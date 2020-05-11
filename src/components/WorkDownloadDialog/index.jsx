@@ -12,7 +12,7 @@ class WorkDownloadDialog extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      format: MOBI_FORMAT,
+      format: EPUB_FORMAT,
     };
   }
 
