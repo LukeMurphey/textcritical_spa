@@ -118,23 +118,6 @@ class WordInformation extends Component {
                 </React.Fragment>
               ))}
             </Accordion>
-            <div style={{ marginTop: 12 }}>
-              Look up at
-              {' '}
-              <a target="_blank" rel="noopener noreferrer" href={`http://www.perseus.tufts.edu/hopper/morph?l=${word}&la=greek`}>
-                Perseus
-              </a>
-              ,
-              {' '}
-              <a target="_blank" rel="noopener noreferrer" href={`https://logeion.uchicago.edu/${word}`}>
-                Logeion
-              </a>
-              , or
-              {' '}
-              <a target="_blank" rel="noopener noreferrer" href={`https://www.google.com/search?q=${word}`}>
-                Google
-              </a>
-            </div>
           </div>
         )}
         {!loading && error && (

@@ -35,24 +35,24 @@ const PopupDialog = (props) => {
   const segmentStyle = {
     position: 'absolute',
     width: 500,
-    height: 300,
+    maxHeight: 300,
     overflowY: 'auto',
     padding: 0,
   };
 
-  // This applies to the footer if needed
+  // This applies to the footer
   const footerStyle = {
-    position: 'absolute',
+    position: 'sticky',
     bottom: 0,
     width: '100%',
     borderTop: '1px solid #DDD',
     backgroundColor: '#F6F6F6',
   };
-
+  const height = segmentStyle.height ? segmentStyle.height : 200;
   if (positionBelow) {
     segmentStyle.top = y;
   } else {
-    segmentStyle.top = y - segmentStyle.height - 20;
+    segmentStyle.top = y - height - 20;
   }
 
   if (positionRight) {
