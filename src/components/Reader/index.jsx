@@ -627,7 +627,7 @@ class Reader extends Component {
               </Menu.Item>
             </Sidebar>
             <Sidebar.Pusher>
-              <Container style={ContainerStyle} inverted={inverted} basic>
+              <Container className="underMenu" inverted={inverted} basic>
                 {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
                 {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
                 {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}

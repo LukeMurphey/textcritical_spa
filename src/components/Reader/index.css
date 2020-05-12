@@ -1,0 +1,16 @@
+@media print {
+
+	.ui.top.menu{
+		display: none;
+	}
+
+    .underMenu{
+        margin-top: 0;
+    }
+}
+
+@media screen {
+    .underMenu{
+        margin-top: 60px;
+    }
+}
