@@ -16,7 +16,7 @@ export const getPositionRecommendation = (event) => {
 
 const PopupDialog = (props) => {
   const {
-    children, onClose, x, y, positionBelow, positionRight,
+    children, onClose, x, y, positionBelow, positionRight, footer,
   } = props;
 
   /**
@@ -37,6 +37,16 @@ const PopupDialog = (props) => {
     width: 500,
     height: 300,
     overflowY: 'auto',
+    padding: 0,
+  };
+
+  // This applies to the footer if needed
+  const footerStyle = {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    borderTop: '1px solid #DDD',
+    backgroundColor: '#F6F6F6',
   };
 
   if (positionBelow) {
@@ -53,10 +63,15 @@ const PopupDialog = (props) => {
 
   return (
     <Segment style={segmentStyle}>
-      <Button basic style={closeButtonStyle} icon onClick={onClose}>
-        <Icon name="close" />
-      </Button>
-      {children}
+      <div style={{ padding: 15 }}>
+        <Button basic style={closeButtonStyle} icon onClick={onClose}>
+          <Icon name="close" />
+        </Button>
+        {children}
+      </div>
+      {footer && (
+        <Segment basic style={footerStyle}>{footer}</Segment>
+      )}
     </Segment>
   );
 };
@@ -68,11 +83,13 @@ PopupDialog.propTypes = {
   positionBelow: PropTypes.bool,
   positionRight: PropTypes.bool,
   children: PropTypes.element.isRequired,
+  footer: PropTypes.element,
 };
 
 PopupDialog.defaultProps = {
   positionBelow: true,
   positionRight: true,
+  footer: null,
 };
 
 export default PopupDialog;
