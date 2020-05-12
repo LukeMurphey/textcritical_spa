@@ -54,3 +54,17 @@ export function ENDPOINT_WORKS_LISTS() {
 export function ENDPOINT_VERSION_INFO() {
   return `${getHostConfig()}/api/version_info`;
 }
+
+export function ENDPOINT_SEARCH(query, page = 1, relatedForms = false, ignoreDiacritics = false) {
+  let relatedFormsConverted = 0;
+  if (relatedForms) {
+    relatedFormsConverted = 1;
+  }
+
+  let ignoreDiacriticsConverted = 0;
+  if (ignoreDiacritics) {
+    ignoreDiacriticsConverted = 1;
+  }
+
+  return `${getHostConfig()}/api/search/${encodeURIComponent(query)}?page=${page}&related_forms=${relatedFormsConverted}&ignore_diacritics=${ignoreDiacriticsConverted}`;
+}

@@ -4,6 +4,7 @@ import { Router, Route, Switch } from 'react-router-dom';
 import history from './history';
 import NotFound from './components/NotFound';
 import About from './components/About';
+import Search from './components/Search';
 import ContactMe from './components/ContactMe';
 import ErrorBoundary from './components/ErrorBoundary';
 import App from './App';
@@ -20,6 +21,9 @@ ReactDOM.render((
         </Route>
         <Route exact path="/about">
           <About />
+        </Route>
+        <Route exact path="/search">
+          <Search />
         </Route>
         <Route exact path="/contact">
           <ContactMe />
