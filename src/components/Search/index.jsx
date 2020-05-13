@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Segment, Input, Container, Header, Button, Checkbox, Loader, Dimmer,
 } from 'semantic-ui-react';
+import ErrorMessage from '../ErrorMessage';
 import { ENDPOINT_SEARCH } from '../Endpoints';
 
 /**
@@ -61,7 +62,14 @@ function Search() {
               <Loader>Loading</Loader>
             )}
           </Dimmer>
-          {resultSet && (
+          {error && (
+            <ErrorMessage
+              title="Unable to perform the search"
+              description="The search could not be executed."
+              message={error}
+            />
+          )}
+          {!error && resultSet && (
           <Segment.Group>
             {resultSet.results.map((result) => (
               <Segment>
