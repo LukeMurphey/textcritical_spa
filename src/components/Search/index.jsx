@@ -25,7 +25,7 @@ function Search() {
   let lastPage = 1;
 
   if (resultSet) {
-    lastPage = Math.round(resultSet.result_count / 10);
+    lastPage = Math.ceil(resultSet.result_count / 10);
   }
 
   /**
@@ -131,7 +131,7 @@ function Search() {
                     {result.work}
                     {' '}
                     {result.division}
-                    :
+                    {', '}
                     {result.verse}
                   </strong>
                 </div>
@@ -147,7 +147,7 @@ function Search() {
             {'Page '}
             {page}
             {' of '}
-            {lastPage + 1}
+            {lastPage}
             {' ('}
             {resultSet.match_count}
             {' word matches in '}
