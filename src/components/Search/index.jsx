@@ -122,26 +122,39 @@ function Search() {
           </Message>
         )}
         {mode === MODE_RESULTS && (
-        <Segment.Group>
-          {resultSet.results.map((result) => (
-            <Segment>
-              <div>
-                <strong>
-                  {result.work}
-                  {' '}
-                  {result.division}
-                  :
-                  {result.verse}
-                </strong>
-              </div>
-              {result.highlights}
-            </Segment>
-          ))}
-          <Button.Group attached="bottom">
-            <Button active={page <= 1} onClick={() => goBack()}>Back</Button>
-            <Button active={page >= lastPage} onClick={() => goNext()}>Next</Button>
-          </Button.Group>
-        </Segment.Group>
+        <>
+          <Segment.Group>
+            {resultSet.results.map((result) => (
+              <Segment>
+                <div>
+                  <strong>
+                    {result.work}
+                    {' '}
+                    {result.division}
+                    :
+                    {result.verse}
+                  </strong>
+                </div>
+                {result.highlights}
+              </Segment>
+            ))}
+            <Button.Group attached="bottom">
+              <Button active={page <= 1} onClick={() => goBack()}>Back</Button>
+              <Button active={page >= lastPage} onClick={() => goNext()}>Next</Button>
+            </Button.Group>
+          </Segment.Group>
+          <div>
+            {'Page '}
+            {page}
+            {' of '}
+            {lastPage + 1}
+            {' ('}
+            {resultSet.match_count}
+            {' word matches in '}
+            {resultSet.result_count}
+            {' verses)'}
+          </div>
+        </>
         )}
         {mode === MODE_NOT_STARTED && (
           <Message>
