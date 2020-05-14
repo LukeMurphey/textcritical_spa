@@ -1,0 +1,18 @@
+
+@import "../StylingShortcuts/shortcuts.scss";
+
+b.match{
+	font-weight: bold;
+	color: white;
+	padding: 0 4px 0 4px;
+	@include rounded(3px);
+}
+
+$highlight-color: #3a87ad;
+@for $i from 3 through 5 {
+    .term#{$i} { background-color: darken($highlight-color, $i * 5%); }
+}
+
+@for $i from 0 through 2 {
+    .term#{$i} { background-color: lighten($highlight-color, $i * 5%); }
+}

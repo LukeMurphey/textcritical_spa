@@ -4,6 +4,7 @@ import {
 } from 'semantic-ui-react';
 import ErrorMessage from '../ErrorMessage';
 import { ENDPOINT_SEARCH } from '../Endpoints';
+import './index.scss';
 
 const MODE_NOT_STARTED = 0;
 const MODE_SEARCHING = 1;
@@ -60,6 +61,13 @@ function Search() {
     if (page < lastPage) {
       doSearch(page + 1);
     }
+  };
+
+  const renderHighlights = (highlights) => {
+    return (
+      // eslint-disable-next-line react/no-danger
+      <div dangerouslySetInnerHTML={{ __html: highlights }} />
+    );
   };
 
   // Figure out what mode the page is in
@@ -131,11 +139,11 @@ function Search() {
                     {result.work}
                     {' '}
                     {result.division}
-                    {', '}
+                    :
                     {result.verse}
                   </strong>
                 </div>
-                {result.highlights}
+                {renderHighlights(result.highlights)}
               </Segment>
             ))}
             <Button.Group attached="bottom">
