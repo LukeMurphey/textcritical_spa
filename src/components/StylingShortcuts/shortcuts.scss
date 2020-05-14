@@ -1,34 +1,77 @@
 @mixin rounded_side($side, $radius: 10px) {
-    border-#{$side}-radius: $radius;
-    -moz-border-radius-#{$side}: $radius;
-    -webkit-border-#{$side}-radius: $radius;
+  border-#{$side}-radius: $radius;
+  -moz-border-radius-#{$side}: $radius;
+  -webkit-border-#{$side}-radius: $radius;
+}
+
+@mixin rounded($radius: 10px) {
+  border-radius: $radius;
+  -moz-border-radius: $radius;
+  -webkit-border-radius: $radius;
+}
+
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content; 
   }
-  
-  @mixin rounded($radius: 10px) {
-    border-radius: $radius;
-    -moz-border-radius: $radius;
-    -webkit-border-radius: $radius;
+  @-moz-keyframes #{$name} {
+    @content;
   }
-  
-  @mixin keyframes($name) {
-    @-webkit-keyframes #{$name} {
-      @content; 
-    }
-    @-moz-keyframes #{$name} {
-      @content;
-    }
-    @-ms-keyframes #{$name} {
-      @content;
-    }
-    @keyframes #{$name} {
-      @content;
-    } 
+  @-ms-keyframes #{$name} {
+    @content;
   }
+  @keyframes #{$name} {
+    @content;
+  } 
+}
+
+@mixin animation($name, $timing: 1s) {
+  -moz-animation:#{$name} $timing;
+  -webkit-animation:#{$name} $timing;
+  -o-animation:#{$name} $timing;
+  animation:#{$name} $timing;
+}
+
+@function random_pastel($min: 220, $max: 250, $min_delta: 20) {
+  // Determine how room for variation we have
+  $rand_range: $max - $min;
+
+  // Get the base color offsets
+  $r: random($rand_range);
+  $g: random($rand_range);
+  $b: random($rand_range);
   
-  @mixin animation($name, $timing: 1s) {
-    -moz-animation:#{$name} $timing;
-    -webkit-animation:#{$name} $timing;
-    -o-animation:#{$name} $timing;
-    animation:#{$name} $timing;
-  }
+  // Mix in white
+  $r: ($r + $min);
+  $g: ($g + $min);
+  $b: ($b + $min);
+
+	@return rgb($r, $g, $b);
+}
+
+@function random_pastel($min: 200, $max: 250) {
+  /*
+  This function will produce pastel colors but will enforce color differentiation such that you don't get whites.
+  */
+  // Determine how room for variation we have
+  $rand_range: $max - $min;
+  $variation: 2 * $rand_range;
+
+  // Get the red offset
+  $r: random($rand_range);
+
+  // Remove the amount of expected variation; then make green offset
+  $variation: $variation - $r;
+  $g: random($rand_range);
+
+  // Apply whatever variation is left to blue
+  $variation: $variation - $g;
+  $b: min($variation, $rand_range);
   
+  // Mix in white
+  $r: ($r + $min);
+  $g: ($g + $min);
+  $b: ($b + $min);
+
+	@return rgb($r, $g, $b);
+}

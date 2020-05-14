@@ -63,12 +63,10 @@ function Search() {
     }
   };
 
-  const renderHighlights = (highlights) => {
-    return (
-      // eslint-disable-next-line react/no-danger
-      <div dangerouslySetInnerHTML={{ __html: highlights }} />
-    );
-  };
+  const renderHighlights = (highlights) => (
+    // eslint-disable-next-line react/no-danger
+    <div dangerouslySetInnerHTML={{ __html: highlights }} />
+  );
 
   // Figure out what mode the page is in
   let mode = MODE_NOT_STARTED;
@@ -136,11 +134,11 @@ function Search() {
               <Segment>
                 <div>
                   <strong>
-                    {result.work}
-                    {' '}
-                    {result.division}
-                    :
-                    {result.verse}
+                    <a href={result.url}>
+                      {result.work}
+                      {' '}
+                      {result.description}
+                    </a>
                   </strong>
                 </div>
                 {renderHighlights(result.highlights)}
