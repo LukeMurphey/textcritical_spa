@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, useLocation } from 'react-router-dom';
 import {
-  Segment, Input, Container, Header, Button, Checkbox, Icon, Message,
+  Segment, Input, Container, Header, Button, Checkbox, Icon, Message, Tab,
 } from 'semantic-ui-react';
+import SearchResults from './SearchResults';
+import SearchHelp from './SearchHelp';
 import ErrorMessage from '../ErrorMessage';
 import { ENDPOINT_SEARCH } from '../Endpoints';
 import './index.scss';
@@ -21,6 +23,56 @@ const CONVERT_BOOL = 1;
 // the query string for you.
 function useQuery() {
   return new URLSearchParams(useLocation().search);
+}
+
+function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, error) {
+  return (
+    <Tab.Pane>
+      {mode === MODE_SEARCHING && (
+        <Message icon>
+          <Icon name="circle notched" loading />
+          <Message.Content>
+            <Message.Header>Just one second</Message.Header>
+            Performing the search...
+          </Message.Content>
+        </Message>
+      )}
+      {mode === MODE_ERROR && (
+        <ErrorMessage
+          title="Unable to perform the search"
+          description="The search could not be executed."
+          message={error}
+        />
+      )}
+      {mode === MODE_NO_RESULTS && (
+        <Message>
+          <Message.Header>No Results Found</Message.Header>
+          <p>
+            No Results were found for the given search.
+          </p>
+        </Message>
+      )}
+      {mode === MODE_RESULTS && (
+        <SearchResults
+          results={resultSet.results}
+          matchCount={resultSet.match_count}
+          resultCount={resultSet.result_count}
+          page={page}
+          lastPage={lastPage}
+          goBack={() => goBack()}
+          goNext={() => goNext()}
+        />
+      )}
+      {mode === MODE_NOT_STARTED && (
+        <Message>
+          <Message.Header>Enter a search</Message.Header>
+          <p>
+            Enter a search term to get started.
+          </p>
+        </Message>
+      )}
+    </Tab.Pane>
+  );
 }
 
 function getParamOrDefault(searchParams, paramName, defaultValue, convertFormat = null) {
@@ -135,11 +187,6 @@ function Search({ history }) {
     }
   };
 
-  const renderHighlights = (highlights) => (
-    // eslint-disable-next-line react/no-danger
-    <div dangerouslySetInnerHTML={{ __html: highlights }} />
-  );
-
   // Figure out what mode the page is in
   let mode = MODE_NOT_STARTED;
 
@@ -152,6 +199,17 @@ function Search({ history }) {
   } else if (resultSet && resultSet.result_count > 0) {
     mode = MODE_RESULTS;
   }
+
+  const panes = [
+    {
+      menuItem: 'Results',
+      render: () => searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, error),
+    },
+    {
+      menuItem: 'Help',
+      render: () => <Tab.Pane><SearchHelp /></Tab.Pane>,
+    },
+  ];
 
   return (
     <Segment>
@@ -176,73 +234,7 @@ function Search({ history }) {
         />
         <Checkbox label="Search ignoring diacritics" checked={ignoreDiacritics} onChange={(e, d) => setIgnoreDiacritics(d.checked)} />
         <Checkbox label="Search related Greek forms (slower but more thorough)" checked={searchRelatedForms} onChange={(e, d) => setSearchRelatedForms(d.checked)} />
-        {mode === MODE_SEARCHING && (
-          <Message icon>
-            <Icon name="circle notched" loading />
-            <Message.Content>
-              <Message.Header>Just one second</Message.Header>
-              Performing the search...
-            </Message.Content>
-          </Message>
-        )}
-        {mode === MODE_ERROR && (
-          <ErrorMessage
-            title="Unable to perform the search"
-            description="The search could not be executed."
-            message={error}
-          />
-        )}
-        {mode === MODE_NO_RESULTS && (
-          <Message>
-            <Message.Header>No Results Found</Message.Header>
-            <p>
-              No Results were found for the given search.
-            </p>
-          </Message>
-        )}
-        {mode === MODE_RESULTS && (
-        <>
-          <Segment.Group>
-            {resultSet.results.map((result) => (
-              <Segment>
-                <div>
-                  <strong>
-                    <a href={result.url}>
-                      {result.work}
-                      {' '}
-                      {result.description}
-                    </a>
-                  </strong>
-                </div>
-                {renderHighlights(result.highlights)}
-              </Segment>
-            ))}
-            <Button.Group attached="bottom">
-              <Button active={page <= 1} onClick={() => goBack()}>Back</Button>
-              <Button active={page >= lastPage} onClick={() => goNext()}>Next</Button>
-            </Button.Group>
-          </Segment.Group>
-          <div>
-            {'Page '}
-            {page}
-            {' of '}
-            {lastPage}
-            {' ('}
-            {resultSet.match_count}
-            {' word matches in '}
-            {resultSet.result_count}
-            {' verses)'}
-          </div>
-        </>
-        )}
-        {mode === MODE_NOT_STARTED && (
-          <Message>
-            <Message.Header>Enter a search</Message.Header>
-            <p>
-              Enter a search term to get started.
-            </p>
-          </Message>
-        )}
+        <Tab panes={panes} />
       </Container>
     </Segment>
   );
