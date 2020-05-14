@@ -60,7 +60,7 @@
   // Get the red offset
   $r: random($rand_range);
 
-  // Remove the amount of expected variation; then make green offset
+  // Remove the amount of expected variation; then make the green offset
   $variation: $variation - $r;
   $g: random($rand_range);
 
