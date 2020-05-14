@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { withRouter, useLocation } from 'react-router-dom';
 import {
   Segment, Input, Container, Header, Button, Checkbox, Icon, Message,
 } from 'semantic-ui-react';
@@ -12,22 +14,84 @@ const MODE_ERROR = 2;
 const MODE_NO_RESULTS = 3;
 const MODE_RESULTS = 4;
 
+const CONVERT_INT = 0;
+const CONVERT_BOOL = 1;
+
+// A custom hook that builds on useLocation to parse
+// the query string for you.
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
+function getParamOrDefault(searchParams, paramName, defaultValue, convertFormat = null) {
+  const paramValue = searchParams.get(paramName);
+  if (paramValue) {
+    if (convertFormat === CONVERT_INT) {
+      return parseInt(paramValue, 10);
+    }
+
+    if (convertFormat === CONVERT_BOOL && paramValue === '0') {
+      return false;
+    }
+
+    if (convertFormat === CONVERT_BOOL) {
+      return true;
+    }
+
+    return paramValue;
+  }
+
+  return defaultValue;
+}
+
 /**
  * This class renders a search page and results.
  */
-function Search() {
-  const [query, setQuery] = useState('work:abdicatus νομος');
+function Search({ history }) {
+  // Get the query params
+  const queryParams = useQuery();
+
+  // Setup state
+  const [query, setQuery] = useState(getParamOrDefault(queryParams, 'q', ''));
   const [resultSet, setResultSet] = useState(null);
   const [error, setError] = useState(null);
-  const [ignoreDiacritics, setIgnoreDiacritics] = useState(false);
-  const [searchRelatedForms, setSearchRelatedForms] = useState(false);
+  const [ignoreDiacritics, setIgnoreDiacritics] = useState(getParamOrDefault(queryParams, 'ignore_diacritics', false, CONVERT_BOOL));
+  const [searchRelatedForms, setSearchRelatedForms] = useState(getParamOrDefault(queryParams, 'include_related', false, CONVERT_BOOL));
   const [searching, setSearching] = useState(false);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(getParamOrDefault(queryParams, 'page', 1, CONVERT_INT));
+
+  // Calculate the last page
   let lastPage = 1;
 
   if (resultSet) {
     lastPage = Math.ceil(resultSet.result_count / 10);
   }
+
+  /**
+   * Change the history entry.
+   *
+   * @param {string} q The search query
+   * @param {integer} selectedPage The page offset
+   * @param {bool} diacritics Whether diacritics ought to be ignored
+   * @param {bool} relatedForms Whether related forms ought to be ignored
+   */
+  const updateHistory = (q, selectedPage, diacritics, relatedForms) => {
+    let url = `/search?q=${q}`;
+
+    if (page) {
+      url += `&page=${page}`;
+    }
+
+    if (diacritics) {
+      url += '&ignore_diacritics=1';
+    }
+
+    if (relatedForms) {
+      url += '&include_related=1';
+    }
+
+    history.push(url);
+  };
 
   /**
    * Do the search
@@ -36,6 +100,8 @@ function Search() {
     setSearching(true);
     setError(null);
     setPage(requestedPage);
+
+    updateHistory(query, requestedPage, ignoreDiacritics, searchRelatedForms);
 
     fetch(ENDPOINT_SEARCH(query, requestedPage, ignoreDiacritics, searchRelatedForms))
       .then((res) => res.json())
@@ -108,8 +174,8 @@ function Search() {
           onKeyPress={(e) => onKeyPressed(e)}
           style={{ width: '100%' }}
         />
-        <Checkbox label="Search ignoring diacritics" value={ignoreDiacritics} onChange={(e, d) => setIgnoreDiacritics(d.checked)} />
-        <Checkbox label="Search related Greek forms (slower but more thorough)" value={searchRelatedForms} onChange={(e, d) => setSearchRelatedForms(d.checked)} />
+        <Checkbox label="Search ignoring diacritics" checked={ignoreDiacritics} onChange={(e, d) => setIgnoreDiacritics(d.checked)} />
+        <Checkbox label="Search related Greek forms (slower but more thorough)" checked={searchRelatedForms} onChange={(e, d) => setSearchRelatedForms(d.checked)} />
         {mode === MODE_SEARCHING && (
           <Message icon>
             <Icon name="circle notched" loading />
@@ -182,4 +248,16 @@ function Search() {
   );
 }
 
-export default Search;
+Search.propTypes = {
+  match: PropTypes.object,
+  location: PropTypes.object,
+  history: PropTypes.object,
+};
+
+Search.defaultProps = {
+  match: null,
+  location: null,
+  history: null,
+};
+
+export default withRouter(Search);
