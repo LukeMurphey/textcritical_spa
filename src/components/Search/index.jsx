@@ -63,6 +63,12 @@ function Search() {
     }
   };
 
+  const onKeyPressed = (event) => {
+    if (event.key === 'Enter') {
+      doSearch(1);
+    }
+  };
+
   const renderHighlights = (highlights) => (
     // eslint-disable-next-line react/no-danger
     <div dangerouslySetInnerHTML={{ __html: highlights }} />
@@ -99,6 +105,7 @@ function Search() {
           placeholder="Enter the text to search for (e.g. νόμου or no/mou)"
           value={query}
           onChange={(e, d) => setQuery(d.value)}
+          onKeyPress={(e) => onKeyPressed(e)}
           style={{ width: '100%' }}
         />
         <Checkbox label="Search ignoring diacritics" value={ignoreDiacritics} onChange={(e, d) => setIgnoreDiacritics(d.checked)} />
