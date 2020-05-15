@@ -26,15 +26,13 @@ function MatchedWordsChart(
 ) {
   // Process the data into what the charting library expects
   const categories = [];
-  const data = [];
+  let data = [];
 
   if (results) {
-    for (var key in results) {
-      if (results.hasOwnProperty(key)) {
-        categories.push(key);
-        data.push(results[key])
-      }
-    }
+    data = Object.entries(results).map(([key, value]) => {
+      categories.push(key);
+      return value;
+    });
   }
 
   // Determine the color scheme
@@ -114,11 +112,13 @@ function MatchedWordsChart(
       )}
     </>
   );
-};
-
+}
 
 MatchedWordsChart.propTypes = {
-  results: PropTypes.shape.isRequired,
+  results: PropTypes.shape({
+    title: PropTypes.string,
+    value: PropTypes.string,
+  }).isRequired,
   title: PropTypes.string.isRequired,
   noDataMessage: PropTypes.string,
   width: PropTypes.number,
