@@ -4,6 +4,7 @@ import { withRouter, useLocation } from 'react-router-dom';
 import {
   Segment, Input, Container, Header, Button, Checkbox, Icon, Message, Tab,
 } from 'semantic-ui-react';
+import BarChart from '../Charts/BarChart';
 import SearchResults from './SearchResults';
 import SearchHelp from './SearchHelp';
 import ErrorMessage from '../ErrorMessage';
@@ -204,6 +205,48 @@ function Search({ history }) {
     {
       menuItem: 'Results',
       render: () => searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, error),
+    },
+    {
+      menuItem: 'Matched words',
+      render: () => (
+        <Tab.Pane>
+          {resultSet && (
+            <BarChart
+              results={resultSet.matched_terms}
+              title="Frequency of matched words"
+              noDataMessage="No data available on matched terms"
+            />
+          )}
+        </Tab.Pane>
+      ),
+    },
+    {
+      menuItem: 'Matched works',
+      render: () => (
+        <Tab.Pane>
+          {resultSet && (
+            <BarChart
+              results={resultSet.matched_works}
+              title="Frequency of matched works"
+              noDataMessage="No data available on matched works"
+            />
+          )}
+        </Tab.Pane>
+      ),
+    },
+    {
+      menuItem: 'Matched sections',
+      render: () => (
+        <Tab.Pane>
+          {resultSet && (
+            <BarChart
+              results={resultSet.matched_sections}
+              title="Frequency of matched sections"
+              noDataMessage="No data available on matched sections"
+            />
+          )}
+        </Tab.Pane>
+      ),
     },
     {
       menuItem: 'Help',
