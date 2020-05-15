@@ -20,7 +20,7 @@ function SearchResults({
     <>
       <Segment.Group>
         {results.map((result) => (
-          <Segment>
+          <Segment key={result.url}>
             <div>
               <strong>
                 <a href={result.url}>

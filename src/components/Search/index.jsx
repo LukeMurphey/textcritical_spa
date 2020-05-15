@@ -20,6 +20,12 @@ const MODE_RESULTS = 4;
 const CONVERT_INT = 0;
 const CONVERT_BOOL = 1;
 
+const CheckboxStyle = {
+  marginTop: 12,
+  marginRight: 12,
+  marginBottom: 12,
+};
+
 // A custom hook that builds on useLocation to parse
 // the query string for you.
 function useQuery() {
@@ -275,8 +281,8 @@ function Search({ history }) {
           onKeyPress={(e) => onKeyPressed(e)}
           style={{ width: '100%' }}
         />
-        <Checkbox label="Search ignoring diacritics" checked={ignoreDiacritics} onChange={(e, d) => setIgnoreDiacritics(d.checked)} />
-        <Checkbox label="Search related Greek forms (slower but more thorough)" checked={searchRelatedForms} onChange={(e, d) => setSearchRelatedForms(d.checked)} />
+        <Checkbox style={CheckboxStyle} label="Search ignoring diacritics" checked={ignoreDiacritics} onChange={(e, d) => setIgnoreDiacritics(d.checked)} />
+        <Checkbox style={CheckboxStyle} label="Search related Greek forms (slower but more thorough)" checked={searchRelatedForms} onChange={(e, d) => setSearchRelatedForms(d.checked)} />
         <Tab panes={panes} />
       </Container>
     </Segment>
