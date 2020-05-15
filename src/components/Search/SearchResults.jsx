@@ -25,6 +25,7 @@ function SearchResults({
               <strong>
                 <a href={result.url}>
                   {result.work}
+                  {' '}
                   {result.description}
                 </a>
               </strong>
