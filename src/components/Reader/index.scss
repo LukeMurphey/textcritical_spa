@@ -1,0 +1,31 @@
+@import "../StylingShortcuts/theme.scss";
+
+@media print {
+
+	.ui.top.menu{
+		display: none;
+	}
+
+    .underMenu{
+        margin-top: 0;
+    }
+}
+
+@media screen {
+    .underMenu{
+        margin-top: 60px;
+    }
+}
+
+.underMenu.inverted{
+    background-color: $backgroundColorDark;
+}
+
+.menu.control.inverted{
+    background-color: $controlColorDark;
+    border-bottom: 1px solid $highlightColorDark;
+}
+
+.pushable.inverted > .pusher {
+    background-color: $backgroundColorDark;
+}

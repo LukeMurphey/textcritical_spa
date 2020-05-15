@@ -224,10 +224,17 @@ class Chapter extends Component {
   }
 
   render() {
-    const { content, highlightedVerse } = this.props;
+    const { content, highlightedVerse, inverted } = this.props;
 
     if (highlightedVerse && !this.highlightOverridden) {
       setTimeout(() => this.highlightVerse(highlightedVerse), 100);
+    }
+
+    // Determine the class name
+    let className = 'view_read_work';
+
+    if (inverted) {
+      className = 'view_read_work inverted';
     }
 
     // We are keeping a reference to the wrapper so that math can be done regarding client rectangle
@@ -236,7 +243,7 @@ class Chapter extends Component {
     return (
       <>
         <div
-          className="view_read_work"
+          className={className}
           ref={this.wrapper}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: content }}
@@ -253,6 +260,7 @@ Chapter.propTypes = {
   onWordClick: PropTypes.func,
   onClickAway: PropTypes.func,
   onNoteClick: PropTypes.func,
+  inverted: PropTypes.bool,
 };
 
 Chapter.defaultProps = {
@@ -261,6 +269,7 @@ Chapter.defaultProps = {
   onWordClick: () => { },
   onClickAway: () => { },
   onNoteClick: () => { },
+  inverted: false,
 };
 
 export default Chapter;

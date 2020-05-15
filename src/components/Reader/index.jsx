@@ -14,7 +14,7 @@ import WordInformation from '../WordInformation/WordInformationPopup';
 import FootnotePopup from '../FootnotePopup';
 import BookSelection from '../BookSelection';
 import history from '../../history';
-import './index.css';
+import './index.scss';
 
 const NextPageStyle = {
   bottom: '20px',
@@ -75,9 +75,9 @@ class Reader extends Component {
   /**
    * Get a placeholder for the content.
    */
-  static getPlaceholder() {
+  static getPlaceholder(inverted = false) {
     return (
-      <Placeholder style={ContainerStyle}>
+      <Placeholder inverted={inverted} style={ContainerStyle}>
         <Placeholder.Header>
           <Placeholder.Line />
         </Placeholder.Header>
@@ -221,6 +221,16 @@ class Reader extends Component {
    */
   onSelectWork(work) {
     this.loadChapter(work);
+  }
+
+  /**
+   * Accept the enter key as a jumop to execute the reference jump.
+   * @param {object} event The event from the key press.
+   */
+  onKeyPressed(event, data) {
+    if (event.key === 'Enter') {
+      this.goToReference();
+    }
   }
 
   /**
@@ -507,9 +517,16 @@ class Reader extends Component {
       }
     }
 
+    // Create a custom className for signaling the desire to switch to inverted
+    let classNameSuffix = '';
+
+    if (inverted) {
+      classNameSuffix = ' inverted';
+    }
+
     return (
       <>
-        <Menu inverted={inverted} fixed="top">
+        <Menu inverted={inverted} className={`control ${classNameSuffix}`} fixed="top">
           <Container>
             <Menu.Item
               name="works"
@@ -538,6 +555,7 @@ class Reader extends Component {
                   (
                     <Button
                       disabled={!referenceValid}
+                      inverted={inverted}
                       onClick={() => this.goToReference()}
                       basic
                     >
@@ -549,6 +567,7 @@ class Reader extends Component {
                 value={referenceDescription}
                 error={!referenceValid}
                 onChange={(e, d) => this.changeReference(e, d)}
+                onKeyPress={(e, d) => this.onKeyPressed(e, d)}
               />
             </Menu.Item>
             <Menu.Menu position="left">
@@ -582,7 +601,9 @@ class Reader extends Component {
             <>
               <Button
                 icon
+                inverted={inverted}
                 style={PriorPageStyle}
+                className={`priorPage ${classNameSuffix}`}
                 disabled={data.previous_chapter === null}
                 onClick={() => this.goToPriorChapter()}
               >
@@ -590,7 +611,9 @@ class Reader extends Component {
               </Button>
               <Button
                 icon
+                inverted={inverted}
                 style={NextPageStyle}
+                className={`nextPage ${classNameSuffix}`}
                 disabled={data.next_chapter === null}
                 onClick={() => this.goToNextChapter()}
               >
@@ -600,7 +623,7 @@ class Reader extends Component {
           )}
         </Menu>
         {data && !loading && (
-          <Sidebar.Pushable as={Segment} basic style={sidebarStyle}>
+          <Sidebar.Pushable as={Segment} basic style={sidebarStyle} className={`${classNameSuffix}`}>
             <Sidebar
               as={Menu}
               animation="overlay"
@@ -627,15 +650,15 @@ class Reader extends Component {
               </Menu.Item>
             </Sidebar>
             <Sidebar.Pusher>
-              <Container className="underMenu" inverted={inverted} basic>
+              <Container className={`underMenu ${classNameSuffix}`} basic>
                 {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
                 {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
                 {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
                 {data && !loading && modal === 'note' && <FootnotePopup positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} notes={selectedNote} onClose={() => this.closeModal()} />}
-                <Grid>
+                <Grid inverted={inverted}>
                   <Grid.Row>
                     <Grid.Column width={8}>
-                      <Header floated="left" as="h3">
+                      <Header inverted={inverted} floated="left" as="h3">
                         {data.chapter.parent_division && (
                           <>
                             <Dropdown
@@ -658,7 +681,7 @@ class Reader extends Component {
                     </Grid.Column>
                     <Grid.Column width={8}>
                       <Container textAlign="right">
-                        <Header floated="right" as="h3">{data.work.title}</Header>
+                        <Header inverted={inverted} floated="right" as="h3">{data.work.title}</Header>
                       </Container>
                     </Grid.Column>
                   </Grid.Row>
@@ -689,13 +712,14 @@ class Reader extends Component {
                   onNoteClick={onNoteClick}
                   onClickAway={() => this.closeModal()}
                   highlightedVerse={data.verse_to_highlight}
+                  inverted={inverted}
                 />
               </Container>
             </Sidebar.Pusher>
           </Sidebar.Pushable>
         )}
         {errorTitle && (
-          <Container style={ContainerStyle}>
+          <Container style={ContainerStyle} className={`${classNameSuffix}`}>
             <ErrorMessage
               title={errorTitle}
               description={errorDescription}
@@ -704,8 +728,8 @@ class Reader extends Component {
           </Container>
         )}
         {loading && !errorTitle && (
-          <Container style={ContainerStyle} inverted={inverted} basic>
-            {Reader.getPlaceholder()}
+          <Container style={ContainerStyle} className={`${classNameSuffix}`} basic>
+            {Reader.getPlaceholder(inverted)}
           </Container>
         )}
       </>

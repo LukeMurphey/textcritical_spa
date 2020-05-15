@@ -1,5 +1,6 @@
 
 @import "../StylingShortcuts/shortcuts.scss";
+@import "../StylingShortcuts/theme.scss";
 @import "perseus.scss";
 
 /**
@@ -7,6 +8,10 @@
  */
  .view_read_work .hide {
     display: none;
+}
+
+.view_read_work {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .view_read_work .icon-info-sign {
@@ -20,6 +25,12 @@
 
 .verse.number{
     font-weight: bold;
+}
+
+.inverted {
+    .verse.number {
+        color: white;
+    }
 }
 
 .verse-container{
@@ -54,8 +65,9 @@
     }
 }
 
-body.dark .verse-container.highlighted{
-    background-color: #454545;
+.inverted{
+    background-color: $backgroundColorDark;
+    color: $textColorDark;
 }
 
 .no_definition_entries{
