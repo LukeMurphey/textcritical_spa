@@ -575,6 +575,7 @@ class Reader extends Component {
                 text="Other Versions"
                 inverted={inverted}
                 disabled={!referenceValid || !data || data.related_works.length === 0}
+                className="otherVersions"
                 item
               >
                 <Dropdown.Menu>

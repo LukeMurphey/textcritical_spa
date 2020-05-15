@@ -29,3 +29,8 @@
 .pushable.inverted > .pusher {
     background-color: $backgroundColorDark;
 }
+
+// Add a little margin to the dropdown so that it allows the language string to show up
+.otherVersions > .menu > .item > .text {
+    margin-right: 64px;
+}
