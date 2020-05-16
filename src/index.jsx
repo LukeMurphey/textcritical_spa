@@ -8,6 +8,7 @@ import Search from './components/Search';
 import ContactMe from './components/ContactMe';
 import ErrorBoundary from './components/ErrorBoundary';
 import App from './App';
+import './index.scss';
 
 ReactDOM.render((
   <ErrorBoundary>

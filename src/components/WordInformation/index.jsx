@@ -62,7 +62,7 @@ class WordInformation extends Component {
   }
 
   render() {
-    const { word } = this.props;
+    const { word, inverted } = this.props;
     const {
       wordInfo, loading, error, activeIndex,
     } = this.state;
@@ -91,7 +91,7 @@ class WordInformation extends Component {
                 are being returned.
               </>
             )}
-            <Accordion style={{ marginTop: 18 }} fluid>
+            <Accordion inverted={inverted} style={{ marginTop: 18 }} fluid>
               {wordInfo.map((entry, index) => (
                 <React.Fragment key={`${entry.form}::${entry.description}`}>
                   <Accordion.Title
@@ -130,7 +130,7 @@ class WordInformation extends Component {
           </div>
         )}
         {loading && (
-          <Placeholder style={{ marginTop: 32 }}>
+          <Placeholder inverted={inverted} style={{ marginTop: 32 }}>
             <Placeholder.Header>
               <Placeholder.Line />
             </Placeholder.Header>
@@ -146,6 +146,11 @@ class WordInformation extends Component {
 
 WordInformation.propTypes = {
   word: PropTypes.string.isRequired,
+  inverted: PropTypes.bool,
+};
+
+WordInformation.defaultProps = {
+  inverted: false,
 };
 
 export default WordInformation;

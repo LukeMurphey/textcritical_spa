@@ -17,16 +17,14 @@
     }
 }
 
-.underMenu.inverted{
-    background-color: $backgroundColorDark;
-}
-
 .menu.control.inverted{
     background-color: $controlColorDark;
     border-bottom: 1px solid $highlightColorDark;
 }
 
-.pushable.inverted > .pusher {
+.pushable.inverted > .pusher,
+.pushable.inverted > .pusher,
+.underMenu.inverted {
     background-color: $backgroundColorDark;
 }
 

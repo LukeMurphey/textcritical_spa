@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Segment, Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import './PopupDialog.scss';
 
 /**
  * Determines a recommendation about where to show a popup.
@@ -16,7 +17,7 @@ export const getPositionRecommendation = (event) => {
 
 const PopupDialog = (props) => {
   const {
-    children, onClose, x, y, positionBelow, positionRight, footer,
+    children, onClose, x, y, positionBelow, positionRight, footer, inverted,
   } = props;
 
   /**
@@ -29,6 +30,7 @@ const PopupDialog = (props) => {
     boxShadow: '0 0 0 0',
     paddingTop: 0,
     paddingRight: 0,
+    border: 0,
   };
 
   // Correct for the cases where the dialog is off of the bottom of the screen.
@@ -45,10 +47,10 @@ const PopupDialog = (props) => {
     position: 'sticky',
     bottom: 0,
     width: '100%',
-    borderTop: '1px solid #DDD',
-    backgroundColor: '#F6F6F6',
   };
+
   const height = segmentStyle.height ? segmentStyle.height : 200;
+
   if (positionBelow) {
     segmentStyle.top = y;
   } else {
@@ -62,15 +64,15 @@ const PopupDialog = (props) => {
   }
 
   return (
-    <Segment style={segmentStyle}>
+    <Segment className="popupDialog" inverted={inverted} style={segmentStyle}>
       <div style={{ padding: 15 }}>
-        <Button basic style={closeButtonStyle} icon onClick={onClose}>
+        <Button inverted={inverted} basic style={closeButtonStyle} icon onClick={onClose}>
           <Icon name="close" />
         </Button>
         {children}
       </div>
       {footer && (
-        <Segment basic style={footerStyle}>{footer}</Segment>
+        <Segment className="popupDialogFooter" inverted={inverted} basic style={footerStyle}>{footer}</Segment>
       )}
     </Segment>
   );
@@ -84,12 +86,14 @@ PopupDialog.propTypes = {
   positionRight: PropTypes.bool,
   children: PropTypes.element.isRequired,
   footer: PropTypes.element,
+  inverted: PropTypes.bool,
 };
 
 PopupDialog.defaultProps = {
   positionBelow: true,
   positionRight: true,
   footer: null,
+  inverted: false,
 };
 
 export default PopupDialog;

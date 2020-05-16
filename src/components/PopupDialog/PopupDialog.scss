@@ -1,0 +1,21 @@
+@import "../StylingShortcuts/theme.scss";
+
+.ui.inverted.segment.popupDialog {
+    background-color: $backgroundColorDark;
+    border: 1px solid #555;
+}
+
+// Make the dialog appear on top of other controls
+.popupDialog {
+    z-index: 100
+}
+
+.ui.inverted.segment.popupDialogFooter {
+    border-top: 1px solid $highlightColorDark;
+    background-color: $controlColorDark;
+}
+
+.ui.segment.popupDialogFooter {
+    border-top: 1px solid #DDD;
+    background-color: #F6F6F6;
+}

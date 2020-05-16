@@ -295,6 +295,7 @@ class Reader extends Component {
     fetch(ENDPOINT_READ_WORK(`${work}/${divisionReference}`))
       .then((res) => (Promise.all([res.status, res.json()])))
       .then(([status, data]) => {
+
         if (status === 200) {
           let redirected = false;
           // If the work alias didn't match, then update the URL accordingly
@@ -315,7 +316,6 @@ class Reader extends Component {
 
           // Preload the next chapter so that it is cached
           this.preloadNextChapter();
-
         } else {
           this.setErrorState(
             'Work could not be found',
@@ -652,10 +652,40 @@ class Reader extends Component {
             </Sidebar>
             <Sidebar.Pusher>
               <Container className={`underMenu ${classNameSuffix}`} basic>
-                {data && !loading && modal === 'aboutWork' && <AboutWorkDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-                {data && !loading && modal === 'downloadWork' && <WorkDownloadDialog work={data.work.title_slug} onClose={() => this.closeModal()} />}
-                {data && !loading && modal === 'word' && <WordInformation positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} word={selectedWord} onClose={() => this.closeModal()} />}
-                {data && !loading && modal === 'note' && <FootnotePopup positionBelow={popupPositionBelow} positionRight={popupPositionRight} x={popupX} y={popupY} notes={selectedNote} onClose={() => this.closeModal()} />}
+                {data && !loading && modal === 'aboutWork' && (
+                  <AboutWorkDialog
+                    work={data.work.title_slug}
+                    onClose={() => this.closeModal()}
+                  />
+                )}
+                {data && !loading && modal === 'downloadWork' && (
+                  <WorkDownloadDialog
+                    work={data.work.title_slug}
+                    onClose={() => this.closeModal()}
+                  />
+                )}
+                {data && !loading && modal === 'word' && (
+                  <WordInformation
+                    inverted={inverted}
+                    positionBelow={popupPositionBelow}
+                    positionRight={popupPositionRight}
+                    x={popupX}
+                    y={popupY}
+                    word={selectedWord}
+                    onClose={() => this.closeModal()}
+                  />
+                )}
+                {data && !loading && modal === 'note' && (
+                  <FootnotePopup
+                    inverted={inverted}
+                    positionBelow={popupPositionBelow}
+                    positionRight={popupPositionRight}
+                    x={popupX}
+                    y={popupY}
+                    notes={selectedNote}
+                    onClose={() => this.closeModal()}
+                  />
+                )}
                 <Grid inverted={inverted}>
                   <Grid.Row>
                     <Grid.Column width={8}>

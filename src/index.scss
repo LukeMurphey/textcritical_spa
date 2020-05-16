@@ -1,5 +1,13 @@
 @import "./components/StylingShortcuts/theme.scss";
 
-#root {
-    
+body {
+    background-color: $backgroundColorDark;
+}
+
+.ui.inverted.placeholder,
+.ui.inverted.placeholder > :before,
+.ui.inverted.placeholder .image.header:after,
+.ui.inverted.placeholder .line,
+.ui.inverted.placeholder .line:after  {
+    background-color: $backgroundColorDark;
 }

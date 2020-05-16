@@ -4,12 +4,13 @@ import PopupDialog from '../PopupDialog';
 
 const FootnoteDialog = (props) => {
   const {
-    notes, onClose, x, y, positionBelow, positionRight,
+    notes, onClose, x, y, positionBelow, positionRight, inverted,
   } = props;
 
   return (
     <PopupDialog
       onClose={onClose}
+      inverted={inverted}
       x={x}
       y={y}
       positionBelow={positionBelow}
@@ -32,11 +33,13 @@ FootnoteDialog.propTypes = {
   y: PropTypes.number.isRequired,
   positionBelow: PropTypes.bool,
   positionRight: PropTypes.bool,
+  inverted: PropTypes.bool,
 };
 
 FootnoteDialog.defaultProps = {
   positionBelow: true,
   positionRight: true,
+  inverted: false,
 };
 
 export default FootnoteDialog;

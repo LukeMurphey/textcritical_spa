@@ -6,19 +6,20 @@ import ExternalLookupLinks from './ExternalLookupLinks';
 
 const WordInformationDialog = (props) => {
   const {
-    word, onClose, x, y, positionBelow, positionRight,
+    word, onClose, x, y, positionBelow, positionRight, inverted,
   } = props;
 
   return (
     <PopupDialog
       onClose={onClose}
+      inverted={inverted}
       x={x}
       y={y}
       positionBelow={positionBelow}
       positionRight={positionRight}
       footer={<ExternalLookupLinks word={word} />}
     >
-      <WordInformation word={word} />
+      <WordInformation word={word} inverted={inverted} />
     </PopupDialog>
   );
 };
@@ -30,11 +31,13 @@ WordInformationDialog.propTypes = {
   y: PropTypes.number.isRequired,
   positionBelow: PropTypes.bool,
   positionRight: PropTypes.bool,
+  inverted: PropTypes.bool,
 };
 
 WordInformationDialog.defaultProps = {
   positionBelow: true,
   positionRight: true,
+  inverted: true,
 };
 
 export default WordInformationDialog;
