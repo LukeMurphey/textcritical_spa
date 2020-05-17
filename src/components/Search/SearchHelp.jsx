@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import {
   Message, Accordion, Icon, Table,
 } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 
-function SearchHelp() {
+function SearchHelp({ inverted }) {
   const preformattedStyle = {
     marginLeft: 32,
     fontFamily: 'monospace',
@@ -22,8 +23,14 @@ function SearchHelp() {
     setActiveIndex(newIndex);
   };
 
+  let className = '';
+
+  if (inverted) {
+    className = 'inverted';
+  }
+
   return (
-    <Accordion>
+    <Accordion inverted={inverted}>
       <Accordion.Title
         active={activeIndex === 0}
         index={0}
@@ -63,7 +70,8 @@ function SearchHelp() {
           <div style={preformattedStyle}>no/mon</div>
         </div>
         <Message
-          warning
+          info
+          className={className}
           content="If you are searching using beta-code, make sure to put your search query in single quotes (e.g. 'no/mon')"
         />
       </Accordion.Content>
@@ -81,7 +89,8 @@ function SearchHelp() {
         word. For example, a search for ἀδελφός would also search for ἀδελφοί, ἀδελφοῦ, ἀδελφοί,
         etc.
         <Message
-          warning
+          info
+          className={className}
           content="Searching for related forms is considerably slower than searching for a particular form. "
         />
       </Accordion.Content>
@@ -97,7 +106,7 @@ function SearchHelp() {
       <Accordion.Content active={activeIndex === 2}>
         Several fields exist that can be be searched. Just append the field name to the search
         with a colon to search it (e.g. work:new-testament). Below are the available fields:
-        <Table>
+        <Table inverted={inverted}>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Field</Table.HeaderCell>
@@ -141,5 +150,13 @@ function SearchHelp() {
     </Accordion>
   );
 }
+
+SearchHelp.propTypes = {
+  inverted: PropTypes.bool,
+};
+
+SearchHelp.defaultProps = {
+  inverted: false,
+};
 
 export default SearchHelp;

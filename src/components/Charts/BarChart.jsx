@@ -5,7 +5,7 @@ import HighchartsReact from 'highcharts-react-official';
 
 const InvertedColors = {
   fill: '#006dcc',
-  background: '#2f2f2f',
+  background: '#2B2B2E',
   lineColor: '#DDD',
   tickColor: '#DDD',
   text: '#DDD',
@@ -19,7 +19,7 @@ const NormalColors = {
   text: '#000',
 };
 
-function MatchedWordsChart(
+function BarChart(
   {
     results, title, noDataMessage, width, inverted,
   },
@@ -114,7 +114,7 @@ function MatchedWordsChart(
   );
 }
 
-MatchedWordsChart.propTypes = {
+BarChart.propTypes = {
   results: PropTypes.shape({
     title: PropTypes.string,
     value: PropTypes.string,
@@ -125,10 +125,10 @@ MatchedWordsChart.propTypes = {
   inverted: PropTypes.bool,
 };
 
-MatchedWordsChart.defaultProps = {
+BarChart.defaultProps = {
   noDataMessage: 'No data matched',
   width: null,
   inverted: false,
 };
 
-export default MatchedWordsChart;
+export default BarChart;

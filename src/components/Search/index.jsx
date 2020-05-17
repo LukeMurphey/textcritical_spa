@@ -32,11 +32,17 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, error) {
+function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, error, inverted) {
+  let className = '';
+
+  if (inverted) {
+    className = 'inverted';
+  }
+
   return (
     <Tab.Pane>
       {mode === MODE_SEARCHING && (
-        <Message icon>
+        <Message icon className={className}>
           <Icon name="circle notched" loading />
           <Message.Content>
             <Message.Header>Just one second</Message.Header>
@@ -49,10 +55,11 @@ function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, er
           title="Unable to perform the search"
           description="The search could not be executed."
           message={error}
+          inverted={inverted}
         />
       )}
       {mode === MODE_NO_RESULTS && (
-        <Message>
+        <Message className={className}>
           <Message.Header>No Results Found</Message.Header>
           <p>
             No Results were found for the given search.
@@ -68,10 +75,11 @@ function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, er
           lastPage={lastPage}
           goBack={() => goBack()}
           goNext={() => goNext()}
+          inverted={inverted}
         />
       )}
       {mode === MODE_NOT_STARTED && (
-        <Message>
+        <Message className={className}>
           <Message.Header>Enter a search</Message.Header>
           <p>
             Enter a search term to get started.
@@ -106,7 +114,7 @@ function getParamOrDefault(searchParams, paramName, defaultValue, convertFormat 
 /**
  * This class renders a search page and results.
  */
-function Search({ history }) {
+function Search({ history, inverted }) {
   // Get the query params
   const queryParams = useQuery();
 
@@ -118,6 +126,12 @@ function Search({ history }) {
   const [searchRelatedForms, setSearchRelatedForms] = useState(getParamOrDefault(queryParams, 'include_related', false, CONVERT_BOOL));
   const [searching, setSearching] = useState(false);
   const [page, setPage] = useState(getParamOrDefault(queryParams, 'page', 1, CONVERT_INT));
+
+  let className = '';
+
+  if (inverted) {
+    className = 'inverted';
+  }
 
   // Calculate the last page
   let lastPage = 1;
@@ -207,10 +221,13 @@ function Search({ history }) {
     mode = MODE_RESULTS;
   }
 
+  // Create the list of tab panes to show
   const panes = [
     {
       menuItem: 'Results',
-      render: () => searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, error),
+      render: () => searchResultsByMode(
+        mode, resultSet, page, lastPage, goBack, goNext, error, inverted,
+      ),
     },
     {
       menuItem: 'Matched words',
@@ -221,6 +238,7 @@ function Search({ history }) {
               results={resultSet.matched_terms}
               title="Frequency of matched words"
               noDataMessage="No data available on matched terms"
+              inverted={inverted}
             />
           )}
         </Tab.Pane>
@@ -235,6 +253,7 @@ function Search({ history }) {
               results={resultSet.matched_works}
               title="Frequency of matched works"
               noDataMessage="No data available on matched works"
+              inverted={inverted}
             />
           )}
         </Tab.Pane>
@@ -249,6 +268,7 @@ function Search({ history }) {
               results={resultSet.matched_sections}
               title="Frequency of matched sections"
               noDataMessage="No data available on matched sections"
+              inverted={inverted}
             />
           )}
         </Tab.Pane>
@@ -256,34 +276,36 @@ function Search({ history }) {
     },
     {
       menuItem: 'Help',
-      render: () => <Tab.Pane><SearchHelp /></Tab.Pane>,
+      render: () => <Tab.Pane><SearchHelp inverted={inverted} /></Tab.Pane>,
     },
   ];
 
   return (
-    <Segment>
+    <Segment inverted={inverted}>
       <Container>
-        <Header as="h1">Search</Header>
+        <Header inverted={inverted} as="h1">Search</Header>
         <Input
           action={
             (
               <Button
                 onClick={() => doSearch(1)}
                 basic
+                inverted={inverted}
               >
                 Go
               </Button>
             )
           }
+          inverted={inverted}
           placeholder="Enter the text to search for (e.g. νόμου or no/mou)"
           value={query}
           onChange={(e, d) => setQuery(d.value)}
           onKeyPress={(e) => onKeyPressed(e)}
           style={{ width: '100%' }}
         />
-        <Checkbox style={CheckboxStyle} label="Search ignoring diacritics" checked={ignoreDiacritics} onChange={(e, d) => setIgnoreDiacritics(d.checked)} />
-        <Checkbox style={CheckboxStyle} label="Search related Greek forms (slower but more thorough)" checked={searchRelatedForms} onChange={(e, d) => setSearchRelatedForms(d.checked)} />
-        <Tab panes={panes} />
+        <Checkbox className={className} style={CheckboxStyle} label="Search ignoring diacritics" checked={ignoreDiacritics} onChange={(e, d) => setIgnoreDiacritics(d.checked)} />
+        <Checkbox className={className} style={CheckboxStyle} label="Search related Greek forms (slower but more thorough)" checked={searchRelatedForms} onChange={(e, d) => setSearchRelatedForms(d.checked)} />
+        <Tab className={className} panes={panes} />
       </Container>
     </Segment>
   );
@@ -293,12 +315,14 @@ Search.propTypes = {
   match: PropTypes.object,
   location: PropTypes.object,
   history: PropTypes.object,
+  inverted: PropTypes.bool,
 };
 
 Search.defaultProps = {
   match: null,
   location: null,
   history: null,
+  inverted: false,
 };
 
 export default withRouter(Search);

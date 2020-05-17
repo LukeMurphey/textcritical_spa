@@ -8,6 +8,38 @@ body {
 .ui.inverted.placeholder > :before,
 .ui.inverted.placeholder .image.header:after,
 .ui.inverted.placeholder .line,
-.ui.inverted.placeholder .line:after  {
+.ui.inverted.placeholder .line:after,
+.ui.inverted.segment,
+.ui.checked.checkbox.inverted > label,
+.ui.bottom.attached.segment.active.tab
+{
     background-color: $backgroundColorDark;
+}
+
+.inverted > .ui.tabular.menu > .item
+{
+    background-color: $backgroundColorDark;
+    color: $textColorDark;
+}
+
+.inverted > .ui.tabular.menu > .item.active
+{
+    color: $textColorDark;
+}
+
+.ui.checked.checkbox.inverted > label {
+    color: $textColorDark;
+}
+
+table.ui.inverted.table > thead {
+    background-color: $controlColorDark;
+}
+
+table.ui.inverted.table > tbody {
+    background-color: $highlightColorDark;
+}
+
+.ui.info.message.inverted {
+    background-color: #143c75;
+    box-shadow: 0px 0px 0px 1px #1c55a5 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0)
 }
