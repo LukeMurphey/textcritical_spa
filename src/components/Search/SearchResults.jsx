@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Segment, Button } from 'semantic-ui-react';
 
@@ -10,17 +10,23 @@ function SearchResults({
   goNext,
   matchCount,
   resultCount,
+  inverted,
 }) {
-  const renderHighlights = (highlights) => (
+  const renderHighlights = (highlights) => {
+    let className = '';
+    if (inverted) {
+      className = 'inverted';
+    }
+
     // eslint-disable-next-line react/no-danger
-    <div dangerouslySetInnerHTML={{ __html: highlights }} />
-  );
+    return (<div className={className} dangerouslySetInnerHTML={{ __html: highlights }} />);
+  };
 
   return (
     <>
       <Segment.Group>
         {results.map((result) => (
-          <Segment key={result.url}>
+          <Segment inverted={inverted} key={result.url}>
             <div>
               <strong>
                 <a href={result.url}>
@@ -34,10 +40,10 @@ function SearchResults({
           </Segment>
         ))}
         <Button.Group attached="bottom">
-          <Button active={page <= 1} onClick={() => goBack()}>
+          <Button inverted={inverted} active={page <= 1} onClick={() => goBack()}>
             Back
           </Button>
-          <Button active={page >= lastPage} onClick={() => goNext()}>
+          <Button inverted={inverted} active={page >= lastPage} onClick={() => goNext()}>
             Next
           </Button>
         </Button.Group>
@@ -65,6 +71,11 @@ SearchResults.propTypes = {
   lastPage: PropTypes.number.isRequired,
   goBack: PropTypes.func.isRequired,
   goNext: PropTypes.func.isRequired,
+  inverted: PropTypes.bool,
+};
+
+SearchResults.defaultProps = {
+  inverted: false,
 };
 
 export default SearchResults;

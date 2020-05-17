@@ -5,12 +5,13 @@ b.match{
 	font-weight: bold;
 }
 
-$pink: #F8E2E7;
-$green: #BED9D4;
-$yellow: #F7EBC3;
-$orange: #F6D7C5;
-$purple: #E8D6E2;
-
 @for $i from 0 through 50 {
-	.term#{$i} { background-color: random_pastel() }
+	.term#{$i} { background-color:  random_pastel() }
 }
+
+.inverted > {
+	@for $i from 0 through 50 {
+		.term#{$i} { background-color: random_pastel(40, 150) }
+	}
+}
+

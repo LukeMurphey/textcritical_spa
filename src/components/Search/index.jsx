@@ -312,15 +312,12 @@ function Search({ history, inverted }) {
 }
 
 Search.propTypes = {
-  match: PropTypes.object,
-  location: PropTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
   history: PropTypes.object,
   inverted: PropTypes.bool,
 };
 
 Search.defaultProps = {
-  match: null,
-  location: null,
   history: null,
   inverted: false,
 };
