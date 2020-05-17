@@ -2,10 +2,11 @@ import React from 'react';
 import {
   Header, Segment, Container,
 } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 
-const About = () => (
+const About = ({ inverted }) => (
   <Container style={{ marginTop: 32 }}>
-    <Segment>
+    <Segment inverted={inverted}>
       <Header as="h1">About TextCritical.net</Header>
       TextCritical.net is a website that provides ancient Greek texts and useful analysis tools.
       <Header as="h2">Source Code</Header>
@@ -18,5 +19,14 @@ const About = () => (
     </Segment>
   </Container>
 );
+
+About.propTypes = {
+  inverted: PropTypes.bool,
+};
+
+About.defaultProps = {
+  inverted: false,
+};
+
 
 export default About;

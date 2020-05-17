@@ -15,22 +15,22 @@ ReactDOM.render((
     <Router history={history}>
       <Switch>
         <Route exact path="/work/:work?/:division0?/:division1?/:division2?/:division3?/:division4?/:leftovers?">
-          <App />
+          <App inverted />
         </Route>
         <Route exact path="/">
-          <App />
+          <App inverted />
         </Route>
         <Route exact path="/about">
-          <About />
+          <About inverted />
         </Route>
         <Route exact path="/search">
-          <Search />
+          <Search inverted />
         </Route>
         <Route exact path="/contact">
-          <ContactMe />
+          <ContactMe inverted />
         </Route>
         <Route>
-          <NotFound />
+          <NotFound inverted />
         </Route>
       </Switch>
     </Router>

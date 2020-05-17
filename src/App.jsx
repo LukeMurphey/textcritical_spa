@@ -90,7 +90,7 @@ App.propTypes = {
 };
 
 App.defaultProps = {
-  inverted: true,
+  inverted: false,
   includeMenu: false,
   match: null,
   location: null,

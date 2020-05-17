@@ -5,7 +5,9 @@ import { Header, Segment } from 'semantic-ui-react';
 /**
  * This class renders the content of chapter of a work.
  */
-function ErrorMessage({ title, description, message, inverted }) {
+function ErrorMessage({
+  title, description, message, inverted,
+}) {
   return (
     <Segment color="red" inverted={inverted}>
       <Header as="h3">{title}</Header>

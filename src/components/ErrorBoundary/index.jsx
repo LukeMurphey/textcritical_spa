@@ -18,13 +18,13 @@ class ErrorBoundary extends React.Component {
 
   render() {
     const { errorInfo, error } = this.state;
-    const { children } = this.props;
+    const { children, inverted } = this.props;
 
     if (errorInfo) {
       // Display the stack trace
       return (
         <Container style={{ marginTop: 32 }}>
-          <Segment color="red">
+          <Segment inverted={inverted} color="red">
             <Header as="h1">Something went wrong.</Header>
             An error happened and the view could not be rendered.
             <details style={{ whiteSpace: 'pre-wrap', marginTop: 24 }}>
@@ -43,6 +43,11 @@ class ErrorBoundary extends React.Component {
 
 ErrorBoundary.propTypes = {
   children: PropTypes.element.isRequired,
+  inverted: PropTypes.bool,
+};
+
+ErrorBoundary.defaultProps = {
+  inverted: false,
 };
 
 export default ErrorBoundary;
