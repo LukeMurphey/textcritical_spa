@@ -752,6 +752,7 @@ class Reader extends Component {
         {errorTitle && (
           <Container style={ContainerStyle} className={`${classNameSuffix}`}>
             <ErrorMessage
+              inverted={inverted}
               title={errorTitle}
               description={errorDescription}
               message={errorMessage}

@@ -26,11 +26,7 @@ const PopupDialog = (props) => {
    */
   const closeButtonStyle = {
     float: 'right',
-    WebkitBoxShadow: '0 0 0 0',
-    boxShadow: '0 0 0 0',
-    paddingTop: 0,
-    paddingRight: 0,
-    border: 0,
+    cursor: 'pointer',
   };
 
   // Correct for the cases where the dialog is off of the bottom of the screen.
@@ -66,9 +62,7 @@ const PopupDialog = (props) => {
   return (
     <Segment className="popupDialog" inverted={inverted} style={segmentStyle}>
       <div style={{ padding: 15 }}>
-        <Button inverted={inverted} basic style={closeButtonStyle} icon onClick={onClose}>
-          <Icon name="close" />
-        </Button>
+        <Icon style={closeButtonStyle} name="close" onClick={onClose} />
         {children}
       </div>
       {footer && (
