@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Segment, Icon } from 'semantic-ui-react';
+import { Segment, Icon } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import './PopupDialog.scss';
 
@@ -27,6 +27,7 @@ const PopupDialog = (props) => {
   const closeButtonStyle = {
     float: 'right',
     cursor: 'pointer',
+    marginRight: 0,
   };
 
   // Correct for the cases where the dialog is off of the bottom of the screen.
@@ -62,7 +63,7 @@ const PopupDialog = (props) => {
   return (
     <Segment className="popupDialog" inverted={inverted} style={segmentStyle}>
       <div style={{ padding: 15 }}>
-        <Icon style={closeButtonStyle} name="close" onClick={onClose} />
+        <Icon style={closeButtonStyle} onClick={onClose}>&#10005;</Icon>
         {children}
       </div>
       {footer && (
