@@ -10,27 +10,29 @@ import ErrorBoundary from './components/ErrorBoundary';
 import App from './App';
 import './index.scss';
 
+const inverted = true;
+
 ReactDOM.render((
   <ErrorBoundary>
     <Router history={history}>
       <Switch>
         <Route exact path="/work/:work?/:division0?/:division1?/:division2?/:division3?/:division4?/:leftovers?">
-          <App inverted />
+          <App inverted={inverted} />
         </Route>
         <Route exact path="/">
-          <App inverted />
+          <App inverted={inverted} />
         </Route>
         <Route exact path="/about">
-          <About inverted />
+          <About inverted={inverted} />
         </Route>
         <Route exact path="/search">
-          <Search inverted />
+          <Search inverted={inverted} />
         </Route>
         <Route exact path="/contact">
-          <ContactMe inverted />
+          <ContactMe inverted={inverted} />
         </Route>
         <Route>
-          <NotFound inverted />
+          <NotFound inverted={inverted} />
         </Route>
       </Switch>
     </Router>

@@ -113,6 +113,7 @@ class WordInformation extends Component {
                   >
                     <WordLemma
                       lexiconEntries={entry.lexicon_entries}
+                      inverted={inverted}
                     />
                   </Accordion.Content>
                 </React.Fragment>
@@ -123,6 +124,7 @@ class WordInformation extends Component {
         {!loading && error && (
           <div>
             <ErrorMessage
+              inverted={inverted}
               title="Unable to get word information"
               description="Information for the given word could not be obtained."
               message={error}

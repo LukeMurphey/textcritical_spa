@@ -5,13 +5,19 @@ import './WordLemma.css';
 
 const WordLemma = (props) => {
   const {
-    lexiconEntries,
+    lexiconEntries, inverted,
   } = props;
+
+  let className = '';
+
+  if (inverted) {
+    className = 'inverted';
+  }
 
   return (
     <>
       {lexiconEntries.length === 0 && (
-        <Message warning>
+        <Message warning className={className}>
           <Icon name="warning" />
           No definition available from Liddel and Scott.
         </Message>
@@ -32,10 +38,12 @@ const WordLemma = (props) => {
 
 WordLemma.propTypes = {
   lexiconEntries: PropTypes.arrayOf(PropTypes.shape),
+  inverted: PropTypes.bool,
 };
 
 WordLemma.defaultProps = {
   lexiconEntries: null,
+  inverted: false,
 };
 
 export default WordLemma;

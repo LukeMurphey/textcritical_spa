@@ -11,7 +11,7 @@ body {
 .ui.inverted.placeholder .line:after,
 .ui.inverted.segment,
 .ui.checked.checkbox.inverted > label,
-.ui.bottom.attached.segment.active.tab
+.ui.bottom.attached.segment.active.tab.inverted
 {
     background-color: $backgroundColorDark;
 }
@@ -42,4 +42,9 @@ table.ui.inverted.table > tbody {
 .ui.info.message.inverted {
     background-color: #143c75;
     box-shadow: 0px 0px 0px 1px #1c55a5 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0)
+}
+
+.ui.warning.message.inverted {
+    background-color: #774100;
+    box-shadow: 0px 0px 0px 1px #cc7103 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0)
 }
