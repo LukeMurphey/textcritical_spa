@@ -27,7 +27,12 @@ body {
     color: $textColorDark;
 }
 
-.ui.checked.checkbox.inverted > label {
+.ui.checkbox.inverted > label,
+.ui.checkbox.checked.inverted > label,
+input.ui.checkbox.checked.inverted:focus > label,
+input.ui.checkbox.inverted:focus > label,
+.ui.checkbox.inverted input:focus ~ label
+{
     color: $textColorDark;
 }
 

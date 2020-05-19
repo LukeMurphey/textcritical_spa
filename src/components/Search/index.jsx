@@ -41,7 +41,7 @@ function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, er
   }
 
   return (
-    <Tab.Pane>
+    <Tab.Pane inverted={inverted}>
       {mode === MODE_SEARCHING && (
         <Message icon className={className}>
           <Icon name="circle notched" loading />
@@ -219,7 +219,7 @@ function Search({ history, inverted }) {
     {
       menuItem: 'Matched words',
       render: () => (
-        <Tab.Pane>
+        <Tab.Pane inverted={inverted}>
           {resultSet && (
             <BarChart
               results={resultSet.matched_terms}
@@ -234,7 +234,7 @@ function Search({ history, inverted }) {
     {
       menuItem: 'Matched works',
       render: () => (
-        <Tab.Pane>
+        <Tab.Pane inverted={inverted}>
           {resultSet && (
             <BarChart
               results={resultSet.matched_works}
@@ -249,7 +249,7 @@ function Search({ history, inverted }) {
     {
       menuItem: 'Matched sections',
       render: () => (
-        <Tab.Pane>
+        <Tab.Pane inverted={inverted}>
           {resultSet && (
             <BarChart
               results={resultSet.matched_sections}
@@ -263,7 +263,7 @@ function Search({ history, inverted }) {
     },
     {
       menuItem: 'Help',
-      render: () => <Tab.Pane><SearchHelp inverted={inverted} /></Tab.Pane>,
+      render: () => <Tab.Pane inverted={inverted}><SearchHelp inverted={inverted} /></Tab.Pane>,
     },
   ];
 
