@@ -515,7 +515,7 @@ class Reader extends Component {
     const {
       modal, data, errorDescription, loading, referenceValid, referenceValue, selectedWord,
       popupX, popupY, popupPositionRight, popupPositionBelow, bookSelectionOpen, errorTitle,
-      errorMessage, selectedNote, redirected, sidebarVisible,
+      errorMessage, selectedNote, redirected, sidebarVisible, loadedWork,
     } = this.state;
 
     const { inverted } = this.props;
@@ -696,6 +696,7 @@ class Reader extends Component {
                     x={popupX}
                     y={popupY}
                     word={selectedWord}
+                    work={data.work.title_slug}
                     onClose={() => this.closeModal()}
                   />
                 )}

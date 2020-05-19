@@ -65,7 +65,7 @@ class WordInformation extends Component {
           {' '}
           in
           {' '}
-          <Link to={SEARCH(word)}>this work</Link>
+          <Link to={SEARCH(`work:${work} ${word}`)}>this work</Link>
           {' '}
           or
           {' '}
