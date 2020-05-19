@@ -331,10 +331,10 @@ class Reader extends Component {
    * Preload the next chapter.
    */
   preloadNextChapter() {
-    const { data } = this.state;
+    const { data, loadedWork } = this.state;
 
     if (data.next_chapter) {
-      fetch(ENDPOINT_READ_WORK(`${data.work.title_slug}/${data.next_chapter.full_descriptor}`));
+      fetch(ENDPOINT_READ_WORK(`${loadedWork}/${data.next_chapter.full_descriptor}`));
     }
   }
 
@@ -345,7 +345,7 @@ class Reader extends Component {
     const { data } = this.state;
 
     if (data.previous_chapter) {
-      fetch(ENDPOINT_READ_WORK(`${data.work.title_slug}/${data.previous_chapter.full_descriptor}`));
+      fetch(ENDPOINT_READ_WORK(`${loadedWork}/${data.previous_chapter.full_descriptor}`));
     }
   }
 
@@ -405,8 +405,8 @@ class Reader extends Component {
    * @param {*} info All props.
    */
   changeChapter(event, info) {
-    const { data } = this.state;
-    this.loadChapter(data.work.title_slug, info.value);
+    const { data, loadedWork } = this.state;
+    this.loadChapter(loadedWork, info.value);
   }
 
   /**
@@ -416,7 +416,7 @@ class Reader extends Component {
    * @param {*} info All props.
    */
   changeReference(event, info) {
-    const { data } = this.state;
+    const { data, loadedWork } = this.state;
 
     this.setState({
       referenceValue: info.value,
@@ -427,7 +427,7 @@ class Reader extends Component {
     // reference before the server's response came back
     this.lastSetReference = info.value;
 
-    resolveReferenceDebounced(data.work.title_slug, info.value)
+    resolveReferenceDebounced(loadedWork, info.value)
       .then((res) => (Promise.all([res.status, res.json()])))
       .then(([status, referenceInfo]) => {
         // If the user already changed the value again, just ignore it
@@ -495,9 +495,9 @@ class Reader extends Component {
    * Go to the next chapter.
    */
   goToNextChapter() {
-    const { data } = this.state;
+    const { data, loadedWork } = this.state;
     if (data.next_chapter) {
-      this.loadChapter(data.work.title_slug, data.next_chapter.full_descriptor);
+      this.loadChapter(loadedWork, data.next_chapter.full_descriptor);
     }
   }
 
@@ -505,9 +505,9 @@ class Reader extends Component {
    * Go to the prior chapter.
    */
   goToPriorChapter() {
-    const { data } = this.state;
+    const { data, loadedWork } = this.state;
     if (data.previous_chapter) {
-      this.loadChapter(data.work.title_slug, data.previous_chapter.full_descriptor);
+      this.loadChapter(loadedWork, data.previous_chapter.full_descriptor);
     }
   }
 
@@ -663,7 +663,7 @@ class Reader extends Component {
               vertical
               width="thin"
             >
-              <Image src={ENDPOINT_WORK_IMAGE(data.work.title_slug, 400)} />
+              <Image src={ENDPOINT_WORK_IMAGE(loadedWork, 400)} />
               <Menu.Item as="a" onClick={() => this.openWorkInfoModal()}>
                 Information
               </Menu.Item>
@@ -678,13 +678,13 @@ class Reader extends Component {
               <Container className={`underMenu ${classNameSuffix}`} basic>
                 {data && !loading && modal === 'aboutWork' && (
                   <AboutWorkDialog
-                    work={data.work.title_slug}
+                    work={loadedWork}
                     onClose={() => this.closeModal()}
                   />
                 )}
                 {data && !loading && modal === 'downloadWork' && (
                   <WorkDownloadDialog
-                    work={data.work.title_slug}
+                    work={loadedWork}
                     onClose={() => this.closeModal()}
                   />
                 )}
@@ -696,7 +696,7 @@ class Reader extends Component {
                     x={popupX}
                     y={popupY}
                     word={selectedWord}
-                    work={data.work.title_slug}
+                    work={loadedWork}
                     onClose={() => this.closeModal()}
                   />
                 )}
