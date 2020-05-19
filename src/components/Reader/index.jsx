@@ -227,7 +227,7 @@ class Reader extends Component {
    * Accept the enter key as a jumop to execute the reference jump.
    * @param {object} event The event from the key press.
    */
-  onKeyPressed(event, data) {
+  onKeyPressed(event) {
     if (event.key === 'Enter') {
       this.goToReference();
     }
@@ -295,7 +295,6 @@ class Reader extends Component {
     fetch(ENDPOINT_READ_WORK(`${work}/${divisionReference}`))
       .then((res) => (Promise.all([res.status, res.json()])))
       .then(([status, data]) => {
-
         if (status === 200) {
           let redirected = false;
           // If the work alias didn't match, then update the URL accordingly
