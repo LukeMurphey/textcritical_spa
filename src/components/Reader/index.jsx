@@ -720,6 +720,7 @@ class Reader extends Component {
                 <div style={{ marginTop: 6 }} />
                 {data && data.warnings.map((warning) => (
                   <Message
+                    className={classNameSuffix}
                     warning
                     key={warning[0]}
                     header={warning[0]}
@@ -727,7 +728,7 @@ class Reader extends Component {
                   />
                 ))}
                 {redirected && (
-                <Message info>
+                <Message info className={classNameSuffix}>
                   <p>
                     The URL you were using was old so you were redirected to the new one.
                     You may want to update your shortcuts.
