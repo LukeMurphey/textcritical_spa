@@ -5,7 +5,7 @@ import {
 import PropTypes from 'prop-types';
 
 const About = ({ inverted }) => (
-  <Container style={{ marginTop: 32 }}>
+  <Container style={{ paddingTop: 32 }}>
     <Segment inverted={inverted}>
       <Header as="h1">About TextCritical.net</Header>
       TextCritical.net is a website that provides ancient Greek texts and useful analysis tools.

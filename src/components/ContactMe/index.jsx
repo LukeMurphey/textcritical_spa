@@ -5,7 +5,7 @@ import {
 import PropTypes from 'prop-types';
 
 const ContactMe = ({ inverted }) => (
-  <Container style={{ marginTop: 32 }}>
+  <Container style={{ paddingTop: 32 }}>
     <Segment inverted={inverted}>
       <Header as="h1">Getting in Touch</Header>
       If you found something that does not work, please
