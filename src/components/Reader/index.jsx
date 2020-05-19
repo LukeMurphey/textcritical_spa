@@ -6,7 +6,7 @@ import {
 import PropTypes from 'prop-types';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from '../Endpoints';
-import { SEARCH } from '../URLs';
+import { SEARCH, READ_WORK } from '../URLs';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
@@ -276,12 +276,7 @@ class Reader extends Component {
    * @param {array} divisions The list of division indicators
    */
   loadChapter(work, ...divisions) {
-    let divisionReference = '';
-    if (divisions) {
-      divisionReference = divisions.join('/');
-    }
-
-    history.push(`/work/${work}/${divisionReference}`);
+    history.push(READ_WORK(work, divisions));
 
     this.setState({
       loading: true,
@@ -293,7 +288,7 @@ class Reader extends Component {
       redirected: false,
     });
 
-    fetch(ENDPOINT_READ_WORK(`${work}/${divisionReference}`))
+    fetch(ENDPOINT_READ_WORK(work, divisions))
       .then((res) => (Promise.all([res.status, res.json()])))
       .then(([status, data]) => {
         if (status === 200) {
@@ -301,7 +296,7 @@ class Reader extends Component {
           // If the work alias didn't match, then update the URL accordingly
           if (data.work.title_slug !== work) {
             redirected = true;
-            history.push(`/work/${data.work.title_slug}/${divisionReference}`);
+            history.push(READ_WORK(work, divisions));
           }
 
           this.setState({

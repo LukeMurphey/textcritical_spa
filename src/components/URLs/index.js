@@ -2,8 +2,14 @@
  * This page provides helper functions for creating URLs for the website.
  */
 
-export function READ_WORK(workReference = '') {
-  return `/work/${workReference}`;
+export function READ_WORK(work = '', ...divisions) {
+  let divisionReference = '';
+
+  if (divisions && work) {
+    divisionReference = divisions.join('/');
+  }
+
+  return `/work/${work}/${divisionReference}`;
 }
 
 export function SEARCH(

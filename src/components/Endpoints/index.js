@@ -18,8 +18,14 @@ export function getHostConfig(origin = window.location.hostname) {
   return '';
 }
 
-export function ENDPOINT_READ_WORK(workReference = '') {
-  return `${getHostConfig()}/api/work/${workReference}`;
+export function ENDPOINT_READ_WORK(work = '', ...divisions) {
+  let divisionReference = '';
+
+  if (divisions && work) {
+    divisionReference = divisions.join('/');
+  }
+
+  return `${getHostConfig()}/api/work/${work}/${divisionReference}`;
 }
 
 export function ENDPOINT_WORK_INFO(work) {
