@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Placeholder, Accordion, Icon } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { ENDPOINT_WORD_PARSE } from '../Endpoints';
+import { SEARCH } from '../URLs';
 import ErrorMessage from '../ErrorMessage';
 import WordLemma from './WordLemma';
 
@@ -53,6 +55,33 @@ class WordInformation extends Component {
       });
   }
 
+  getSearchLinks(word, work) {
+    if (work) {
+      return (
+        <>
+          Search for
+          {' '}
+          {word}
+          {' '}
+          in
+          {' '}
+          <Link to={SEARCH(word)}>this work</Link>
+          {' '}
+          or
+          {' '}
+          <Link to={SEARCH(word)}>all works</Link>
+        </>
+      );
+    }
+    return (
+      <>
+      Search for
+      {' '}
+      <Link to={SEARCH(word)}>{word}</Link>
+    </>
+    )
+  }
+
   handleClick(e, titleProps) {
     const { index } = titleProps;
     const { activeIndex } = this.state;
@@ -62,7 +91,7 @@ class WordInformation extends Component {
   }
 
   render() {
-    const { word, inverted } = this.props;
+    const { word, inverted, work } = this.props;
     const {
       wordInfo, loading, error, activeIndex,
     } = this.state;
@@ -119,6 +148,9 @@ class WordInformation extends Component {
                 </React.Fragment>
               ))}
             </Accordion>
+            <div style={{ marginTop: 12 }}>
+              {this.getSearchLinks(word, work)}
+            </div>
           </div>
         )}
         {!loading && error && (
@@ -148,11 +180,13 @@ class WordInformation extends Component {
 
 WordInformation.propTypes = {
   word: PropTypes.string.isRequired,
+  work: PropTypes.string,
   inverted: PropTypes.bool,
 };
 
 WordInformation.defaultProps = {
   inverted: false,
+  work: null,
 };
 
 export default WordInformation;
