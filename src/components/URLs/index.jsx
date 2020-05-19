@@ -16,7 +16,7 @@ export function SEARCH(
   q = '',
   ignoreDiacritics = false,
   searchRelatedForms = false,
-  page = 1,
+  page = '',
 ) {
   let url = `/search?q=${q}`;
 

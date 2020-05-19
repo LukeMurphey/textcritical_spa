@@ -276,7 +276,7 @@ class Reader extends Component {
    * @param {array} divisions The list of division indicators
    */
   loadChapter(work, ...divisions) {
-    history.push(READ_WORK(work, divisions));
+    history.push(READ_WORK(work, ...divisions));
 
     this.setState({
       loading: true,
@@ -288,7 +288,7 @@ class Reader extends Component {
       redirected: false,
     });
 
-    fetch(ENDPOINT_READ_WORK(work, divisions))
+    fetch(ENDPOINT_READ_WORK(work, ...divisions))
       .then((res) => (Promise.all([res.status, res.json()])))
       .then(([status, data]) => {
         if (status === 200) {
@@ -296,7 +296,7 @@ class Reader extends Component {
           // If the work alias didn't match, then update the URL accordingly
           if (data.work.title_slug !== work) {
             redirected = true;
-            history.push(READ_WORK(work, divisions));
+            history.push(READ_WORK(data.work.title_slug, ...divisions));
           }
 
           this.setState({
