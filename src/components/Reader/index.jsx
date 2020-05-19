@@ -454,14 +454,37 @@ class Reader extends Component {
   }
 
   /**
-   * Go to the reference defiend in the input box.
+   * Go to the reference defined in the input box.
    */
   goToReference() {
-    const { divisions, loadedWork, referenceValid } = this.state;
+    const { loadedWork, referenceValue } = this.state;
 
-    if (referenceValid) {
-      this.loadChapter(loadedWork, ...divisions);
-    }
+    // Verify the reference is valid before going to it
+    fetch(ENDPOINT_RESOLVE_REFERENCE(loadedWork, referenceValue))
+      .then((res) => (Promise.all([res.status, res.json()])))
+      .then(([status, referenceInfo]) => {
+        if (status === 200) {
+          this.setState({
+            divisions: referenceInfo.divisions,
+            referenceValue,
+            referenceValid: true,
+          });
+
+          this.loadChapter(loadedWork, ...referenceInfo.divisions);
+        } else {
+          this.setState({
+            referenceValue,
+            referenceValid: false,
+          });
+        }
+      })
+      .catch((e) => {
+        this.setErrorState(
+          'Unable to load the content',
+          'The given chapter could not be loaded from the server',
+          e.toString(),
+        );
+      });
   }
 
   /**
