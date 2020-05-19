@@ -1,23 +1,24 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { GOOGLE_SEARCH, PERSEUS_WORD_LOOKUP, LOGEION_WORD_LOOKUP } from '../URLs';
 
 function ExternalLookupLinks({ word }) {
   return (
     <div>
       Look up at
       {' '}
-      <a target="_blank" rel="noopener noreferrer" href={`http://www.perseus.tufts.edu/hopper/morph?l=${word}&la=greek`}>
+      <a target="_blank" rel="noopener noreferrer" href={PERSEUS_WORD_LOOKUP(word)}>
         Perseus
       </a>
       ,
       {' '}
-      <a target="_blank" rel="noopener noreferrer" href={`https://logeion.uchicago.edu/${word}`}>
+      <a target="_blank" rel="noopener noreferrer" href={LOGEION_WORD_LOOKUP(word)}>
         Logeion
       </a>
       , or
       {' '}
-      <a target="_blank" rel="noopener noreferrer" href={`https://www.google.com/search?q=${word}`}>
+      <a target="_blank" rel="noopener noreferrer" href={GOOGLE_SEARCH(word)}>
         Google
       </a>
     </div>

@@ -6,6 +6,7 @@ import {
 import PropTypes from 'prop-types';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from '../Endpoints';
+import { SEARCH } from '../URLs';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
@@ -376,6 +377,15 @@ class Reader extends Component {
   }
 
   /**
+   * Go to the search page.
+   */
+  openSearch() {
+    const { loadedWork } = this.state;
+    const q = `work:${loadedWork}`;
+    history.push(SEARCH(q));
+  }
+
+  /**
    * Open the modal for downloading a work.
    */
   openDownloadModal() {
@@ -665,10 +675,7 @@ class Reader extends Component {
               <Menu.Item as="a" onClick={() => this.openDownloadModal()}>
                 Download
               </Menu.Item>
-              <Menu.Item as="a">
-                Share
-              </Menu.Item>
-              <Menu.Item as="a">
+              <Menu.Item as="a" onClick={() => this.openSearch()}>
                 Search
               </Menu.Item>
             </Sidebar>

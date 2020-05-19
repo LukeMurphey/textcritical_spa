@@ -9,6 +9,7 @@ import SearchResults from './SearchResults';
 import SearchHelp from './SearchHelp';
 import ErrorMessage from '../ErrorMessage';
 import { ENDPOINT_SEARCH } from '../Endpoints';
+import { SEARCH } from '../URLs';
 import './index.scss';
 
 const MODE_NOT_STARTED = 0;
@@ -149,21 +150,7 @@ function Search({ history, inverted }) {
    * @param {bool} relatedForms Whether related forms ought to be ignored
    */
   const updateHistory = (q, selectedPage, diacritics, relatedForms) => {
-    let url = `/search?q=${q}`;
-
-    if (page) {
-      url += `&page=${page}`;
-    }
-
-    if (diacritics) {
-      url += '&ignore_diacritics=1';
-    }
-
-    if (relatedForms) {
-      url += '&include_related=1';
-    }
-
-    history.push(url);
+    history.push(SEARCH(q, diacritics, relatedForms, selectedPage));
   };
 
   /**
