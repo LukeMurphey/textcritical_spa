@@ -302,7 +302,7 @@ class Reader extends Component {
           this.setState({
             data,
             loading: false,
-            loadedWork: work,
+            loadedWork: data.work.title_slug,
             divisions,
             referenceValue: data.chapter.description,
             referenceValid: true,
