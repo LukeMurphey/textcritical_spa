@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, useLocation } from 'react-router-dom';
 import {
@@ -91,6 +91,13 @@ function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, er
   );
 }
 
+/**
+ * Gets the parameter of the default value. This optionally converts the parameter format too.
+ * @param {string} searchParams The string containing the URL parameters
+ * @param {*} paramName The name of the paramter to get
+ * @param {*} defaultValue The default value if the paramter doesn't exist yet
+ * @param {*} convertFormat Whether to convert the value type (null or CONVERT_INT or CONVERT_BOOL)
+ */
 function getParamOrDefault(searchParams, paramName, defaultValue, convertFormat = null) {
   const paramValue = searchParams.get(paramName);
   if (paramValue) {
@@ -115,7 +122,7 @@ function getParamOrDefault(searchParams, paramName, defaultValue, convertFormat 
 /**
  * This class renders a search page and results.
  */
-function Search({ history, inverted }) {
+function Search({ inverted, history, location }) {
   // Get the query params
   const queryParams = useQuery();
 
@@ -127,6 +134,7 @@ function Search({ history, inverted }) {
   const [searchRelatedForms, setSearchRelatedForms] = useState(getParamOrDefault(queryParams, 'include_related', false, CONVERT_BOOL));
   const [searching, setSearching] = useState(false);
   const [page, setPage] = useState(getParamOrDefault(queryParams, 'page', 1, CONVERT_INT));
+  const [searchedKey, setSearchedKey] = useState(null);
 
   let className = '';
 
@@ -154,14 +162,23 @@ function Search({ history, inverted }) {
   };
 
   /**
-   * Do the search
+   * Update the history so that the search is kicked off.
+   *
+   * @param {int} requestedPage The page number
    */
   const doSearch = (requestedPage) => {
+    updateHistory(query, requestedPage, ignoreDiacritics, searchRelatedForms);
+  };
+
+  /**
+   * Perform the REST call to perform the search
+   *
+   * @param {int} requestedPage The page number
+   */
+  const executeSearch = (requestedPage) => {
     setSearching(true);
     setError(null);
     setPage(requestedPage);
-
-    updateHistory(query, requestedPage, ignoreDiacritics, searchRelatedForms);
 
     fetch(ENDPOINT_SEARCH(query, requestedPage, ignoreDiacritics, searchRelatedForms))
       .then((res) => res.json())
@@ -176,6 +193,14 @@ function Search({ history, inverted }) {
         setResultSet(null);
       });
   };
+
+  useEffect(() => {
+    // Use the searched key to determine if we have already searched for this page
+    if (location.key !== searchedKey) {
+      setSearchedKey(location.key);
+      executeSearch(getParamOrDefault(queryParams, 'page', page, CONVERT_INT));
+    }
+  });
 
   const goBack = () => {
     if (page > 1) {
@@ -300,12 +325,13 @@ function Search({ history, inverted }) {
 
 Search.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  history: PropTypes.object,
+  history: PropTypes.object.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  location: PropTypes.object.isRequired,
   inverted: PropTypes.bool,
 };
 
 Search.defaultProps = {
-  history: null,
   inverted: false,
 };
 
