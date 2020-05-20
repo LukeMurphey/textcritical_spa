@@ -308,7 +308,6 @@ class Reader extends Component {
    */
   updateHistory(work, ...divisions) {
     const { history, location } = this.props;
-    const { redirectedFrom } = this.state;
 
     // Get the URL
     const workUrl = READ_WORK(work, ...divisions);
