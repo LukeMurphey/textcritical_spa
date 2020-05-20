@@ -124,7 +124,8 @@ class Reader extends Component {
       selectedWord: null,
       popupX: null,
       popupY: null,
-      redirectedFrom: false,
+      redirectedFrom: null,
+      redirectedTo: null,
       sidebarVisible: false,
     };
 
@@ -168,8 +169,9 @@ class Reader extends Component {
    */
   componentDidUpdate(prevProps) {
     const { location, match } = this.props;
+    const { redirectedTo } = this.state;
 
-    if (location.pathname !== prevProps.location.pathname) {
+    if (location.pathname !== prevProps.location.pathname && redirectedTo !== location.pathname) {
       const divisions = [
         match.params.division0,
         match.params.division1,
@@ -313,8 +315,8 @@ class Reader extends Component {
 
     // Determine if the URL is already set
     // Note that we need to check redirectedFrom because the URL might not match because we were
-    // redirected
-    if (workUrl === location.pathname || redirectedFrom === location.pathname) {
+    // redirected since a work had been renamed.
+    if (workUrl === location.pathname) {
       return false;
     }
 
@@ -347,6 +349,7 @@ class Reader extends Component {
       errorMessage: null,
       errorDescription: null,
       redirectedFrom: null,
+      redirectedTo: null,
     });
 
     fetch(ENDPOINT_READ_WORK(work, ...divisions))
@@ -354,10 +357,12 @@ class Reader extends Component {
       .then(([status, data]) => {
         if (status === 200) {
           let redirectedFrom = null;
+          let redirectedTo = null;
 
           // If the work alias didn't match, then update the URL accordingly
           if (data.work.title_slug !== work) {
             redirectedFrom = READ_WORK(work, ...divisions);
+            redirectedTo = READ_WORK(data.work.title_slug, ...divisions);
           }
 
           this.setState({
@@ -368,6 +373,7 @@ class Reader extends Component {
             referenceValue: data.chapter.description,
             referenceValid: true,
             redirectedFrom,
+            redirectedTo,
           });
 
           // Update the URL if we were redirected
@@ -628,8 +634,6 @@ class Reader extends Component {
     } else if (loading && !errorTitle) {
       mode = MODE_LOADING;
     }
-
-    console.warn('mode is', mode);
 
     return (
       <>
