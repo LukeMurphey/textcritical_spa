@@ -7,6 +7,10 @@ import { SEARCH } from '../URLs';
 import ErrorMessage from '../ErrorMessage';
 import WordLemma from './WordLemma';
 
+const MODE_LOADING = 0;
+const MODE_ERROR = 1;
+const MODE_DONE = 2;
+
 class WordInformation extends Component {
   constructor(props) {
     super(props);
@@ -16,6 +20,33 @@ class WordInformation extends Component {
       error: null,
       activeIndex: null,
     };
+  }
+
+  static getSearchLinks(word, work) {
+    if (work) {
+      return (
+        <>
+          Search for
+          {' '}
+          {word}
+          {' '}
+          in
+          {' '}
+          <Link to={SEARCH(`work:${work} ${word}`)}>this work</Link>
+          {' '}
+          or
+          {' '}
+          <Link to={SEARCH(word)}>all works</Link>
+        </>
+      );
+    }
+    return (
+      <>
+        Search for
+        {' '}
+        <Link to={SEARCH(word)}>{word}</Link>
+      </>
+    );
   }
 
   componentDidMount() {
@@ -51,35 +82,9 @@ class WordInformation extends Component {
       .catch((e) => {
         this.setState({
           error: e.toString(),
+          loading: false,
         });
       });
-  }
-
-  getSearchLinks(word, work) {
-    if (work) {
-      return (
-        <>
-          Search for
-          {' '}
-          {word}
-          {' '}
-          in
-          {' '}
-          <Link to={SEARCH(`work:${work} ${word}`)}>this work</Link>
-          {' '}
-          or
-          {' '}
-          <Link to={SEARCH(word)}>all works</Link>
-        </>
-      );
-    }
-    return (
-      <>
-      Search for
-      {' '}
-      <Link to={SEARCH(word)}>{word}</Link>
-    </>
-    )
   }
 
   handleClick(e, titleProps) {
@@ -96,9 +101,17 @@ class WordInformation extends Component {
       wordInfo, loading, error, activeIndex,
     } = this.state;
 
+    let mode = MODE_LOADING;
+    if (!loading && wordInfo) {
+      mode = MODE_DONE;
+    }
+    else if (!loading && error) {
+      mode = MODE_ERROR;
+    }
+
     return (
       <>
-        {!loading && wordInfo && (
+        {mode === MODE_DONE && (
           <div>
             Found
             {' '}
@@ -153,7 +166,7 @@ class WordInformation extends Component {
             </div>
           </div>
         )}
-        {!loading && error && (
+        {mode === MODE_ERROR && (
           <div>
             <ErrorMessage
               inverted={inverted}
@@ -163,7 +176,7 @@ class WordInformation extends Component {
             />
           </div>
         )}
-        {loading && (
+        {mode === MODE_LOADING && (
           <Placeholder inverted={inverted} style={{ marginTop: 32 }}>
             <Placeholder.Header>
               <Placeholder.Line />
