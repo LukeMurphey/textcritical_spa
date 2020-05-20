@@ -37,7 +37,7 @@ const ContainerStyle = {
   marginTop: 60,
 };
 
-const sidebarStyle = {
+const SidebarStyle = {
   height: '100vh',
   marginTop: 0,
 };
@@ -124,7 +124,7 @@ class Reader extends Component {
       selectedWord: null,
       popupX: null,
       popupY: null,
-      redirected: false,
+      redirectedFrom: false,
       sidebarVisible: false,
     };
 
@@ -156,14 +156,19 @@ class Reader extends Component {
     if (defaultWork) {
       this.loadChapter(defaultWork, ...divisions);
     } else {
-      this.loadChapter('new-testament', 'John', '1');
+      this.navigateToChapter('new-testament', 'John', '1');
     }
   }
 
+  /**
+   * Handle a component update in order to load a new chapter if the user changed navigation
+   * based on the browsers back/forward buttons.
+   *
+   * @param {object} prevProps The previous properties
+   */
   componentDidUpdate(prevProps) {
     const { location, match } = this.props;
 
-    console.warn('componentDidUpdate', location, prevProps.location);
     if (location.pathname !== prevProps.location.pathname) {
       const divisions = [
         match.params.division0,
@@ -173,12 +178,11 @@ class Reader extends Component {
         match.params.division4,
         match.params.leftovers,
       ].filter((entry) => entry);
-      console.warn('Updated!!', match.params.work, ...divisions);
 
       this.loadChapter(match.params.work, ...divisions);
     }
   }
-  
+
   /**
    * Handle the clicking of a verse.
    *
@@ -246,7 +250,7 @@ class Reader extends Component {
    * @param {string} work the title slug of a work to load
    */
   onSelectWork(work) {
-    this.loadChapter(work);
+    this.navigateToChapter(work);
   }
 
   /**
@@ -302,17 +306,30 @@ class Reader extends Component {
    */
   updateHistory(work, ...divisions) {
     const { history, location } = this.props;
+    const { redirectedFrom } = this.state;
 
     // Get the URL
     const workUrl = READ_WORK(work, ...divisions);
 
     // Determine if the URL is already set
-    if (workUrl === location.pathname) {
+    // Note that we need to check redirectedFrom because the URL might not match because we were
+    // redirected
+    if (workUrl === location.pathname || redirectedFrom === location.pathname) {
       return false;
     }
 
     history.push(workUrl);
     return true;
+  }
+
+  /**
+   * Navigate to chapter.
+   *
+   * @param {string} work The title slug of the work
+   * @param {array} divisions The list of division indicators
+   */
+  navigateToChapter(work, ...divisions) {
+    this.updateHistory(work, ...divisions);
   }
 
   /**
@@ -322,8 +339,6 @@ class Reader extends Component {
    * @param {array} divisions The list of division indicators
    */
   loadChapter(work, ...divisions) {
-    this.updateHistory(work, ...divisions);
-
     this.setState({
       loading: true,
       bookSelectionOpen: false,
@@ -331,18 +346,18 @@ class Reader extends Component {
       errorTitle: null,
       errorMessage: null,
       errorDescription: null,
-      redirected: false,
+      redirectedFrom: null,
     });
 
     fetch(ENDPOINT_READ_WORK(work, ...divisions))
       .then((res) => (Promise.all([res.status, res.json()])))
       .then(([status, data]) => {
         if (status === 200) {
-          let redirected = false;
+          let redirectedFrom = null;
+
           // If the work alias didn't match, then update the URL accordingly
           if (data.work.title_slug !== work) {
-            redirected = true;
-            this.updateHistory(data.work.title_slug, ...divisions);
+            redirectedFrom = READ_WORK(work, ...divisions);
           }
 
           this.setState({
@@ -352,8 +367,13 @@ class Reader extends Component {
             divisions,
             referenceValue: data.chapter.description,
             referenceValid: true,
-            redirected,
+            redirectedFrom,
           });
+
+          // Update the URL if we were redirected
+          if (redirectedFrom) {
+            this.updateHistory(data.work.title_slug, ...divisions);
+          }
 
           // Preload the next chapter so that it is cached
           this.preloadNextChapter();
@@ -443,7 +463,7 @@ class Reader extends Component {
    */
   changeWork(work) {
     const { divisions } = this.state;
-    this.loadChapter(work, ...divisions);
+    this.navigateToChapter(work, ...divisions);
   }
 
   /**
@@ -454,7 +474,7 @@ class Reader extends Component {
    */
   changeChapter(event, info) {
     const { loadedWork } = this.state;
-    this.loadChapter(loadedWork, info.value);
+    this.navigateToChapter(loadedWork, info.value);
   }
 
   /**
@@ -522,7 +542,7 @@ class Reader extends Component {
             referenceValid: true,
           });
 
-          this.loadChapter(loadedWork, ...referenceInfo.divisions);
+          this.navigateToChapter(loadedWork, ...referenceInfo.divisions);
         } else {
           this.setState({
             referenceValue,
@@ -545,7 +565,7 @@ class Reader extends Component {
   goToNextChapter() {
     const { data, loadedWork } = this.state;
     if (data.next_chapter) {
-      this.loadChapter(loadedWork, data.next_chapter.full_descriptor);
+      this.navigateToChapter(loadedWork, data.next_chapter.full_descriptor);
     }
   }
 
@@ -555,7 +575,7 @@ class Reader extends Component {
   goToPriorChapter() {
     const { data, loadedWork } = this.state;
     if (data.previous_chapter) {
-      this.loadChapter(loadedWork, data.previous_chapter.full_descriptor);
+      this.navigateToChapter(loadedWork, data.previous_chapter.full_descriptor);
     }
   }
 
@@ -563,7 +583,7 @@ class Reader extends Component {
     const {
       modal, data, errorDescription, loading, referenceValid, referenceValue, selectedWord,
       popupX, popupY, popupPositionRight, popupPositionBelow, bookSelectionOpen, errorTitle,
-      errorMessage, selectedNote, redirected, sidebarVisible, loadedWork,
+      errorMessage, selectedNote, redirectedFrom, sidebarVisible, loadedWork,
     } = this.state;
 
     const { inverted } = this.props;
@@ -711,7 +731,7 @@ class Reader extends Component {
           )}
         </Menu>
         {mode === MODE_DONE && (
-          <Sidebar.Pushable as={Segment} basic style={sidebarStyle} className={`${classNameSuffix}`}>
+          <Sidebar.Pushable as={Segment} basic style={SidebarStyle} className={`${classNameSuffix}`}>
             <Sidebar
               as={Menu}
               animation="overlay"
@@ -812,7 +832,7 @@ class Reader extends Component {
                     content={warning[1]}
                   />
                 ))}
-                {redirected && (
+                {redirectedFrom && (
                 <Message info className={classNameSuffix}>
                   <p>
                     The URL you were using was old so you were redirected to the new one.
