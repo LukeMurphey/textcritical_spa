@@ -162,7 +162,7 @@ class WordInformation extends Component {
               ))}
             </Accordion>
             <div style={{ marginTop: 12 }}>
-              {this.getSearchLinks(word, work)}
+              {WordInformation.getSearchLinks(word, work)}
             </div>
           </div>
         )}
