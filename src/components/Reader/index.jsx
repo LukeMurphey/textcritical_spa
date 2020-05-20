@@ -3,6 +3,7 @@ import {
   Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Segment,
   Message, Menu, Popup, Sidebar, Image,
 } from 'semantic-ui-react';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from '../Endpoints';
@@ -14,8 +15,11 @@ import WorkDownloadDialog from '../WorkDownloadDialog';
 import WordInformation from '../WordInformation/WordInformationPopup';
 import FootnotePopup from '../FootnotePopup';
 import BookSelection from '../BookSelection';
-import history from '../../history';
 import './index.scss';
+
+const MODE_LOADING = 0;
+const MODE_ERROR = 1;
+const MODE_DONE = 2;
 
 const NextPageStyle = {
   bottom: '20px',
@@ -156,6 +160,25 @@ class Reader extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    const { location, match } = this.props;
+
+    console.warn('componentDidUpdate', location, prevProps.location);
+    if (location.pathname !== prevProps.location.pathname) {
+      const divisions = [
+        match.params.division0,
+        match.params.division1,
+        match.params.division2,
+        match.params.division3,
+        match.params.division4,
+        match.params.leftovers,
+      ].filter((entry) => entry);
+      console.warn('Updated!!', match.params.work, ...divisions);
+
+      this.loadChapter(match.params.work, ...divisions);
+    }
+  }
+  
   /**
    * Handle the clicking of a verse.
    *
@@ -171,6 +194,8 @@ class Reader extends Component {
       referenceValue: verseDescriptor,
       referenceValid: true,
     });
+
+    const { history } = this.props;
 
     history.push(href);
   }
@@ -270,13 +295,34 @@ class Reader extends Component {
   }
 
   /**
+   * Update the history but only if it has changed.
+   *
+   * @param {str} work The title slug of the work
+   * @param  {...any} divisions The list of division indicators
+   */
+  updateHistory(work, ...divisions) {
+    const { history, location } = this.props;
+
+    // Get the URL
+    const workUrl = READ_WORK(work, ...divisions);
+
+    // Determine if the URL is already set
+    if (workUrl === location.pathname) {
+      return false;
+    }
+
+    history.push(workUrl);
+    return true;
+  }
+
+  /**
    * Load the given chapter.
    *
-   * @param {string} work The work to load
+   * @param {string} work The title slug of the work
    * @param {array} divisions The list of division indicators
    */
   loadChapter(work, ...divisions) {
-    history.push(READ_WORK(work, ...divisions));
+    this.updateHistory(work, ...divisions);
 
     this.setState({
       loading: true,
@@ -296,7 +342,7 @@ class Reader extends Component {
           // If the work alias didn't match, then update the URL accordingly
           if (data.work.title_slug !== work) {
             redirected = true;
-            history.push(READ_WORK(data.work.title_slug, ...divisions));
+            this.updateHistory(data.work.title_slug, ...divisions);
           }
 
           this.setState({
@@ -342,7 +388,7 @@ class Reader extends Component {
    * Preload the prior chapter.
    */
   preloadPriorChapter() {
-    const { data } = this.state;
+    const { data, loadedWork } = this.state;
 
     if (data.previous_chapter) {
       fetch(ENDPOINT_READ_WORK(`${loadedWork}/${data.previous_chapter.full_descriptor}`));
@@ -375,6 +421,8 @@ class Reader extends Component {
    * Go to the search page.
    */
   openSearch() {
+    const { history } = this.props;
+
     const { loadedWork } = this.state;
     const q = `work:${loadedWork}`;
     history.push(SEARCH(q));
@@ -405,7 +453,7 @@ class Reader extends Component {
    * @param {*} info All props.
    */
   changeChapter(event, info) {
-    const { data, loadedWork } = this.state;
+    const { loadedWork } = this.state;
     this.loadChapter(loadedWork, info.value);
   }
 
@@ -416,7 +464,7 @@ class Reader extends Component {
    * @param {*} info All props.
    */
   changeReference(event, info) {
-    const { data, loadedWork } = this.state;
+    const { loadedWork } = this.state;
 
     this.setState({
       referenceValue: info.value,
@@ -551,6 +599,18 @@ class Reader extends Component {
       classNameSuffix = ' inverted';
     }
 
+    let mode = MODE_LOADING;
+
+    if (data && !loading) {
+      mode = MODE_DONE;
+    } else if (errorTitle) {
+      mode = MODE_ERROR;
+    } else if (loading && !errorTitle) {
+      mode = MODE_LOADING;
+    }
+
+    console.warn('mode is', mode);
+
     return (
       <>
         <Menu inverted={inverted} className={`control ${classNameSuffix}`} fixed="top">
@@ -625,7 +685,7 @@ class Reader extends Component {
               </Dropdown>
             </div>
           </Container>
-          {data && !loading && (
+          {mode === MODE_DONE && (
             <>
               <Button
                 icon
@@ -650,7 +710,7 @@ class Reader extends Component {
             </>
           )}
         </Menu>
-        {data && !loading && (
+        {mode === MODE_DONE && (
           <Sidebar.Pushable as={Segment} basic style={sidebarStyle} className={`${classNameSuffix}`}>
             <Sidebar
               as={Menu}
@@ -775,7 +835,7 @@ class Reader extends Component {
             </Sidebar.Pusher>
           </Sidebar.Pushable>
         )}
-        {errorTitle && (
+        {mode === MODE_ERROR && (
           <Container style={ContainerStyle} className={`${classNameSuffix}`}>
             <ErrorMessage
               inverted={inverted}
@@ -785,7 +845,7 @@ class Reader extends Component {
             />
           </Container>
         )}
-        {loading && !errorTitle && (
+        {mode === MODE_LOADING && (
           <Container style={ContainerStyle} className={`${classNameSuffix}`} basic>
             {Reader.getPlaceholder(inverted)}
           </Container>
@@ -804,6 +864,12 @@ Reader.propTypes = {
   division3: PropTypes.string,
   division4: PropTypes.string,
   leftovers: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
+  location: PropTypes.object.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  history: PropTypes.object.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  match: PropTypes.object.isRequired,
 };
 
 Reader.defaultProps = {
@@ -817,4 +883,4 @@ Reader.defaultProps = {
   leftovers: null,
 };
 
-export default Reader;
+export default withRouter(Reader);

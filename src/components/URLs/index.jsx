@@ -5,11 +5,14 @@
 export function READ_WORK(work = '', ...divisions) {
   let divisionReference = '';
 
-  if (divisions && work) {
-    divisionReference = divisions.join('/');
+  const divisionsFiltered = divisions.filter((entry) => entry);
+
+  if (divisions.length > 0 && work) {
+    divisionReference = divisionsFiltered.join('/');
+    return `/work/${work}/${divisionReference}`;
   }
 
-  return `/work/${work}/${divisionReference}`;
+  return `/work/${work}`;
 }
 
 export function SEARCH(

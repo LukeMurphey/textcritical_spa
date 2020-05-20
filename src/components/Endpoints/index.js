@@ -19,13 +19,15 @@ export function getHostConfig(origin = window.location.hostname) {
 }
 
 export function ENDPOINT_READ_WORK(work = '', ...divisions) {
+
   let divisionReference = '';
 
-  if (divisions && work) {
+  if (divisions.length > 0 && work) {
     divisionReference = divisions.join('/');
+    return `${getHostConfig()}/api/work/${work}/${divisionReference}`;
   }
 
-  return `${getHostConfig()}/api/work/${work}/${divisionReference}`;
+  return `${getHostConfig()}/api/work/${work}`;
 }
 
 export function ENDPOINT_WORK_INFO(work) {
