@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Segment,
-  Message, Menu, Popup, Sidebar, Image,
+  Message, Menu, Popup, Sidebar, Image, Progress,
 } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -624,6 +624,7 @@ class Reader extends Component {
       classNameSuffix = ' inverted';
     }
 
+    // Determine what we ought to be rendering
     let mode = MODE_LOADING;
 
     if (data && !loading) {
@@ -845,6 +846,28 @@ class Reader extends Component {
                   </p>
                 </Message>
                 )}
+                {data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
+                  <>
+                    <Segment.Group horizontal style={{ border: 0, marginBottom: 4 }} className={`${classNameSuffix}`}>
+                      <Segment basic inverted style={{ padding: 0 }}>
+                        {data.completed_chapters_in_book}
+                        {' '}
+                        of
+                        {' '}
+                        {data.total_chapters_in_book}
+                        {' '}
+                        chapters
+                        {' '}
+                      </Segment>
+                      <Segment basic inverted style={{ textAlign: 'right', padding: 0 }}>
+                        {Math.round(data.progress_in_book)}
+                        % through the book
+                      </Segment>
+                    </Segment.Group>
+                    <Progress className="bookProgress" color="blue" style={{ margin: '0 0 8px 0' }} percent={data.progress_in_book} size="tiny" />
+                  </>
+                )}
+
                 <Chapter
                   chapter={data.chapter}
                   content={data.content}

@@ -32,3 +32,9 @@
 .otherVersions > .menu > .item > .text {
     margin-right: 64px;
 }
+
+.bookProgress.ui.progress > .bar,
+.bookProgress.ui.progress
+{
+    border-radius: 0;
+}
