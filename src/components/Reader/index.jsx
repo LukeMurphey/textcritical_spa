@@ -15,11 +15,13 @@ import WorkDownloadDialog from '../WorkDownloadDialog';
 import WordInformation from '../WordInformation/WordInformationPopup';
 import FootnotePopup from '../FootnotePopup';
 import BookSelection from '../BookSelection';
+import NoWorkSelected from './NoWorkSelected';
 import './index.scss';
 
 const MODE_LOADING = 0;
 const MODE_ERROR = 1;
 const MODE_DONE = 2;
+const MODE_NOT_READY = 3;
 
 const NextPageStyle = {
   bottom: '20px',
@@ -156,8 +158,6 @@ class Reader extends Component {
 
     if (defaultWork) {
       this.loadChapter(defaultWork, ...divisions);
-    } else {
-      this.navigateToChapter('new-testament', 'John', '1');
     }
   }
 
@@ -632,7 +632,11 @@ class Reader extends Component {
       mode = MODE_ERROR;
     } else if (loading && !errorTitle) {
       mode = MODE_LOADING;
+    } else {
+      mode = MODE_NOT_READY;
     }
+
+    console.warn(mode);
 
     return (
       <>
@@ -873,6 +877,13 @@ class Reader extends Component {
             {Reader.getPlaceholder(inverted)}
           </Container>
         )}
+        {mode === MODE_NOT_READY && (
+          <Container style={ContainerStyle} className={`${classNameSuffix}`} basic>
+            <div style={{ paddingTop: 24 }}>
+              <NoWorkSelected onClick={() => this.setBookSelectionOpen()} inverted={inverted} />
+            </div>
+          </Container>
+        )}
       </>
     );
   }
@@ -896,7 +907,7 @@ Reader.propTypes = {
 };
 
 Reader.defaultProps = {
-  inverted: true,
+  inverted: false,
   defaultWork: null,
   division0: null,
   division1: null,

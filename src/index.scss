@@ -46,7 +46,10 @@ table.ui.inverted.table > tbody {
 
 .ui.info.message.inverted {
     background-color: #143c75;
-    box-shadow: 0px 0px 0px 1px #1c55a5 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0)
+    box-shadow: 0px 0px 0px 1px #1c55a5 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+    > .header {
+        color: $textColorDark;
+    }
 }
 
 .ui.warning.message.inverted {
