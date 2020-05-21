@@ -636,8 +636,6 @@ class Reader extends Component {
       mode = MODE_NOT_READY;
     }
 
-    console.warn(mode);
-
     return (
       <>
         <Menu inverted={inverted} className={`control ${classNameSuffix}`} fixed="top">
