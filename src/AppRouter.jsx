@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import {
   Router, Route, Switch, withRouter,
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import history from './history';
 import NotFound from './components/NotFound';
-import About from './components/About';
-import Search from './components/Search';
-import ContactMe from './components/ContactMe';
 import App from './App';
+
+const ContactMe = React.lazy(() => import('./components/ContactMe'));
+const About = React.lazy(() => import('./components/About'));
+const Search = React.lazy(() => import('./components/Search'));
+// const App = React.lazy(() => import('./App'));
 
 const AppRouter = ({ inverted }) => (
   <Router history={history}>
@@ -23,13 +25,19 @@ const AppRouter = ({ inverted }) => (
         <App inverted={inverted} />
       </Route>
       <Route exact path="/about">
-        <About inverted={inverted} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <About inverted={inverted} />
+        </Suspense>
       </Route>
       <Route exact path="/search">
-        <Search inverted={inverted} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Search inverted={inverted} />
+        </Suspense>
       </Route>
       <Route exact path="/contact">
-        <ContactMe inverted={inverted} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <ContactMe inverted={inverted} />
+        </Suspense>
       </Route>
       <Route>
         <NotFound inverted={inverted} />

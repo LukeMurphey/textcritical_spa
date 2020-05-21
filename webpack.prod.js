@@ -8,13 +8,13 @@ module.exports = merge(common, {
   plugins: [
     new webpack.SourceMapDevToolPlugin({
       filename: '[name].js.map',
-      exclude: ['bundle.js']
+      exclude: ['bundle.js'],
     }),
     new UglifyJSPlugin({
-      sourceMap: true
+      sourceMap: true,
     }),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production')
-    })
-  ]
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    }),
+  ],
 });
