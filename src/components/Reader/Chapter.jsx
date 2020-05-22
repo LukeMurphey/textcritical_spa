@@ -103,8 +103,10 @@ class Chapter extends Component {
    * Unhighlight existing verses.
    */
   unhighlistVerses() {
-    const highlights = Array.from(this.wrapper.current.getElementsByClassName('highlighted'));
-    highlights.map((highlight) => highlight.classList.remove('highlighted'));
+    if (this.wrapper && this.wrapper.current) {
+      const highlights = Array.from(this.wrapper.current.getElementsByClassName('highlighted'));
+      highlights.map((highlight) => highlight.classList.remove('highlighted'));
+    }
   }
 
   /**
