@@ -212,8 +212,10 @@ class Reader extends Component {
    * @param {int} y The y coordinate of the verse marker
    */
   onVerseClick(verseDescriptor, verse, id, href) {
+    const { data } = this.state;
+
     // Add the verse to the list
-    this.addVerseToHistoryList(href, this.state.data.chapter.full_descriptor);
+    this.addVerseToHistoryList(href, data.chapter.full_descriptor);
 
     this.setState({
       referenceValue: verseDescriptor,
