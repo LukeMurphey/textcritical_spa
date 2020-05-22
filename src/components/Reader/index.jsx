@@ -134,6 +134,10 @@ class Reader extends Component {
     // This will store the last reference set so that we make sure not to replace the reference
     // we did a reference resolution check against the server for.
     this.lastSetReference = null;
+
+    // Keep a list of the verses so that we can know what chapter the verse is assopciated with.
+    // This is needed so that we don't force a reload just to get the same chapter.
+    this.verseReferences = {};
   }
 
   componentDidMount() {
@@ -169,8 +173,20 @@ class Reader extends Component {
    */
   componentDidUpdate(prevProps) {
     const { location, match } = this.props;
-    const { redirectedTo } = this.state;
+    const { redirectedTo, data } = this.state;
 
+    // See if we know that this is a reference to this chapter
+    const existingChapter = this.verseReferences[location.pathname];
+    console.log('existingChapter', existingChapter);
+
+    // Check if the chapter we have loaded already
+    if (data && data.chapter && existingChapter
+      && existingChapter === data.chapter.full_descriptor) {
+      // Don't load the new one, we already have it on the page!
+      return;
+    }
+
+    // Determine if the page changed
     if (location.pathname !== prevProps.location.pathname && redirectedTo !== location.pathname) {
       const divisions = [
         match.params.division0,
@@ -188,14 +204,17 @@ class Reader extends Component {
   /**
    * Handle the clicking of a verse.
    *
-   * @param {string} verseDescriptor The descriptor that can be used to recognize a verse
-   * @param {string} verse The verse number
-   * @param {string} id An ID that designates the verse
-   * @param {string} href A href for the verse
+   * @param {string} verseDescriptor A descripion of the verse (e.g. "John 8:4")
+   * @param {string} verse The verse number (e.g. "4")
+   * @param {string} id An ID that designates the verse in the HTML DOM
+   * @param {string} href A href for the verse (e.g. "/work/new-testament/John/8/4")
    * @param {int} x The x coordinate of the verse marker
    * @param {int} y The y coordinate of the verse marker
    */
   onVerseClick(verseDescriptor, verse, id, href) {
+    // Add the verse to the list
+    this.addVerseToHistoryList(href, this.state.data.chapter.full_descriptor);
+
     this.setState({
       referenceValue: verseDescriptor,
       referenceValid: true,
@@ -298,6 +317,15 @@ class Reader extends Component {
     this.setState({
       sidebarVisible: visible,
     });
+  }
+
+  /**
+   * Add the href to the list so that we can remember what URL is capable of loading it.
+   * @param {string} href The partial URL of the page
+   * @param {string} chapter The chapter descriptor
+   */
+  addVerseToHistoryList(href, chapter) {
+    this.verseReferences[href] = chapter;
   }
 
   /**
