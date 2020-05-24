@@ -7,7 +7,7 @@ import './Chapter.scss';
 /**
  * This class renders the content of chapter of a work.
  *
- * render() is going to use an unsafe method of rendering HTML. This is unfortunate but necessary.
+ * render() is going to parse some HTML it gets from the server and then present it.
  * The reason is that the works are persisted in a preformatted state in order to improve
  * performance. The alternative is to parse the XML on the client-side and process it into
  * HTML. This would mean that the content could not be cached. Right now, the server preprocesses

@@ -187,6 +187,7 @@ class Reader extends Component {
       if (highlightedVerse !== highlightedVerseRef) {
         this.setState({
           highlightedVerse: highlightedVerseRef,
+          referenceValue: existingChapter.referenceValue,
         });
       }
 
@@ -222,7 +223,7 @@ class Reader extends Component {
     const { data } = this.state;
 
     // Add the verse to the list
-    this.addVerseToHistoryList(href, data.chapter.full_descriptor, verse);
+    this.addVerseToHistoryList(href, data.chapter.full_descriptor, verse, verseDescriptor);
 
     this.setState({
       referenceValue: verseDescriptor,
@@ -333,10 +334,11 @@ class Reader extends Component {
    * @param {string} href The partial URL of the page (e.g. "/work/new-testament/John/8/4")
    * @param {string} chapter The chapter descriptor (e.g. "John/9")
    */
-  addVerseToHistoryList(href, chapter, verse) {
+  addVerseToHistoryList(href, chapter, verse, referenceValue) {
     this.verseReferences[href] = {
       chapter,
       verse,
+      referenceValue,
     };
   }
 
@@ -420,7 +422,9 @@ class Reader extends Component {
           // Add the verse to the list
           this.addVerseToHistoryList(
             READ_WORK(work, ...divisions),
-            data.chapter.full_descriptor, data.verse_to_highlight,
+            data.chapter.full_descriptor,
+            data.verse_to_highlight,
+            data.chapter.description,
           );
 
           // Update the URL if we were redirected
