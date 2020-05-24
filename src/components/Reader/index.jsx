@@ -412,7 +412,7 @@ class Reader extends Component {
             loading: false,
             loadedWork: data.work.title_slug,
             divisions,
-            referenceValue: data.chapter.description,
+            referenceValue: data.reference_descriptor,
             referenceValid: true,
             redirectedFrom,
             redirectedTo,
