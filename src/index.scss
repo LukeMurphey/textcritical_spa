@@ -51,9 +51,18 @@ table.ui.inverted.table > tbody {
     > .header {
         color: $textColorDark;
     }
+    > .content > .header {
+        color: $textColorDark;
+    }
 }
 
 .ui.warning.message.inverted {
     background-color: #774100;
-    box-shadow: 0px 0px 0px 1px #cc7103 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0)
+    box-shadow: 0px 0px 0px 1px #cc7103 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+    > .header {
+        color: $textColorDark;
+    }
+    > .content > .header {
+        color: $textColorDark;
+    }
 }

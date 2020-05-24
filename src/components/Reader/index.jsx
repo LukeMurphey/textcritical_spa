@@ -173,15 +173,23 @@ class Reader extends Component {
    */
   componentDidUpdate(prevProps) {
     const { location, match } = this.props;
-    const { redirectedTo, data } = this.state;
+    const { redirectedTo, data, highlightedVerse } = this.state;
 
     // See if we know that this is a reference to this chapter
     const existingChapter = this.verseReferences[location.pathname];
-    console.log('existingChapter', existingChapter);
 
     // Check if the chapter we have loaded already
     if (data && data.chapter && existingChapter
-      && existingChapter === data.chapter.full_descriptor) {
+      && existingChapter.chapter === data.chapter.full_descriptor) {
+      // Get the highlighted verse
+      const highlightedVerseRef = existingChapter.verse;
+
+      if (highlightedVerse !== highlightedVerseRef) {
+        this.setState({
+          highlightedVerse: highlightedVerseRef,
+        });
+      }
+
       // Don't load the new one, we already have it on the page!
       return;
     }
@@ -196,7 +204,6 @@ class Reader extends Component {
         match.params.division4,
         match.params.leftovers,
       ].filter((entry) => entry);
-
       this.loadChapter(match.params.work, ...divisions);
     }
   }
@@ -215,7 +222,7 @@ class Reader extends Component {
     const { data } = this.state;
 
     // Add the verse to the list
-    this.addVerseToHistoryList(href, data.chapter.full_descriptor);
+    this.addVerseToHistoryList(href, data.chapter.full_descriptor, verse);
 
     this.setState({
       referenceValue: verseDescriptor,
@@ -323,11 +330,14 @@ class Reader extends Component {
 
   /**
    * Add the href to the list so that we can remember what URL is capable of loading it.
-   * @param {string} href The partial URL of the page
-   * @param {string} chapter The chapter descriptor
+   * @param {string} href The partial URL of the page (e.g. "/work/new-testament/John/8/4")
+   * @param {string} chapter The chapter descriptor (e.g. "John/9")
    */
-  addVerseToHistoryList(href, chapter) {
-    this.verseReferences[href] = chapter;
+  addVerseToHistoryList(href, chapter, verse) {
+    this.verseReferences[href] = {
+      chapter,
+      verse,
+    };
   }
 
   /**
@@ -379,12 +389,13 @@ class Reader extends Component {
       errorDescription: null,
       redirectedFrom: null,
       redirectedTo: null,
+      highlightedVerse: null,
     });
 
     fetch(ENDPOINT_READ_WORK(work, ...divisions))
       .then((res) => (Promise.all([res.status, res.json()])))
       .then(([status, data]) => {
-        if (status === 200) {
+        if (status >= 200 && status < 300) {
           let redirectedFrom = null;
           let redirectedTo = null;
 
@@ -403,7 +414,14 @@ class Reader extends Component {
             referenceValid: true,
             redirectedFrom,
             redirectedTo,
+            highlightedVerse: data.verse_to_highlight,
           });
+
+          // Add the verse to the list
+          this.addVerseToHistoryList(
+            READ_WORK(work, ...divisions),
+            data.chapter.full_descriptor, data.verse_to_highlight,
+          );
 
           // Update the URL if we were redirected
           if (redirectedFrom) {
@@ -618,7 +636,7 @@ class Reader extends Component {
     const {
       modal, data, errorDescription, loading, referenceValid, referenceValue, selectedWord,
       popupX, popupY, popupPositionRight, popupPositionBelow, bookSelectionOpen, errorTitle,
-      errorMessage, selectedNote, redirectedFrom, sidebarVisible, loadedWork,
+      errorMessage, selectedNote, redirectedFrom, sidebarVisible, loadedWork, highlightedVerse,
     } = this.state;
 
     const { inverted } = this.props;
@@ -906,7 +924,7 @@ class Reader extends Component {
                   onWordClick={onWordClick}
                   onNoteClick={onNoteClick}
                   onClickAway={() => this.closeModal()}
-                  highlightedVerse={data.verse_to_highlight}
+                  highlightedVerse={highlightedVerse}
                   inverted={inverted}
                 />
               </Container>

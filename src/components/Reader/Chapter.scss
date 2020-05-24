@@ -54,11 +54,9 @@
     &:hover { color: #08C; }
 }
 
-.verse-container.highlighted {
-    .verse-link{
-        background-color: red;
-        border-radius: 2px;
-    }
+.verse-link.highlighted{
+    background-color: red;
+    border-radius: 2px;
 
     .verse.number {
         color: white;

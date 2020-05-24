@@ -1,5 +1,6 @@
 import React, { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
+import parse, { domToReact } from 'html-react-parser';
 import { getPositionRecommendation } from '../PopupDialog';
 import './Chapter.scss';
 
@@ -75,8 +76,53 @@ class Chapter extends Component {
     return [element.textContent];
   }
 
+  /**
+   * Get the chapter content
+   * @param {string} className The class name to put the content under
+   */
+  getChapterContent(className) {
+    const { content, highlightedVerse } = this.props;
+
+    // These options will process the nodes such that the node gets a tag indicating that it is
+    // highlighted
+    const options = {
+      replace: ({ attribs, children }) => {
+        if (!attribs) return undefined;
+
+        if (attribs && attribs['data-verse'] === highlightedVerse) {
+          return (
+            <a
+              className="verse-link highlighted"
+              href={attribs.href}
+              data-verse={attribs['data-verse']}
+              data-verse-descriptor={attribs['data-verse-descriptor']}
+              id={attribs.id}
+            >
+              {domToReact(children, options)}
+            </a>
+          );
+        }
+
+        return undefined;
+      },
+    };
+
+    const reactElement = parse(content, options);
+
+    return (
+      <div
+        className={className}
+        ref={this.wrapper}
+      >
+        {reactElement}
+      </div>
+    );
+  }
+
   addHandler(handler, type = 'click') {
-    this.wrapper.current.addEventListener(type, (event) => handler(event));
+    if (this.wrapper.current) {
+      this.wrapper.current.addEventListener(type, (event) => handler(event));
+    }
   }
 
   removeHandler(handler, type = 'click') {
@@ -178,10 +224,10 @@ class Chapter extends Component {
     onVerseClick(verseDescriptor, verse, id, href, event.x, event.y);
 
     // Unhighlight existing verses
-    this.unhighlistVerses();
+    // this.unhighlistVerses();
 
     // Highlight the verse
-    target.parentElement.classList.toggle('highlighted');
+    // target.parentElement.classList.toggle('highlighted');
   }
 
   /**
@@ -226,11 +272,7 @@ class Chapter extends Component {
   }
 
   render() {
-    const { content, highlightedVerse, inverted } = this.props;
-
-    if (highlightedVerse && !this.highlightOverridden) {
-      setTimeout(() => this.highlightVerse(highlightedVerse), 100);
-    }
+    const { inverted } = this.props;
 
     // Determine the class name
     let className = 'view_read_work';
@@ -244,12 +286,7 @@ class Chapter extends Component {
     this.wrapper = createRef();
     return (
       <>
-        <div
-          className={className}
-          ref={this.wrapper}
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+        {this.getChapterContent(className)}
       </>
     );
   }
