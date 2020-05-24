@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import {
-  Table, Placeholder, Image, Input, Visibility,
+  Table, Placeholder, Image, Input,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+// regeneratorRuntime is needed for AwesomeDebouncePromise
 // eslint-disable-next-line no-unused-vars
 import regeneratorRuntime from 'regenerator-runtime';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
@@ -42,16 +43,21 @@ class BookSelection extends Component {
     });
   }
 
-  getWorkRow(work) {
+  getWorkRow(work, lazyLoad = true) {
     const { onSelectWork } = this.props;
     const handler = () => { onSelectWork(work.title_slug); };
 
     return (
       <Table.Row key={work.title_slug}>
         <Table.Cell style={ClickStyle} onClick={handler}>
-          <LazyImage src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)}>
-            <Image src="/book-cover-small.png" />
-          </LazyImage>
+          { lazyLoad && (
+            <LazyImage src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)}>
+              <Image style={{ width: 32 }} src="/book-cover-small.png" />
+            </LazyImage>
+          )}
+          { !lazyLoad && (
+            <Image src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)} />
+          )}
         </Table.Cell>
         <Table.Cell style={ClickStyle} onClick={handler}>
           <div>{work.title}</div>
@@ -105,8 +111,8 @@ class BookSelection extends Component {
             <Table.Body>
               {works
                 .filter((work) => BookSelection.workMatchesSearch(work, searchLowerCase))
-                .map((work) => (
-                  this.getWorkRow(work)
+                .map((work, index) => (
+                  this.getWorkRow(work, index > 15)
                 ))}
             </Table.Body>
           </Table>
