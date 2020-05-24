@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import {
-  Table, Placeholder, Image, Input,
+  Table, Placeholder, Image, Input, Visibility,
 } from 'semantic-ui-react';
-import LazyLoad from 'react-lazy-load';
 import PropTypes from 'prop-types';
 // eslint-disable-next-line no-unused-vars
 import regeneratorRuntime from 'regenerator-runtime';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_WORKS_LISTS, ENDPOINT_WORK_IMAGE } from '../Endpoints';
+import LazyImage from '../LazyImage';
 import ErrorMessage from '../ErrorMessage';
 
 const ClickStyle = {
@@ -49,9 +49,9 @@ class BookSelection extends Component {
     return (
       <Table.Row key={work.title_slug}>
         <Table.Cell style={ClickStyle} onClick={handler}>
-          <LazyLoad>
-            <Image src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)} />
-          </LazyLoad>
+          <LazyImage src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)}>
+            <Image src="/book-cover-small.png" />
+          </LazyImage>
         </Table.Cell>
         <Table.Cell style={ClickStyle} onClick={handler}>
           <div>{work.title}</div>
