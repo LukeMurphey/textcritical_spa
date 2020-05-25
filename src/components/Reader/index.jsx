@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from '../Endpoints';
 import { SEARCH, READ_WORK } from '../URLs';
+import { toTitleCase } from '../Utils';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
@@ -58,7 +59,7 @@ class Reader extends Component {
   static convertDivisionsToOptions(divisions) {
     return divisions.map((d) => ({
       key: d.description,
-      text: d.label,
+      text: toTitleCase(d.label),
       value: d.descriptor,
     }));
   }
