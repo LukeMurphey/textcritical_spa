@@ -544,6 +544,11 @@ class Reader extends Component {
   changeReference(event, info) {
     const { loadedWork } = this.state;
 
+    // Stop if we have nothing to lookup
+    if (!loadedWork || !info.value) {
+      return;
+    }
+
     this.setState({
       referenceValue: info.value,
       referenceValid: true,
@@ -588,6 +593,11 @@ class Reader extends Component {
    */
   goToReference() {
     const { loadedWork, referenceValue } = this.state;
+
+    // Stop if we have no where to go
+    if (!loadedWork || !referenceValue) {
+      return;
+    }
 
     // Verify the reference is valid before going to it
     fetch(ENDPOINT_RESOLVE_REFERENCE(loadedWork, referenceValue))
