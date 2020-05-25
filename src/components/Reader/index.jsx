@@ -802,7 +802,7 @@ class Reader extends Component {
           )}
         </Menu>
         {mode === MODE_DONE && (
-          <Sidebar.Pushable as={Segment} basic style={SidebarStyle} className={`${classNameSuffix}`}>
+          <>
             <Sidebar
               as={Menu}
               animation="overlay"
@@ -825,128 +825,130 @@ class Reader extends Component {
                 Search
               </Menu.Item>
             </Sidebar>
-            <Sidebar.Pusher>
-              <Container className={`underMenu ${classNameSuffix}`} basic>
-                {data && !loading && modal === 'aboutWork' && (
-                  <AboutWorkDialog
-                    work={loadedWork}
-                    onClose={() => this.closeModal()}
-                  />
-                )}
-                {data && !loading && modal === 'downloadWork' && (
-                  <WorkDownloadDialog
-                    work={loadedWork}
-                    onClose={() => this.closeModal()}
-                  />
-                )}
-                {data && !loading && modal === 'word' && (
-                  <WordInformation
-                    inverted={inverted}
-                    positionBelow={popupPositionBelow}
-                    positionRight={popupPositionRight}
-                    x={popupX}
-                    y={popupY}
-                    word={selectedWord}
-                    work={loadedWork}
-                    onClose={() => this.closeModal()}
-                  />
-                )}
-                {data && !loading && modal === 'note' && (
-                  <FootnotePopup
-                    inverted={inverted}
-                    positionBelow={popupPositionBelow}
-                    positionRight={popupPositionRight}
-                    x={popupX}
-                    y={popupY}
-                    notes={selectedNote}
-                    onClose={() => this.closeModal()}
-                  />
-                )}
-                <Grid inverted={inverted}>
-                  <Grid.Row>
-                    <Grid.Column width={8}>
-                      <Header inverted={inverted} floated="left" as="h3">
-                        {data.chapter.parent_division && (
-                          <>
-                            <Dropdown
-                              inline
-                              floating
-                              deburr
-                              scrolling
-                              search={Reader.workSearch}
-                              options={Reader.convertDivisionsToOptions(data.divisions)}
-                              value={data.chapter.parent_division.descriptor}
-                              onChange={(event, info) => this.changeChapter(event, info)}
-                            />
-                            <div style={{ display: 'inline-block', paddingLeft: 6 }}>
-                              {data.chapter.type}
-                              {` ${data.chapter.descriptor}`}
-                            </div>
-                          </>
-                        )}
-                      </Header>
-                    </Grid.Column>
-                    <Grid.Column width={8}>
-                      <Container textAlign="right">
-                        <Header inverted={inverted} floated="right" as="h3">{data.work.title}</Header>
-                      </Container>
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-                <div style={{ marginTop: 6 }} />
-                {data && data.warnings.map((warning) => (
-                  <Message
-                    className={classNameSuffix}
-                    warning
-                    key={warning[0]}
-                    header={warning[0]}
-                    content={warning[1]}
-                  />
-                ))}
-                {redirectedFrom && (
-                <Message info className={classNameSuffix}>
-                  <p>
-                    The URL you were using was old so you were redirected to the new one.
-                    You may want to update your shortcuts.
-                  </p>
-                </Message>
-                )}
-                {data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
-                  <>
-                    <Segment.Group horizontal style={{ border: 0, marginBottom: 4 }} className={`${classNameSuffix}`}>
-                      <Segment basic inverted style={{ padding: 0 }}>
-                        {data.completed_chapters_in_book}
-                        {' '}
-                        of
-                        {' '}
-                        {data.total_chapters_in_book}
-                        {' '}
-                        chapters
-                        {' '}
-                      </Segment>
-                      <Segment basic inverted style={{ textAlign: 'right', padding: 0 }}>
-                        {Math.round(data.progress_in_book)}
-                        % through the book
-                      </Segment>
-                    </Segment.Group>
-                    <Progress className="bookProgress" color="blue" style={{ margin: '0 0 8px 0' }} percent={data.progress_in_book} size="tiny" />
-                  </>
-                )}
+            <Sidebar.Pushable as={Segment} basic style={SidebarStyle} className={`${classNameSuffix}`}>
+              <Sidebar.Pusher>
+                <Container className={`underMenu ${classNameSuffix}`} basic>
+                  {data && !loading && modal === 'aboutWork' && (
+                    <AboutWorkDialog
+                      work={loadedWork}
+                      onClose={() => this.closeModal()}
+                    />
+                  )}
+                  {data && !loading && modal === 'downloadWork' && (
+                    <WorkDownloadDialog
+                      work={loadedWork}
+                      onClose={() => this.closeModal()}
+                    />
+                  )}
+                  {data && !loading && modal === 'word' && (
+                    <WordInformation
+                      inverted={inverted}
+                      positionBelow={popupPositionBelow}
+                      positionRight={popupPositionRight}
+                      x={popupX}
+                      y={popupY}
+                      word={selectedWord}
+                      work={loadedWork}
+                      onClose={() => this.closeModal()}
+                    />
+                  )}
+                  {data && !loading && modal === 'note' && (
+                    <FootnotePopup
+                      inverted={inverted}
+                      positionBelow={popupPositionBelow}
+                      positionRight={popupPositionRight}
+                      x={popupX}
+                      y={popupY}
+                      notes={selectedNote}
+                      onClose={() => this.closeModal()}
+                    />
+                  )}
+                  <Grid inverted={inverted}>
+                    <Grid.Row>
+                      <Grid.Column width={8}>
+                        <Header inverted={inverted} floated="left" as="h3">
+                          {data.chapter.parent_division && (
+                            <>
+                              <Dropdown
+                                inline
+                                floating
+                                deburr
+                                scrolling
+                                search={Reader.workSearch}
+                                options={Reader.convertDivisionsToOptions(data.divisions)}
+                                value={data.chapter.parent_division.descriptor}
+                                onChange={(event, info) => this.changeChapter(event, info)}
+                              />
+                              <div style={{ display: 'inline-block', paddingLeft: 6 }}>
+                                {data.chapter.type}
+                                {` ${data.chapter.descriptor}`}
+                              </div>
+                            </>
+                          )}
+                        </Header>
+                      </Grid.Column>
+                      <Grid.Column width={8}>
+                        <Container textAlign="right">
+                          <Header inverted={inverted} floated="right" as="h3">{data.work.title}</Header>
+                        </Container>
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
+                  <div style={{ marginTop: 6 }} />
+                  {data && data.warnings.map((warning) => (
+                    <Message
+                      className={classNameSuffix}
+                      warning
+                      key={warning[0]}
+                      header={warning[0]}
+                      content={warning[1]}
+                    />
+                  ))}
+                  {redirectedFrom && (
+                  <Message info className={classNameSuffix}>
+                    <p>
+                      The URL you were using was old so you were redirected to the new one.
+                      You may want to update your shortcuts.
+                    </p>
+                  </Message>
+                  )}
+                  {data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
+                    <>
+                      <Segment.Group horizontal style={{ border: 0, marginBottom: 4 }} className={`${classNameSuffix}`}>
+                        <Segment basic inverted style={{ padding: 0 }}>
+                          {data.completed_chapters_in_book}
+                          {' '}
+                          of
+                          {' '}
+                          {data.total_chapters_in_book}
+                          {' '}
+                          chapters
+                          {' '}
+                        </Segment>
+                        <Segment basic inverted style={{ textAlign: 'right', padding: 0 }}>
+                          {Math.round(data.progress_in_book)}
+                          % through the book
+                        </Segment>
+                      </Segment.Group>
+                      <Progress className="bookProgress" color="blue" style={{ margin: '0 0 8px 0' }} percent={data.progress_in_book} size="tiny" />
+                    </>
+                  )}
 
-                <Chapter
-                  chapter={data.chapter}
-                  content={data.content}
-                  work={data.work}
-                  onVerseClick={onVerseClick}
-                  onWordClick={onWordClick}
-                  onNoteClick={onNoteClick}
-                  onClickAway={() => this.closeModal()}
-                  highlightedVerse={highlightedVerse}
-                  inverted={inverted}
-                />
-              </Container>
-            </Sidebar.Pusher>
-          </Sidebar.Pushable>
+                  <Chapter
+                    chapter={data.chapter}
+                    content={data.content}
+                    work={data.work}
+                    onVerseClick={onVerseClick}
+                    onWordClick={onWordClick}
+                    onNoteClick={onNoteClick}
+                    onClickAway={() => this.closeModal()}
+                    highlightedVerse={highlightedVerse}
+                    inverted={inverted}
+                  />
+                </Container>
+              </Sidebar.Pusher>
+            </Sidebar.Pushable>
+          </>
         )}
         {mode === MODE_ERROR && (
           <Container style={ContainerStyle} className={`${classNameSuffix}`}>
