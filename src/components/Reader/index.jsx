@@ -37,7 +37,7 @@ const PriorPageStyle = {
 };
 
 const ContainerStyle = {
-  marginTop: 60,
+  paddingTop: 60,
 };
 
 const SidebarStyle = {
@@ -85,29 +85,31 @@ class Reader extends Component {
    */
   static getPlaceholder(inverted = false) {
     return (
-      <Placeholder inverted={inverted} style={ContainerStyle}>
-        <Placeholder.Header>
-          <Placeholder.Line />
-        </Placeholder.Header>
-        <Placeholder.Paragraph>
-          <Placeholder.Line />
-          <Placeholder.Line />
-          <Placeholder.Line />
-          <Placeholder.Line />
-        </Placeholder.Paragraph>
-        <Placeholder.Paragraph>
-          <Placeholder.Line />
-          <Placeholder.Line />
-          <Placeholder.Line />
-          <Placeholder.Line />
-          <Placeholder.Line />
-        </Placeholder.Paragraph>
-        <Placeholder.Paragraph>
-          <Placeholder.Line />
-          <Placeholder.Line />
-          <Placeholder.Line />
-        </Placeholder.Paragraph>
-      </Placeholder>
+      <div style={{ paddingTop: 16 }}>
+        <Placeholder inverted={inverted}>
+          <Placeholder.Header>
+            <Placeholder.Line />
+          </Placeholder.Header>
+          <Placeholder.Paragraph>
+            <Placeholder.Line />
+            <Placeholder.Line />
+            <Placeholder.Line />
+            <Placeholder.Line />
+          </Placeholder.Paragraph>
+          <Placeholder.Paragraph>
+            <Placeholder.Line />
+            <Placeholder.Line />
+            <Placeholder.Line />
+            <Placeholder.Line />
+            <Placeholder.Line />
+          </Placeholder.Paragraph>
+          <Placeholder.Paragraph>
+            <Placeholder.Line />
+            <Placeholder.Line />
+            <Placeholder.Line />
+          </Placeholder.Paragraph>
+        </Placeholder>
+      </div>
     );
   }
 
