@@ -18,7 +18,7 @@ class LazyImage extends Component {
 
   render() {
     const { show } = this.state;
-    const { size, children, src } = this.props;
+    const { size, children, src, style } = this.props;
     if (!show) {
       return (
         <Visibility as="span" onOnScreen={() => this.showImage()}>
@@ -27,7 +27,7 @@ class LazyImage extends Component {
         </Visibility>
       );
     }
-    return <Image src={src} />;
+    return <Image style={style} src={src} />;
   }
 }
 
@@ -35,11 +35,14 @@ LazyImage.propTypes = {
   src: PropTypes.string.isRequired,
   size: PropTypes.string,
   children: PropTypes.element,
+  // eslint-disable-next-line react/forbid-prop-types
+  style: PropTypes.object,
 };
 
 LazyImage.defaultProps = {
   size: 'tiny',
   children: null,
+  style: {},
 };
 
 export default LazyImage;

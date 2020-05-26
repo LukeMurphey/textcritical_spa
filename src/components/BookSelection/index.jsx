@@ -43,22 +43,24 @@ class BookSelection extends Component {
     });
   }
 
-  getWorkRow(work, lazyLoad = true) {
+  getWorkRow(work, lazyLoad = true, displayWorkImages = true) {
     const { onSelectWork } = this.props;
     const handler = () => { onSelectWork(work.title_slug); };
 
     return (
       <Table.Row key={work.title_slug}>
-        <Table.Cell style={ClickStyle} onClick={handler}>
-          { lazyLoad && (
-            <LazyImage src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)}>
-              <Image style={{ width: 32 }} src="/book-cover-small.png" />
-            </LazyImage>
-          )}
-          { !lazyLoad && (
-            <Image src={ENDPOINT_WORK_IMAGE(work.title_slug, 32)} />
-          )}
-        </Table.Cell>
+        { displayWorkImages && (
+          <Table.Cell className="workImage" style={ClickStyle} onClick={handler}>
+            { lazyLoad && (
+              <LazyImage style={{ width: 32 }} src={ENDPOINT_WORK_IMAGE(work.title_slug, 64)}>
+                <Image style={{ width: 32 }} src="/book-cover-small.png" />
+              </LazyImage>
+            )}
+            { !lazyLoad && (
+              <Image style={{ width: 32 }} src={ENDPOINT_WORK_IMAGE(work.title_slug, 64)} />
+            )}
+          </Table.Cell>
+        )}
         <Table.Cell style={ClickStyle} onClick={handler}>
           <div>{work.title}</div>
           <div style={{ color: '#888' }}>
@@ -85,17 +87,24 @@ class BookSelection extends Component {
   }
 
   render() {
+    const { displayWorkImages } = this.props;
     const { works, error, search } = this.state;
     const searchLowerCase = search.toLowerCase();
 
     const onChange = (event, data) => { this.onSearchChange(data); };
     const onChangeDebounced = AwesomeDebouncePromise(onChange, 500);
 
+    let displayWorkImagesEx = displayWorkImages;
+
+    if (displayWorkImages === null) {
+      displayWorkImagesEx = window.innerWidth > 767;
+    }
+
     return (
       <>
         {!error && works && (
         <div>
-          <Input onChange={onChangeDebounced} style={{ width: 500 }} placeholder="Search..." />
+          <Input onChange={onChangeDebounced} style={{ width: '100%' }} placeholder="Search..." />
         </div>
         )}
         <div style={{ maxHeight: 400, width: 500, overflowY: 'auto' }}>
@@ -112,7 +121,7 @@ class BookSelection extends Component {
               {works
                 .filter((work) => BookSelection.workMatchesSearch(work, searchLowerCase))
                 .map((work, index) => (
-                  this.getWorkRow(work, index > 15)
+                  this.getWorkRow(work, index > 15, displayWorkImagesEx)
                 ))}
             </Table.Body>
           </Table>
@@ -134,6 +143,11 @@ class BookSelection extends Component {
 
 BookSelection.propTypes = {
   onSelectWork: PropTypes.func.isRequired,
+  displayWorkImages: PropTypes.bool,
+};
+
+BookSelection.defaultProps = {
+  displayWorkImages: null,
 };
 
 export default BookSelection;
