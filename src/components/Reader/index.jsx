@@ -713,7 +713,7 @@ class Reader extends Component {
 
     return (
       <>
-        <Menu inverted={inverted} className={`control ${classNameSuffix}`} fixed="top">
+        <Menu inverted={inverted} style={{ zIndex: 103 }} className={`control ${classNameSuffix}`} fixed="top">
           <Container>
             <Menu.Item
               name="works"
