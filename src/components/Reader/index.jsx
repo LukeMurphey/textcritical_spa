@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Segment,
-  Message, Menu, Popup, Sidebar, Image, Progress,
+  Message, Menu, Popup, Sidebar, Image, Progress, Responsive,
 } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -733,13 +733,14 @@ class Reader extends Component {
                 <Menu.Item
                   name="Library"
                 >
-                  <img style={{ width: 16 }} src={LibraryIcon} alt="React Logo" />
+                  <img style={{ width: 16 }} src={LibraryIcon} alt="Library" />
                 </Menu.Item>
               )}
             />
-            <Menu.Item>
+            <Menu.Item className="referenceJumpInputMenu">
               <Input
                 inverted={inverted}
+                className="referenceJumpInput"
                 action={
                   (
                     <Button
@@ -759,35 +760,39 @@ class Reader extends Component {
                 onKeyPress={(e, d) => this.onKeyPressed(e, d)}
               />
             </Menu.Item>
-            <Menu.Menu position="left">
-              <Dropdown
-                text="Other Versions"
-                inverted={inverted}
-                disabled={!referenceValid || !data || data.related_works.length === 0}
-                className="otherVersions"
-                item
-              >
-                <Dropdown.Menu>
-                  {data && data.related_works.map((work) => (
-                    <Dropdown.Item
-                      key={work.title_slug}
-                      text={work.title}
-                      description={work.language}
-                      onClick={() => this.changeWork(work.title_slug)}
-                    />
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            </Menu.Menu>
+            <Responsive minWidth={768}>
+              <Menu.Menu position="left">
+                <Dropdown
+                  text="Other Versions"
+                  inverted={inverted}
+                  disabled={!referenceValid || !data || data.related_works.length === 0}
+                  className="otherVersions"
+                  item
+                >
+                  <Dropdown.Menu>
+                    {data && data.related_works.map((work) => (
+                      <Dropdown.Item
+                        key={work.title_slug}
+                        text={work.title}
+                        description={work.language}
+                        onClick={() => this.changeWork(work.title_slug)}
+                      />
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Menu.Menu>
+            </Responsive>
             <div style={{ float: 'right', marginLeft: 'auto', marginTop: 11 }}>
-              <Dropdown icon="ellipsis vertical" direction="left">
-                <Dropdown.Menu>
-                  <Dropdown.Item
-                    text="About TextCritical.net"
-                    onClick={() => this.openAboutModal()}
-                  />
-                </Dropdown.Menu>
-              </Dropdown>
+              <Responsive minWidth={768}>
+                <Dropdown icon="ellipsis vertical" direction="left">
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      text="About TextCritical.net"
+                      onClick={() => this.openAboutModal()}
+                    />
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Responsive>
             </div>
           </Container>
           {mode === MODE_DONE && (

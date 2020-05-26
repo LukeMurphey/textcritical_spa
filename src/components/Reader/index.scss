@@ -17,6 +17,18 @@
     }
 }
 
+@media only screen {
+    .ui.inverted.action.input.referenceJumpInput, .referenceJumpInputMenu {
+        width: 130px;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .ui.inverted.action.input.referenceJumpInput, .referenceJumpInputMenu {
+        width: 264px;
+    }
+}
+
 .menu.control.inverted{
     background-color: $controlColorDark;
     border-bottom: 1px solid $highlightColorDark;
