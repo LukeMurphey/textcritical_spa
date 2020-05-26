@@ -12,6 +12,7 @@ import { toTitleCase } from '../Utils';
 import Chapter from './Chapter';
 import ErrorMessage from '../ErrorMessage';
 import AboutWorkDialog from '../AboutWorkDialog';
+import AboutDialog from '../AboutDialog';
 import WorkDownloadDialog from '../WorkDownloadDialog';
 import WordInformation from '../WordInformation/WordInformationPopup';
 import FootnotePopup from '../FootnotePopup';
@@ -477,6 +478,13 @@ class Reader extends Component {
   }
 
   /**
+   * Open the about modal.
+   */
+  openAboutModal() {
+    this.setState({ modal: 'about' });
+  }
+
+  /**
    * Preload the next and prior chapter
    */
   preloadChapters() {
@@ -772,9 +780,12 @@ class Reader extends Component {
               </Dropdown>
             </Menu.Menu>
             <div style={{ float: 'right', marginLeft: 'auto', marginTop: 11 }}>
-              <Dropdown icon="ellipsis vertical">
+              <Dropdown icon="ellipsis vertical" direction="left">
                 <Dropdown.Menu>
-                  <Dropdown.Item text="About TextCritical.net" />
+                  <Dropdown.Item
+                    text="About TextCritical.net"
+                    onClick={() => this.openAboutModal()}
+                  />
                 </Dropdown.Menu>
               </Dropdown>
             </div>
@@ -974,6 +985,9 @@ class Reader extends Component {
               <NoWorkSelected onClick={() => this.setBookSelectionOpen()} inverted={inverted} />
             </div>
           </Container>
+        )}
+        {modal === 'about' && (
+          <AboutDialog onClose={() => this.closeModal()} />
         )}
       </>
     );
