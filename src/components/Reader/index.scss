@@ -18,13 +18,13 @@
 }
 
 @media only screen {
-    .ui.inverted.action.input.referenceJumpInput, .referenceJumpInputMenu {
+    .ui.inverted.action.input.referenceJumpInput > input{
         width: 130px;
     }
 }
 
 @media only screen and (min-width: 768px) {
-    .ui.inverted.action.input.referenceJumpInput, .referenceJumpInputMenu {
+    .ui.inverted.action.input.referenceJumpInput > input{
         width: 264px;
     }
 }

@@ -737,7 +737,7 @@ class Reader extends Component {
                 </Menu.Item>
               )}
             />
-            <Menu.Item className="referenceJumpInputMenu">
+            <Menu.Item>
               <Input
                 inverted={inverted}
                 className="referenceJumpInput"
