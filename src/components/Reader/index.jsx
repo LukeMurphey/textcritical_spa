@@ -17,6 +17,7 @@ import WordInformation from '../WordInformation/WordInformationPopup';
 import FootnotePopup from '../FootnotePopup';
 import BookSelection from '../BookSelection';
 import NoWorkSelected from './NoWorkSelected';
+import LibraryIcon from '../Icons/Library.svg';
 import './index.scss';
 
 const MODE_LOADING = 0;
@@ -723,7 +724,9 @@ class Reader extends Component {
               trigger={(
                 <Menu.Item
                   name="Library"
-                />
+                >
+                  <img style={{ width: 16 }} src={LibraryIcon} alt="React Logo" />
+                </Menu.Item>
               )}
             />
             <Menu.Item>

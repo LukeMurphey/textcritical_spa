@@ -8,6 +8,7 @@
     "awesome-debounce-promise": "^2.1.0",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "clean-webpack-plugin": "^3.0.0",
+    "file-loader": "^6.0.0",
     "highcharts": "^8.1.0",
     "highcharts-react-official": "^3.0.0",
     "history": "^4.10.1",
