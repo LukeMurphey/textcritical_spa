@@ -60,9 +60,8 @@ const PopupDialog = (props) => {
     },
   };
 
-  const isSmallMode = () => {
-    return window.innerWidth < 1024;
-  }
+  // Determine if we ought to enter the mode for mobile devices
+  const isSmallMode = () => window.innerWidth < 1024;
 
   // Get the style appropriate for the segment to appear
   const getSegmentStyle = () => {
@@ -76,6 +75,14 @@ const PopupDialog = (props) => {
     return segmentStyle;
   };
 
+  // This applies to the footer
+  const footerStyle = {
+    position: 'sticky',
+    bottom: 0,
+    width: '100%',
+  };
+
+  // Get the main content for the popuo
   const getContent = () => (
     <Segment className="popupDialog" inverted={inverted} style={getSegmentStyle()}>
       <div style={{ padding: 15 }}>
@@ -88,27 +95,24 @@ const PopupDialog = (props) => {
     </Segment>
   );
 
-  // This applies to the footer
-  const footerStyle = {
-    position: 'sticky',
-    bottom: 0,
-    width: '100%',
-  };
-
+  // Determine the height of the dialog
   const height = segmentStyle.height ? segmentStyle.height : 200;
 
+  // Calculate the vertical position
   if (positionBelow) {
     segmentStyle.top = y;
   } else {
     segmentStyle.top = y - height - 20;
   }
 
+  // Calculate the horizontal position
   if (positionRight) {
     segmentStyle.left = x;
   } else {
     segmentStyle.left = x - segmentStyle.width - 10;
   }
 
+  // If we are running in small mode, run it as a portal so that it can appear in a fixed location
   if (isSmallMode()) {
     return (
       <Portal open>
@@ -116,6 +120,8 @@ const PopupDialog = (props) => {
       </Portal>
     );
   }
+
+  // Otherwise, run it inline so that it is fixed in the rest of the content
   return getContent();
 };
 
