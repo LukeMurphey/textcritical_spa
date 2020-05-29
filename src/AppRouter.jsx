@@ -29,10 +29,10 @@ const AppRouter = ({ inverted }) => (
           <About inverted={inverted} />
         </Route>
         <Route exact path="/search">
-        <Search inverted={inverted} />
+          <Search inverted={inverted} />
         </Route>
         <Route exact path="/contact">
-        <ContactMe inverted={inverted} />
+          <ContactMe inverted={inverted} />
         </Route>
         <Route>
           <NotFound inverted={inverted} />
