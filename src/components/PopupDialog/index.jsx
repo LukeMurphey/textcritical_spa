@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Icon } from 'semantic-ui-react';
+import { Segment, Icon, Portal } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import './PopupDialog.scss';
 
@@ -37,7 +37,56 @@ const PopupDialog = (props) => {
     maxHeight: 300,
     overflowY: 'auto',
     padding: 0,
+    zIndex: 103,
   };
+
+  const segmentStyleTinyTop = {
+    ...segmentStyle,
+    ...{
+      top: 45,
+      left: 5,
+      width: 'calc(100% - 10px)',
+      position: 'fixed',
+    },
+  };
+
+  const segmentStyleTinyBelow = {
+    ...segmentStyle,
+    ...{
+      bottom: 5,
+      left: 5,
+      width: 'calc(100% - 10px)',
+      position: 'fixed',
+    },
+  };
+
+  const isSmallMode = () => {
+    return window.innerWidth < 1024;
+  }
+
+  // Get the style appropriate for the segment to appear
+  const getSegmentStyle = () => {
+    if (isSmallMode()) {
+      if (positionBelow) {
+        return segmentStyleTinyBelow;
+      }
+      return segmentStyleTinyTop;
+    }
+
+    return segmentStyle;
+  };
+
+  const getContent = () => (
+    <Segment className="popupDialog" inverted={inverted} style={getSegmentStyle()}>
+      <div style={{ padding: 15 }}>
+        <Icon style={closeButtonStyle} onClick={onClose}>&#10005;</Icon>
+        {children}
+      </div>
+      {footer && (
+        <Segment className="popupDialogFooter" inverted={inverted} basic style={footerStyle}>{footer}</Segment>
+      )}
+    </Segment>
+  );
 
   // This applies to the footer
   const footerStyle = {
@@ -60,17 +109,14 @@ const PopupDialog = (props) => {
     segmentStyle.left = x - segmentStyle.width - 10;
   }
 
-  return (
-    <Segment className="popupDialog" inverted={inverted} style={segmentStyle}>
-      <div style={{ padding: 15 }}>
-        <Icon style={closeButtonStyle} onClick={onClose}>&#10005;</Icon>
-        {children}
-      </div>
-      {footer && (
-        <Segment className="popupDialogFooter" inverted={inverted} basic style={footerStyle}>{footer}</Segment>
-      )}
-    </Segment>
-  );
+  if (isSmallMode()) {
+    return (
+      <Portal open>
+        {getContent()}
+      </Portal>
+    );
+  }
+  return getContent();
 };
 
 PopupDialog.propTypes = {

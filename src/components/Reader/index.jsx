@@ -658,11 +658,70 @@ class Reader extends Component {
     }
   }
 
+  getPopups() {
+    const {
+      modal, data, loading, selectedWord, popupX, popupY, popupPositionRight, popupPositionBelow,
+      selectedNote, loadedWork,
+    } = this.state;
+
+    const { inverted } = this.props;
+
+    return (
+      <>
+        {data && !loading && modal === 'word' && (
+          <WordInformation
+            inverted={inverted}
+            positionBelow={popupPositionBelow}
+            positionRight={popupPositionRight}
+            x={popupX}
+            y={popupY}
+            word={selectedWord}
+            work={loadedWork}
+            onClose={() => this.closeModal()}
+          />
+        )}
+        {data && !loading && modal === 'note' && (
+          <FootnotePopup
+            inverted={inverted}
+            positionBelow={popupPositionBelow}
+            positionRight={popupPositionRight}
+            x={popupX}
+            y={popupY}
+            notes={selectedNote}
+            onClose={() => this.closeModal()}
+          />
+        )}
+      </>
+    );
+  }
+
+  getDialogs() {
+    const {
+      modal, data, loading, loadedWork,
+    } = this.state;
+
+    return (
+      <>
+        {data && !loading && modal === 'aboutWork' && (
+          <AboutWorkDialog
+            work={loadedWork}
+            onClose={() => this.closeModal()}
+          />
+        )}
+        {data && !loading && modal === 'downloadWork' && (
+          <WorkDownloadDialog
+            work={loadedWork}
+            onClose={() => this.closeModal()}
+          />
+        )}
+      </>
+    );
+  }
+
   render() {
     const {
-      modal, data, errorDescription, loading, referenceValid, referenceValue, selectedWord,
-      popupX, popupY, popupPositionRight, popupPositionBelow, bookSelectionOpen, errorTitle,
-      errorMessage, selectedNote, redirectedFrom, sidebarVisible, loadedWork, highlightedVerse,
+      modal, data, errorDescription, loading, referenceValid, referenceValue, bookSelectionOpen,
+      errorTitle, errorMessage, redirectedFrom, sidebarVisible, loadedWork, highlightedVerse,
     } = this.state;
 
     const { inverted } = this.props;
@@ -847,41 +906,8 @@ class Reader extends Component {
             <Sidebar.Pushable as={Segment} basic style={SidebarStyle} className={`${classNameSuffix}`}>
               <Sidebar.Pusher>
                 <Container className={`underMenu ${classNameSuffix}`} basic>
-                  {data && !loading && modal === 'aboutWork' && (
-                    <AboutWorkDialog
-                      work={loadedWork}
-                      onClose={() => this.closeModal()}
-                    />
-                  )}
-                  {data && !loading && modal === 'downloadWork' && (
-                    <WorkDownloadDialog
-                      work={loadedWork}
-                      onClose={() => this.closeModal()}
-                    />
-                  )}
-                  {data && !loading && modal === 'word' && (
-                    <WordInformation
-                      inverted={inverted}
-                      positionBelow={popupPositionBelow}
-                      positionRight={popupPositionRight}
-                      x={popupX}
-                      y={popupY}
-                      word={selectedWord}
-                      work={loadedWork}
-                      onClose={() => this.closeModal()}
-                    />
-                  )}
-                  {data && !loading && modal === 'note' && (
-                    <FootnotePopup
-                      inverted={inverted}
-                      positionBelow={popupPositionBelow}
-                      positionRight={popupPositionRight}
-                      x={popupX}
-                      y={popupY}
-                      notes={selectedNote}
-                      onClose={() => this.closeModal()}
-                    />
-                  )}
+                  {this.getDialogs()}
+                  {this.getPopups()}
                   <Grid inverted={inverted}>
                     <Grid.Row>
                       <Grid.Column width={8}>
