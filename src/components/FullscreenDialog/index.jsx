@@ -1,5 +1,7 @@
 import React from 'react';
-import { Segment, Icon, Header, Divider } from 'semantic-ui-react';
+import {
+  Segment, Icon, Header, Divider,
+} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
 const BackButtonStyle = {
@@ -26,7 +28,7 @@ const ContentStyle = {
 };
 
 const FullscreenDialog = ({
-  children, onClickBack, title, inverted, backTitle,
+  children, onClickBack, inverted, backTitle,
 }) => (
   <>
     <Segment compact style={BackLinkStyle} onClick={onClickBack} inverted={inverted}>
@@ -49,13 +51,11 @@ FullscreenDialog.propTypes = {
   children: PropTypes.object.isRequired,
   inverted: PropTypes.bool,
   onClickBack: PropTypes.func,
-  title: PropTypes.string,
   backTitle: PropTypes.string,
 };
 
 FullscreenDialog.defaultProps = {
   inverted: false,
-  title: 'ok',
   onClickBack: () => {},
   backTitle: 'Back',
 };
