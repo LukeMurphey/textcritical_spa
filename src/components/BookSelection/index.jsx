@@ -214,10 +214,8 @@ class BookSelection extends Component {
 
 BookSelection.propTypes = {
   onSelectWork: PropTypes.func.isRequired,
-  relatedWorks: PropTypes.shape,
-  authors: PropTypes.arrayOf({
-    name: PropTypes.string,
-  }),
+  relatedWorks: PropTypes.arrayOf(PropTypes.shape),
+  authors: PropTypes.arrayOf(PropTypes.string),
 };
 
 BookSelection.defaultProps = {
