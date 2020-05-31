@@ -348,7 +348,22 @@ class Reader extends Component {
    * @param {string} work the title slug of a work to load
    */
   onSelectWork(work) {
-    this.navigateToChapter(work);
+    const { data, divisions } = this.state;
+    let isRelated = false;
+
+    // See if this is a related work
+    if (data && data.related_works) {
+      isRelated = data.related_works.find(
+        (relatedWork) => relatedWork.title_slug === work,
+      );
+    }
+
+    // If this is related work, then use the same divisions
+    if (isRelated) {
+      this.navigateToChapter(work, ...divisions);
+    } else {
+      this.navigateToChapter(work);
+    }
   }
 
   /**
@@ -961,7 +976,7 @@ class Reader extends Component {
             </Sidebar>
             <Sidebar.Pushable as={Segment} basic style={SidebarStyle} className={`${classNameSuffix}`}>
               <Sidebar.Pusher>
-                <Container className={`underMenu ${classNameSuffix}`} basic>
+                <Container className={`underMenu ${classNameSuffix}`}>
                   {this.getDialogs()}
                   {this.getPopups()}
                   <Grid inverted={inverted}>
@@ -1062,12 +1077,12 @@ class Reader extends Component {
           </Container>
         )}
         {mode === MODE_LOADING && (
-          <Container style={ContainerStyle} className={`${classNameSuffix}`} basic>
+          <Container style={ContainerStyle} className={`${classNameSuffix}`}>
             {Reader.getPlaceholder(inverted)}
           </Container>
         )}
         {mode === MODE_NOT_READY && (
-          <Container style={ContainerStyle} className={`${classNameSuffix}`} basic>
+          <Container style={ContainerStyle} className={`${classNameSuffix}`}>
             <div style={{ paddingTop: 24 }}>
               <NoWorkSelected onClick={() => this.setBookSelectionOpen()} inverted={inverted} />
             </div>
