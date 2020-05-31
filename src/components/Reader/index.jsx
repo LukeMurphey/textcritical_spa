@@ -835,6 +835,7 @@ class Reader extends Component {
 
     // Get the list of related works so that the book selector can put the related ones at the top
     const relatedWorks = data && data.related_works ? data.related_works : [];
+    const authors = data && data.authors ? data.authors : null;
 
     return (
       <>
@@ -850,6 +851,7 @@ class Reader extends Component {
               content={(
                 <BookSelection
                   relatedWorks={relatedWorks}
+                  authors={authors}
                   onSelectWork={(work) => this.onSelectWork(work)}
                 />
               )}
@@ -890,28 +892,6 @@ class Reader extends Component {
                 onKeyPress={(e, d) => this.onKeyPressed(e, d)}
               />
             </Menu.Item>
-            <Responsive minWidth={768}>
-              <Menu.Menu position="left">
-                <Dropdown
-                  text="Other Versions"
-                  inverted={inverted}
-                  disabled={!referenceValid || !data || data.related_works.length === 0}
-                  className="otherVersions"
-                  item
-                >
-                  <Dropdown.Menu>
-                    {data && data.related_works.map((work) => (
-                      <Dropdown.Item
-                        key={work.title_slug}
-                        text={work.title}
-                        description={work.language}
-                        onClick={() => this.changeWork(work.title_slug)}
-                      />
-                    ))}
-                  </Dropdown.Menu>
-                </Dropdown>
-              </Menu.Menu>
-            </Responsive>
             <div style={{ float: 'right', marginLeft: 'auto', marginTop: 11 }}>
               <Responsive minWidth={768}>
                 <Dropdown icon="ellipsis vertical" direction="left">

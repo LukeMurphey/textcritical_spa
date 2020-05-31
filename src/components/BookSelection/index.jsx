@@ -47,6 +47,7 @@ class BookSelection extends Component {
     const { onSelectWork } = this.props;
     const handler = () => { onSelectWork(work.title_slug); };
     const isRelated = this.isRelatedWork(work);
+    const isSameAuthor = this.isSameAuthor(work);
 
     return (
       <Table.Row key={work.title_slug}>
@@ -65,9 +66,14 @@ class BookSelection extends Component {
         <Table.Cell style={ClickStyle} onClick={handler}>
           <div>
             {work.title}
-            {isRelated && (
-              <Label as="a" basic color="teal" pointing="left">Related Work</Label>
-            )}
+            <div style={{ display: 'inline-block', paddingLeft: 4 }}>
+              {isRelated && (
+                <Label as="a" color="red">Related Work</Label>
+              )}
+              {isSameAuthor && (
+                <Label as="a" color="blue">Same Author</Label>
+              )}
+            </div>
           </div>
           <div style={{ color: '#888' }}>
             {work.language}
@@ -88,6 +94,26 @@ class BookSelection extends Component {
     const { relatedWorks } = this.props;
 
     const found = relatedWorks.find((relatedWork) => relatedWork.title_slug === work.title_slug);
+    if (found) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Determine if the work is by the same author
+   *
+   * @param {object} work The work to see if it is a related work
+   */
+  isSameAuthor(work) {
+    const { authors } = this.props;
+
+    if (!authors || !work.author) {
+      return false;
+    }
+
+    const found = authors.find((author) => author.name === work.author);
     if (found) {
       return true;
     }
@@ -184,10 +210,14 @@ class BookSelection extends Component {
 BookSelection.propTypes = {
   onSelectWork: PropTypes.func.isRequired,
   relatedWorks: PropTypes.shape,
+  authors: PropTypes.arrayOf({
+    name: PropTypes.string,
+  }),
 };
 
 BookSelection.defaultProps = {
   relatedWorks: [],
+  authors: [],
 };
 
 export default BookSelection;
