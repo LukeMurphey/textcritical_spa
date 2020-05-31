@@ -235,14 +235,19 @@ class Reader extends Component {
    */
   componentDidUpdate(prevProps) {
     const { location, match } = this.props;
-    const { redirectedTo, data, highlightedVerse } = this.state;
+    const {
+      redirectedTo, data, highlightedVerse, loadedWork,
+    } = this.state;
 
     // See if we know that this is a reference to this chapter
     const existingChapter = this.verseReferences[location.pathname];
 
     // Check if the chapter we have loaded already
+    // This needs to check the loaded work too, since this may be reference for another work
     if (data && data.chapter && existingChapter
-      && existingChapter.chapter === data.chapter.full_descriptor) {
+      && existingChapter.chapter === data.chapter.full_descriptor
+      && (loadedWork && loadedWork.title_slug !== match.params.work)
+    ) {
       // Get the highlighted verse
       const highlightedVerseRef = existingChapter.verse;
 
