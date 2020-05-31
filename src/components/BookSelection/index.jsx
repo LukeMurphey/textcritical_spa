@@ -66,7 +66,7 @@ class BookSelection extends Component {
         <Table.Cell style={ClickStyle} onClick={handler}>
           <div>
             {work.title}
-            <div style={{ display: 'inline-block', float: 'right', paddingLeft: 4 }}>
+            <div style={{ display: 'inline-block', float: 'right', paddingRight: 4 }}>
               {isRelated && onLargeScreen && (
                 <Label as="a" color="red">Related Work</Label>
               )}
