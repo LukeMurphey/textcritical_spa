@@ -93,11 +93,11 @@ class BookSelection extends Component {
     const onChange = (event, data) => { this.onSearchChange(data); };
     const onChangeDebounced = AwesomeDebouncePromise(onChange, 500);
 
+    // Don't show the images on small screens
     const displayWorkImages = window.innerWidth > 767;
-    let width = 500;
-    if (window.innerWidth < 767) {
-      width = 250;
-    }
+
+    // Change the width on small screens
+    const width = window.innerWidth > 767 ? 500 : 250;
 
     return (
       <>
