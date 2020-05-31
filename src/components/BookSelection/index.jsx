@@ -43,7 +43,7 @@ class BookSelection extends Component {
     });
   }
 
-  getWorkRow(work, lazyLoad = true, displayWorkImages = true) {
+  getWorkRow(work, lazyLoad = true, onLargeScreen = true) {
     const { onSelectWork } = this.props;
     const handler = () => { onSelectWork(work.title_slug); };
     const isRelated = this.isRelatedWork(work);
@@ -51,7 +51,7 @@ class BookSelection extends Component {
 
     return (
       <Table.Row key={work.title_slug}>
-        { displayWorkImages && (
+        { onLargeScreen && (
           <Table.Cell className="workImage" style={ClickStyle} onClick={handler}>
             { lazyLoad && (
               <LazyImage style={{ width: 32 }} src={ENDPOINT_WORK_IMAGE(work.title_slug, 64)}>
@@ -66,12 +66,18 @@ class BookSelection extends Component {
         <Table.Cell style={ClickStyle} onClick={handler}>
           <div>
             {work.title}
-            <div style={{ display: 'inline-block', paddingLeft: 4 }}>
-              {isRelated && (
+            <div style={{ display: 'inline-block', float: 'right', paddingLeft: 4 }}>
+              {isRelated && onLargeScreen && (
                 <Label as="a" color="red">Related Work</Label>
               )}
-              {isSameAuthor && (
+              {isSameAuthor && onLargeScreen && (
                 <Label as="a" color="blue">Same Author</Label>
+              )}
+              {isRelated && !onLargeScreen && (
+                <Label as="a" color="red" circular empty />
+              )}
+              {isSameAuthor && !onLargeScreen && (
+                <Label as="a" color="blue" circular empty />
               )}
             </div>
           </div>
@@ -160,11 +166,10 @@ class BookSelection extends Component {
     const onChange = (event, data) => { this.onSearchChange(data); };
     const onChangeDebounced = AwesomeDebouncePromise(onChange, 500);
 
-    // Don't show the images on small screens
-    const displayWorkImages = window.innerWidth > 767;
+    const onLargeScreen = window.innerWidth > 767;
 
     // Change the width on small screens
-    const width = window.innerWidth > 767 ? 500 : 250;
+    const width = onLargeScreen ? 500 : 250;
 
     return (
       <>
@@ -187,7 +192,7 @@ class BookSelection extends Component {
               {works
                 .filter((work) => BookSelection.workMatchesSearch(work, searchLowerCase))
                 .map((work, index) => (
-                  this.getWorkRow(work, index > 15, displayWorkImages)
+                  this.getWorkRow(work, index > 15, onLargeScreen)
                 ))}
             </Table.Body>
           </Table>
