@@ -52,16 +52,73 @@ const resolveReferenceDebounced = AwesomeDebouncePromise(
   500,
 );
 
+/**
+ * Defines how long a division name can get before it is considered long.
+ */
+const LONG_DIVISION_NAME = 30;
+
 class Reader extends Component {
+  /**
+   * Determine if the divisions tend to have long names. This is useful for determining if we ought
+   * to use the titles or the shorter descriptors.
+   *
+   * @param {array} divisions The list of divisions.
+   */
+  static hasLongDivisionNames(divisions) {
+    const countLongNames = (accumulator, division) => (
+      division.full_title && division.full_title.length > LONG_DIVISION_NAME
+        ? accumulator + 1
+        : accumulator
+    );
+    const longNames = divisions.reduce(countLongNames, 0);
+
+    return (longNames > 5 || longNames === divisions.length);
+  }
+
+  /**
+   * Determine if the division descriptors appear to be names.
+   *
+   * @param {array} divisions The list of divisions.
+   */
+  static areDescriptorsNames(divisions) {
+    const countIndicators = (accumulator, division) => (
+      /^([0-9]+|[IVX]+|[A-Z])$/i.test(division.descriptor) ? accumulator + 1 : accumulator
+    );
+    const indicators = divisions.reduce(countIndicators, 0);
+    return (indicators !== divisions.length);
+  }
+
+  /**
+   * Get the the division descriptor.
+   *
+   * @param {array} division The list of divisions.
+   * @param {*} useTitles Whether titles ought to be used.
+   * @param {*} descriptorsAreNames Whether descriptors appear to be names.
+   */
+  static getDivisionText(division, useTitles, descriptorsAreNames) {
+    // Use the title (from the full_title of the division)
+    if (useTitles) {
+      return toTitleCase(division.label);
+    }
+    // Are the descriptors names (like "Matthew" insread of "1")
+    if (descriptorsAreNames) {
+      return division.descriptor;
+    }
+    return `${division.type} ${division.descriptor}`;
+  }
+
   /**
    * Convert the list of divisions to options that can be processed by the dropdown menu.
    *
    * @param {array} divisions The list of divisions.
    */
   static convertDivisionsToOptions(divisions) {
+    const useTitles = !Reader.hasLongDivisionNames(divisions);
+    const descriptorsAreNames = Reader.areDescriptorsNames(divisions);
+
     return divisions.map((d) => ({
       key: d.description,
-      text: toTitleCase(d.label),
+      text: Reader.getDivisionText(d, useTitles, descriptorsAreNames),
       value: d.descriptor,
     }));
   }
