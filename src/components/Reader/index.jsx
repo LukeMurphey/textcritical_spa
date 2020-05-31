@@ -357,6 +357,72 @@ class Reader extends Component {
   }
 
   /**
+   * Get the dialogs that ought to be rendered.
+   */
+  getDialogs() {
+    const {
+      modal, data, loading, loadedWork,
+    } = this.state;
+
+    return (
+      <>
+        {data && !loading && modal === 'aboutWork' && (
+          <AboutWorkDialog
+            work={loadedWork}
+            onClose={() => this.closeModal()}
+          />
+        )}
+        {data && !loading && modal === 'downloadWork' && (
+          <WorkDownloadDialog
+            work={loadedWork}
+            onClose={() => this.closeModal()}
+          />
+        )}
+      </>
+    );
+  }
+
+  /**
+   * Get the popups.
+   */
+  getPopups() {
+    const {
+      modal, data, loading, selectedWord, popupX, popupY, popupPositionRight, popupPositionBelow,
+      selectedNote, loadedWork,
+    } = this.state;
+
+    const { inverted } = this.props;
+
+    return (
+      <>
+        {data && !loading && modal === 'word' && (
+          <WordInformation
+            inverted={inverted}
+            positionBelow={popupPositionBelow}
+            positionRight={popupPositionRight}
+            x={popupX}
+            y={popupY}
+            word={selectedWord}
+            work={loadedWork}
+            onClose={() => this.closeModal()}
+          />
+        )}
+        {data && !loading && modal === 'note' && (
+          <FootnotePopup
+            inverted={inverted}
+            positionBelow={popupPositionBelow}
+            positionRight={popupPositionRight}
+            x={popupX}
+            y={popupY}
+            notes={selectedNote}
+            onClose={() => this.closeModal()}
+          />
+        )}
+      </>
+    );
+  }
+
+  /**
    * Open or close the book selection dialog.
    * @param {bool} open Whether the dialog for selecting a book ought to be open.
    */
@@ -715,66 +781,6 @@ class Reader extends Component {
     }
   }
 
-  getPopups() {
-    const {
-      modal, data, loading, selectedWord, popupX, popupY, popupPositionRight, popupPositionBelow,
-      selectedNote, loadedWork,
-    } = this.state;
-
-    const { inverted } = this.props;
-
-    return (
-      <>
-        {data && !loading && modal === 'word' && (
-          <WordInformation
-            inverted={inverted}
-            positionBelow={popupPositionBelow}
-            positionRight={popupPositionRight}
-            x={popupX}
-            y={popupY}
-            word={selectedWord}
-            work={loadedWork}
-            onClose={() => this.closeModal()}
-          />
-        )}
-        {data && !loading && modal === 'note' && (
-          <FootnotePopup
-            inverted={inverted}
-            positionBelow={popupPositionBelow}
-            positionRight={popupPositionRight}
-            x={popupX}
-            y={popupY}
-            notes={selectedNote}
-            onClose={() => this.closeModal()}
-          />
-        )}
-      </>
-    );
-  }
-
-  getDialogs() {
-    const {
-      modal, data, loading, loadedWork,
-    } = this.state;
-
-    return (
-      <>
-        {data && !loading && modal === 'aboutWork' && (
-          <AboutWorkDialog
-            work={loadedWork}
-            onClose={() => this.closeModal()}
-          />
-        )}
-        {data && !loading && modal === 'downloadWork' && (
-          <WorkDownloadDialog
-            work={loadedWork}
-            onClose={() => this.closeModal()}
-          />
-        )}
-      </>
-    );
-  }
-
   render() {
     const {
       modal, data, errorDescription, loading, referenceValid, referenceValue, bookSelectionOpen,
@@ -841,7 +847,12 @@ class Reader extends Component {
               <Icon name="bars" />
             </Menu.Item>
             <Popup
-              content={<BookSelection relatedWorks={relatedWorks} onSelectWork={(work) => this.onSelectWork(work)} />}
+              content={(
+                <BookSelection
+                  relatedWorks={relatedWorks}
+                  onSelectWork={(work) => this.onSelectWork(work)}
+                />
+              )}
               on="click"
               position="bottom left"
               pinned
