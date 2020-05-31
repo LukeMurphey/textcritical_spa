@@ -87,17 +87,16 @@ class BookSelection extends Component {
   }
 
   render() {
-    const { displayWorkImages } = this.props;
     const { works, error, search } = this.state;
     const searchLowerCase = search.toLowerCase();
 
     const onChange = (event, data) => { this.onSearchChange(data); };
     const onChangeDebounced = AwesomeDebouncePromise(onChange, 500);
 
-    let displayWorkImagesEx = displayWorkImages;
-
-    if (displayWorkImages === null) {
-      displayWorkImagesEx = window.innerWidth > 767;
+    const displayWorkImages = window.innerWidth > 767;
+    let width = 500;
+    if (window.innerWidth < 767) {
+      width = 250;
     }
 
     return (
@@ -107,7 +106,7 @@ class BookSelection extends Component {
           <Input onChange={onChangeDebounced} style={{ width: '100%' }} placeholder="Search..." />
         </div>
         )}
-        <div style={{ maxHeight: 400, width: 500, overflowY: 'auto' }}>
+        <div style={{ maxHeight: 400, width, overflowY: 'auto' }}>
           {error && (
           <ErrorMessage
             title="Unable to load the list of works"
@@ -121,7 +120,7 @@ class BookSelection extends Component {
               {works
                 .filter((work) => BookSelection.workMatchesSearch(work, searchLowerCase))
                 .map((work, index) => (
-                  this.getWorkRow(work, index > 15, displayWorkImagesEx)
+                  this.getWorkRow(work, index > 15, displayWorkImages)
                 ))}
             </Table.Body>
           </Table>
@@ -143,11 +142,6 @@ class BookSelection extends Component {
 
 BookSelection.propTypes = {
   onSelectWork: PropTypes.func.isRequired,
-  displayWorkImages: PropTypes.bool,
-};
-
-BookSelection.defaultProps = {
-  displayWorkImages: null,
 };
 
 export default BookSelection;
