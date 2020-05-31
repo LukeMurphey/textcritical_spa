@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Table, Placeholder, Image, Input,
+  Table, Placeholder, Image, Input, Label,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 // regeneratorRuntime is needed for AwesomeDebouncePromise
@@ -46,6 +46,7 @@ class BookSelection extends Component {
   getWorkRow(work, lazyLoad = true, displayWorkImages = true) {
     const { onSelectWork } = this.props;
     const handler = () => { onSelectWork(work.title_slug); };
+    const isRelated = this.isRelatedWork(work);
 
     return (
       <Table.Row key={work.title_slug}>
@@ -62,7 +63,12 @@ class BookSelection extends Component {
           </Table.Cell>
         )}
         <Table.Cell style={ClickStyle} onClick={handler}>
-          <div>{work.title}</div>
+          <div>
+            {work.title}
+            {isRelated && (
+              <Label as="a" basic color="teal" pointing="left">Related Work</Label>
+            )}
+          </div>
           <div style={{ color: '#888' }}>
             {work.language}
             {work.author && ` by ${work.author}`}
@@ -73,11 +79,46 @@ class BookSelection extends Component {
     );
   }
 
+  /**
+   * Determine if the work is a related work.
+   *
+   * @param {object} work The work to see if it is a related work
+   */
+  isRelatedWork(work) {
+    const { relatedWorks } = this.props;
+
+    const found = relatedWorks.find((relatedWork) => relatedWork.title_slug === work.title_slug);
+    if (found) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Sort the list of works.
+   *
+   * @param {array} works The works to sort
+   */
+  sortWorks(works) {
+    works.sort((a, b) => {
+      if (this.isRelatedWork(a) && !this.isRelatedWork(b)) {
+        return -1;
+      }
+      if (this.isRelatedWork(b) && !this.isRelatedWork(a)) {
+        return 1;
+      }
+      return a.title > b.title;
+    });
+
+    return works;
+  }
+
   loadInfo() {
     fetch(ENDPOINT_WORKS_LISTS())
       .then((res) => res.json())
       .then((works) => {
-        this.setState({ works });
+        this.setState({ works: this.sortWorks(works) });
       })
       .catch((e) => {
         this.setState({
@@ -142,6 +183,11 @@ class BookSelection extends Component {
 
 BookSelection.propTypes = {
   onSelectWork: PropTypes.func.isRequired,
+  relatedWorks: PropTypes.shape,
+};
+
+BookSelection.defaultProps = {
+  relatedWorks: [],
 };
 
 export default BookSelection;
