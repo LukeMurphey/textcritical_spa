@@ -827,6 +827,9 @@ class Reader extends Component {
       mode = MODE_NOT_READY;
     }
 
+    // Get the list of related works so that the book selector can put the related ones at the top
+    const relatedWorks = data && data.related_works ? data.related_works : [];
+
     return (
       <>
         <Menu inverted={inverted} style={{ zIndex: 103 }} className={`control ${classNameSuffix}`} fixed="top">
@@ -838,7 +841,7 @@ class Reader extends Component {
               <Icon name="bars" />
             </Menu.Item>
             <Popup
-              content={<BookSelection onSelectWork={(work) => this.onSelectWork(work)} />}
+              content={<BookSelection relatedWorks={relatedWorks} onSelectWork={(work) => this.onSelectWork(work)} />}
               on="click"
               position="bottom left"
               pinned
