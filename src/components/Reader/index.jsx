@@ -243,10 +243,11 @@ class Reader extends Component {
     const existingChapter = this.verseReferences[location.pathname];
 
     // Check if the chapter we have loaded already
-    // This needs to check the loaded work too, since this may be reference for another work
+    // This needs to check the loaded work too, since we need to recognize if we the reference is
+    // the same reference but in a different work.
     if (data && data.chapter && existingChapter
       && existingChapter.chapter === data.chapter.full_descriptor
-      && (loadedWork && loadedWork.title_slug !== match.params.work)
+      && (loadedWork && loadedWork === match.params.work)
     ) {
       // Get the highlighted verse
       const highlightedVerseRef = existingChapter.verse;
@@ -258,7 +259,7 @@ class Reader extends Component {
         });
       }
 
-      // Don't load the new one, we already have it on the page!
+      // Don't load the new one, we already have it on the page
       return;
     }
 
