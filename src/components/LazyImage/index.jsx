@@ -18,7 +18,10 @@ class LazyImage extends Component {
 
   render() {
     const { show } = this.state;
-    const { size, children, src, style } = this.props;
+    const {
+      size, children, src, style,
+    } = this.props;
+
     if (!show) {
       return (
         <Visibility as="span" onOnScreen={() => this.showImage()}>
