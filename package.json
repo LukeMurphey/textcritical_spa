@@ -55,7 +55,8 @@
     "test": "jest --coverage",
     "start": "webpack-dev-server --open --config webpack.dev.js --content-base public",
     "build": "webpack --mode production --config webpack.prod.js",
-    "watch": "jest --coverage --watch"
+    "watch": "jest --coverage --watch",
+    "deploy": "cp -r dist ../textcritical_net/src/media"
   },
   "repository": {
     "type": "git",
