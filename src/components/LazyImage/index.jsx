@@ -26,7 +26,7 @@ class LazyImage extends Component {
       return (
         <Visibility as="span" onOnScreen={() => this.showImage()}>
           {children && children}
-          {!children && <Loader active inline="centered" size={size} />}
+          {!children && <Loader data-testid="loader" active inline="centered" size={size} />}
         </Visibility>
       );
     }
