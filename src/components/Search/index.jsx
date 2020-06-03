@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, useLocation } from 'react-router-dom';
 import {
-  Segment, Input, Container, Header, Button, Checkbox, Icon, Message, Tab,
+  Input, Container, Header, Button, Checkbox, Icon, Message, Tab,
 } from 'semantic-ui-react';
 import BarChart from '../Charts/BarChart';
 import SearchResults from './SearchResults';
 import SearchHelp from './SearchHelp';
 import ErrorMessage from '../ErrorMessage';
+import FullscreenDialog from '../FullscreenDialog';
 import { ENDPOINT_SEARCH } from '../Endpoints';
-import { SEARCH } from '../URLs';
+import { SEARCH, READ_WORK } from '../URLs';
 import './index.scss';
 
 const MODE_NOT_STARTED = 0;
@@ -220,6 +221,10 @@ function Search({ inverted, history, location }) {
     }
   };
 
+  const onClickBack = () => {
+    history.push(READ_WORK());
+  };
+
   // Figure out what mode the page is in
   let mode = MODE_NOT_STARTED;
 
@@ -293,7 +298,7 @@ function Search({ inverted, history, location }) {
   ];
 
   return (
-    <Segment inverted={inverted}>
+    <FullscreenDialog inverted={inverted} onClickBack={onClickBack} backTitle="Back to the Library">
       <Container>
         <Header inverted={inverted} as="h1">Search</Header>
         <Input
@@ -319,7 +324,7 @@ function Search({ inverted, history, location }) {
         <Checkbox className={className} style={CheckboxStyle} label="Search related Greek forms (slower but more thorough)" checked={searchRelatedForms} onChange={(e, d) => setSearchRelatedForms(d.checked)} />
         <Tab className={className} panes={panes} />
       </Container>
-    </Segment>
+    </FullscreenDialog>
   );
 }
 
