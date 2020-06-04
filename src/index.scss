@@ -12,7 +12,8 @@ body {
 .ui.inverted.segment,
 .ui.horizontal.segments > .ui.inverted.segment,
 .ui.checked.checkbox.inverted > label,
-.ui.bottom.attached.segment.active.tab.inverted
+.ui.bottom.attached.segment.active.tab.inverted,
+.ui.inverted.table
 {
     background-color: $backgroundColorDark;
 }
