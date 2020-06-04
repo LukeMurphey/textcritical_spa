@@ -23,9 +23,16 @@ body {
     color: $textColorDark;
 }
 
+.inverted > .ui.tabular.menu
+{
+    border-bottom: 1px solid #555;
+}
+
 .inverted > .ui.tabular.menu > .item.active
 {
     color: $textColorDark;
+    border-color: #555;
+    border-bottom: none;
 }
 
 .ui.checkbox.inverted > label,
