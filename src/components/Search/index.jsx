@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, useLocation } from 'react-router-dom';
 import {
-  Input, Container, Header, Button, Checkbox, Icon, Message, Tab,
+  Input, Container, Button, Checkbox, Icon, Message, Tab,
 } from 'semantic-ui-react';
 import BarChart from '../Charts/BarChart';
 import SearchResults from './SearchResults';
@@ -248,6 +248,13 @@ function Search({ inverted, history, location }) {
     mode = MODE_RESULTS;
   }
 
+  // Create a custom className for signaling the desire to switch to inverted
+  let classNameSuffix = '';
+
+  if (inverted) {
+    classNameSuffix = ' inverted';
+  }
+
   // Create the list of tab panes to show
   const panes = [
     {
@@ -260,13 +267,18 @@ function Search({ inverted, history, location }) {
       menuItem: 'Matched words',
       render: () => (
         <Tab.Pane inverted={inverted}>
-          {resultSet && (
+          {resultSet && Object.keys(resultSet.matched_terms).length > 0 && (
             <BarChart
               results={resultSet.matched_terms}
               title="Frequency of matched words"
               noDataMessage="No data available on matched terms"
               inverted={inverted}
             />
+          )}
+          {(!resultSet || Object.keys(resultSet.matched_terms).length === 0) && (
+            <Message info className={classNameSuffix}>
+              No data available on matched terms
+            </Message>
           )}
         </Tab.Pane>
       ),
@@ -275,13 +287,18 @@ function Search({ inverted, history, location }) {
       menuItem: 'Matched works',
       render: () => (
         <Tab.Pane inverted={inverted}>
-          {resultSet && (
+          {resultSet && Object.keys(resultSet.matched_works).length > 0 && (
             <BarChart
               results={resultSet.matched_works}
               title="Frequency of matched works"
               noDataMessage="No data available on matched works"
               inverted={inverted}
             />
+          )}
+          {(!resultSet || Object.keys(resultSet.matched_works).length === 0) && (
+            <Message info className={classNameSuffix}>
+              No data available on matched works
+            </Message>
           )}
         </Tab.Pane>
       ),
@@ -290,13 +307,18 @@ function Search({ inverted, history, location }) {
       menuItem: 'Matched sections',
       render: () => (
         <Tab.Pane inverted={inverted}>
-          {resultSet && (
+          {resultSet && Object.keys(resultSet.matched_sections).length > 0 && (
             <BarChart
               results={resultSet.matched_sections}
               title="Frequency of matched sections"
               noDataMessage="No data available on matched sections"
               inverted={inverted}
             />
+          )}
+          {(!resultSet || Object.keys(resultSet.matched_sections).length === 0) && (
+            <Message info className={classNameSuffix}>
+              No data available on matched sections
+            </Message>
           )}
         </Tab.Pane>
       ),
