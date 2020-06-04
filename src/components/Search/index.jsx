@@ -310,7 +310,6 @@ function Search({ inverted, history, location }) {
   return (
     <FullscreenDialog inverted={inverted} onClickBack={onClickBack} backTitle="Back to the Library">
       <Container>
-        <Header inverted={inverted} as="h1">Search</Header>
         <Input
           action={
             (
