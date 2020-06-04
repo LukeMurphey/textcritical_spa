@@ -859,7 +859,7 @@ class Reader extends Component {
 
     // Get the list of related works so that the book selector can put the related ones at the top
     const relatedWorks = data && data.related_works ? data.related_works : [];
-    const authors = data && data.authors ? data.authors : null;
+    const authors = data && data.authors ? data.authors.map((author) => author.name) : null;
 
     return (
       <>
