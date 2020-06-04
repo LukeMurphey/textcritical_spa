@@ -136,6 +136,7 @@ function Search({ inverted, history, location }) {
   const [searching, setSearching] = useState(false);
   const [page, setPage] = useState(getParamOrDefault(queryParams, 'page', 1, CONVERT_INT));
   const [searchedKey, setSearchedKey] = useState(null);
+  const [linkBackURL, setLinkBackURL] = useState(null);
 
   let className = '';
 
@@ -201,6 +202,11 @@ function Search({ inverted, history, location }) {
       setSearchedKey(location.key);
       executeSearch(getParamOrDefault(queryParams, 'page', page, CONVERT_INT));
     }
+
+    // Remember what the history state was so that we can link back to the reading page
+    if (!linkBackURL && location.state && location.state.work) {
+      setLinkBackURL(READ_WORK(location.state.work, ...location.state.divisions));
+    }
   });
 
   const goBack = () => {
@@ -222,7 +228,11 @@ function Search({ inverted, history, location }) {
   };
 
   const onClickBack = () => {
-    history.push(READ_WORK());
+    if (linkBackURL) {
+      history.push(linkBackURL);
+    } else {
+      history.push(READ_WORK());
+    }
   };
 
   // Figure out what mode the page is in

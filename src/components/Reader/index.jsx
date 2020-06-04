@@ -655,10 +655,13 @@ class Reader extends Component {
    */
   openSearch() {
     const { history } = this.props;
+    const { divisions, loadedWork } = this.state;
 
-    const { loadedWork } = this.state;
     const q = `work:${loadedWork}`;
-    history.push(SEARCH(q));
+    history.push(SEARCH(q), {
+      work: loadedWork,
+      divisions,
+    });
   }
 
   /**
@@ -874,6 +877,7 @@ class Reader extends Component {
                   relatedWorks={relatedWorks}
                   authors={authors}
                   onSelectWork={(work) => this.onSelectWork(work)}
+                  loadedWork={loadedWork}
                 />
               )}
               on="click"
