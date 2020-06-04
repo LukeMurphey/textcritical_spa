@@ -3,11 +3,13 @@
 .ui.inverted.segment.popupDialog {
     background-color: $backgroundColorDark;
     border: 1px solid #444;
+    -webkit-box-shadow: 0 15px 20px rgba(0,0,0,.5);
+    box-shadow: 0 15px 20px rgba(0,0,0,.5);
 }
 
 // Make the dialog appear on top of other controls
 .popupDialog {
-    z-index: 100
+    z-index: 100;
 }
 
 .ui.inverted.segment.popupDialogFooter {
