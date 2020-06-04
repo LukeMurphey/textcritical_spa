@@ -44,10 +44,11 @@ class BookSelection extends Component {
   }
 
   getWorkRow(work, lazyLoad = true, onLargeScreen = true) {
-    const { onSelectWork } = this.props;
+    const { onSelectWork, loadedWork } = this.props;
     const handler = () => { onSelectWork(work.title_slug); };
     const isRelated = this.isRelatedWork(work);
     const isSameAuthor = this.isSameAuthor(work);
+    const isLoadedWork = (loadedWork && loadedWork === work.title_slug);
 
     return (
       <Table.Row key={work.title_slug}>
@@ -70,13 +71,16 @@ class BookSelection extends Component {
               {isRelated && onLargeScreen && (
                 <Label as="a" color="red">Related Work</Label>
               )}
-              {isSameAuthor && onLargeScreen && (
+              {isSameAuthor && !isLoadedWork && onLargeScreen && (
                 <Label as="a" color="blue">Same Author</Label>
+              )}
+              {isLoadedWork && onLargeScreen && (
+                <Label as="a" color="green">This work</Label>
               )}
               {isRelated && !onLargeScreen && (
                 <Label as="a" color="red" circular empty />
               )}
-              {isSameAuthor && !onLargeScreen && (
+              {isSameAuthor && !isLoadedWork && !onLargeScreen && (
                 <Label as="a" color="blue" circular empty />
               )}
             </div>
@@ -120,6 +124,7 @@ class BookSelection extends Component {
     }
 
     const found = authors.find((author) => author.name === work.author);
+
     if (found) {
       return true;
     }
@@ -216,11 +221,13 @@ BookSelection.propTypes = {
   onSelectWork: PropTypes.func.isRequired,
   relatedWorks: PropTypes.arrayOf(PropTypes.shape),
   authors: PropTypes.arrayOf(PropTypes.string),
+  loadedWork: PropTypes.string,
 };
 
 BookSelection.defaultProps = {
   relatedWorks: [],
   authors: [],
+  loadedWork: null,
 };
 
 export default BookSelection;
