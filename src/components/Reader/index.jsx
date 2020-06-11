@@ -26,7 +26,7 @@ import {
   ENDPOINT_WORK_IMAGE,
 } from "../Endpoints";
 import { setWorkProgress } from "../Settings";
-import { SEARCH, READ_WORK } from "../URLs";
+import { SEARCH, READ_WORK, START_PAGE } from "../URLs";
 import { toTitleCase } from "../Utils";
 import Chapter from "./Chapter";
 import ErrorMessage from "../ErrorMessage";
@@ -682,6 +682,14 @@ class Reader extends Component {
   }
 
   /**
+   * Open the start page.
+   */
+  openStartPage() {
+    const { history } = this.props;
+    history.push(START_PAGE());
+  }
+
+  /**
    * Preload the next and prior chapter
    */
   preloadChapters() {
@@ -990,6 +998,10 @@ class Reader extends Component {
                     <Dropdown.Item
                       text="About TextCritical.net"
                       onClick={() => this.openAboutModal()}
+                    />
+                    <Dropdown.Item
+                      text="Go to Start Page"
+                      onClick={() => this.openStartPage()}
                     />
                   </Dropdown.Menu>
                 </Dropdown>
