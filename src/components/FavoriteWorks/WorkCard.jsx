@@ -4,6 +4,7 @@ import { Card, Image, Button, Loader, Icon } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import { ENDPOINT_WORK_INFO, ENDPOINT_WORK_IMAGE } from "../Endpoints";
 import { READ_WORK } from "../URLs";
+import { truncate } from "../Utils";
 
 const MODE_LOADING = 0;
 const MODE_ERROR = 1;
@@ -42,14 +43,23 @@ const WorkCard = ({ inverted, work, divisions, divisionTitle, history }) => {
   } else if (data) {
     mode = MODE_DONE;
   }
-  
+
   return (
     <Card>
       <Card.Content>
         <Image floated="right" size="mini" src={ENDPOINT_WORK_IMAGE(work)} />
         {mode === MODE_DONE && (
           <>
-            <Card.Header>{data.title}</Card.Header>
+            <Card.Header
+              style={{
+                lineHeight: "1.2em",
+                maxHeight: "2.4em",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {truncate(data.title, 20)}
+            </Card.Header>
             <Card.Meta>{data.language}</Card.Meta>
           </>
         )}
