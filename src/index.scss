@@ -1,7 +1,7 @@
 @import "./components/StylingShortcuts/theme.scss";
 
 body {
-    background-color: $backgroundColorDark;
+  background-color: $backgroundColorDark;
 }
 
 .ui.inverted.placeholder,
@@ -13,64 +13,70 @@ body {
 .ui.horizontal.segments > .ui.inverted.segment,
 .ui.checked.checkbox.inverted > label,
 .ui.bottom.attached.segment.active.tab.inverted,
-.ui.inverted.table
-{
-    background-color: $backgroundColorDark;
+.ui.inverted.table {
+  background-color: $backgroundColorDark;
 }
 
-.inverted > .ui.tabular.menu > .item
-{
-    background-color: $backgroundColorDark;
-    color: $textColorDark;
+.ui.inverted.card,
+.ui.inverted.card > .content > .header,
+.ui.inverted.card > .content > .meta {
+  background-color: $gray0;
+  color: $textColorDark;
 }
 
-.inverted > .ui.tabular.menu
-{
-    border-bottom: 1px solid #555;
+.ui.inverted.card {
+  box-shadow: 0px 0px 0px 1px $gray0 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
-.inverted > .ui.tabular.menu > .item.active
-{
-    color: $textColorDark;
-    border-color: #555;
-    border-bottom: none;
+.inverted > .ui.tabular.menu > .item {
+  background-color: $backgroundColorDark;
+  color: $textColorDark;
+}
+
+.inverted > .ui.tabular.menu {
+  border-bottom: 1px solid #555;
+}
+
+.inverted > .ui.tabular.menu > .item.active {
+  color: $textColorDark;
+  border-color: #555;
+  border-bottom: none;
 }
 
 .ui.checkbox.inverted > label,
 .ui.checkbox.checked.inverted > label,
 input.ui.checkbox.checked.inverted:focus > label,
 input.ui.checkbox.inverted:focus > label,
-.ui.checkbox.inverted input:focus ~ label
-{
-    color: $textColorDark;
+.ui.checkbox.inverted input:focus ~ label {
+  color: $textColorDark;
 }
 
 table.ui.inverted.table > thead {
-    background-color: $controlColorDark;
+  background-color: $controlColorDark;
 }
 
 table.ui.inverted.table > tbody {
-    background-color: $highlightColorDark;
+  background-color: $highlightColorDark;
 }
 
 .ui.info.message.inverted {
-    background-color: #143c75;
-    box-shadow: 0px 0px 0px 1px #1c55a5 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-    > .header {
-        color: $textColorDark;
-    }
-    > .content > .header {
-        color: $textColorDark;
-    }
+  background-color: #143c75;
+  box-shadow: 0px 0px 0px 1px #1c55a5 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  > .header {
+    color: $textColorDark;
+  }
+  > .content > .header {
+    color: $textColorDark;
+  }
 }
 
 .ui.warning.message.inverted {
-    background-color: #774100;
-    box-shadow: 0px 0px 0px 1px #cc7103 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-    > .header {
-        color: $textColorDark;
-    }
-    > .content > .header {
-        color: $textColorDark;
-    }
+  background-color: #774100;
+  box-shadow: 0px 0px 0px 1px #cc7103 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  > .header {
+    color: $textColorDark;
+  }
+  > .content > .header {
+    color: $textColorDark;
+  }
 }

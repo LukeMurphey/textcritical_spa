@@ -50,8 +50,11 @@ const WorkCard = ({
     mode = MODE_DONE;
   }
 
+  // Determine the classname
+  const className = inverted ? 'inverted' : '';
+
   return (
-    <Card>
+    <Card className={className}>
       <Card.Content>
         <Image floated="right" size="mini" src={ENDPOINT_WORK_IMAGE(work)} />
         {mode === MODE_DONE && (

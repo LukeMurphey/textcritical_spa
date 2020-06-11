@@ -35,7 +35,6 @@ const FavoriteWorks = ({ inverted }) => {
             {recentlyRead.map((work) => (
               <WorkCard
                 key={work.workTitleSlug}
-                inverted={inverted}
                 work={work.workTitleSlug}
                 divisions={work.divisions}
                 divisionReference={work.divisionReference}
