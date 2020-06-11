@@ -10,7 +10,7 @@ const FavoriteWorks = ({ inverted }) => {
   return (
     <div>
       <Header inverted={inverted} as="h3">
-        Last Read
+        Most Recently Read
       </Header>
       {recentlyRead && (
         <Card.Group itemsPerRow={maxHistoryCount()}>
