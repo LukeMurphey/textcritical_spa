@@ -30,10 +30,32 @@ export function storageAvailable(type) {
   }
 }
 
+export function getWorksLastRead() {
+  const lastReadHistory = localStorage.getItem(LAST_READ_HISTORY);
+
+  if (lastReadHistory) {
+    try {
+      const lastReadHistoryParsed = JSON.parse(lastReadHistory);
+
+      // Make sure that the list is an array and has the necesary properties.
+      return lastReadHistoryParsed.filter((entry) => {
+        return entry.workTitleSlug;
+      });
+    }
+    catch(err) {
+      // eslint-disable-next-line no-console
+      console.warn('The list of last read works could not be loaded');
+      return null; // The list could not be loaded
+    }
+  }
+
+  return null;
+}
+
 export function setWorkProgress(workTitleSlug, divisions, divisionReference) {
   if (storageAvailable("localStorage")) {
     // See if the entry exists already
-    let lastReadHistory = localStorage.getItem(LAST_READ_HISTORY);
+    let lastReadHistory = getWorksLastRead();
 
     // Initialize the history object if we don't have one yet
     if (lastReadHistory === null) {
@@ -74,15 +96,6 @@ export function setWorkProgress(workTitleSlug, divisions, divisionReference) {
     // Update the history
     localStorage.setItem(LAST_READ_HISTORY, JSON.stringify(lastReadHistory));
   }
-}
-
-export function getWorksLastRead() {
-  const lastReadHistory = localStorage.getItem(LAST_READ_HISTORY);
-  if (lastReadHistory) {
-    return JSON.parse(lastReadHistory);
-  }
-
-  return null;
 }
 
 export function clearWorksLastRead() {

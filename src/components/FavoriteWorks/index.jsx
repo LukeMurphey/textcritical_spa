@@ -14,7 +14,7 @@ const FavoriteWorks = ({ inverted }) => {
 
   return (
     <div>
-      {(recentlyRead || value > 0) && (
+      {((recentlyRead && recentlyRead.length > 0) || value > 0) && (
         <>
           <Header inverted={inverted} as="h3">
             Most Recently Read
