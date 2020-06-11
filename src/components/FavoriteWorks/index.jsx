@@ -14,10 +14,11 @@ const FavoriteWorks = ({ inverted }) => {
 
   return (
     <div>
-      {recentlyRead && (
+      {(recentlyRead || value > 0) && (
         <>
           <Header inverted={inverted} as="h3">
             Most Recently Read
+            {recentlyRead && recentlyRead.length > 0 && (
             <Button
               floated="right"
               onClick={() => {
@@ -27,7 +28,9 @@ const FavoriteWorks = ({ inverted }) => {
             >
               Clear this list
             </Button>
+            )}
           </Header>
+          {recentlyRead && recentlyRead.length > 0 && (
           <Card.Group itemsPerRow={maxHistoryCount()}>
             {recentlyRead.map((work) => (
               <WorkCard
@@ -39,6 +42,10 @@ const FavoriteWorks = ({ inverted }) => {
               />
             ))}
           </Card.Group>
+          )}
+          {(!recentlyRead || recentlyRead.length === 0) && value > 0 && (
+            <>No works in the list of recently read works</>
+          )}
         </>
       )}
     </div>
