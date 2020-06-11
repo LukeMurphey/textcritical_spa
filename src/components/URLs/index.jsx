@@ -2,6 +2,10 @@
  * This page provides helper functions for creating URLs for the website.
  */
 
+export function START_PAGE() {
+  return '/';
+}
+
 export function READ_WORK(work = '', ...divisions) {
   let divisionReference = '';
 
