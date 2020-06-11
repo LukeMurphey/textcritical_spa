@@ -1,5 +1,5 @@
 const LAST_READ_HISTORY = "lastReadHistory";
-export function maxHistoryCount(){
+export function maxHistoryCount() {
   return 5;
 }
 
@@ -30,8 +30,10 @@ export function storageAvailable(type) {
   }
 }
 
-export function getWorksLastRead() {
-  const lastReadHistory = localStorage.getItem(LAST_READ_HISTORY);
+export function getWorksLastRead(storageOverride = null) {
+  const storage = storageOverride || localStorage;
+
+  const lastReadHistory = storage.getItem(LAST_READ_HISTORY);
 
   if (lastReadHistory) {
     try {
@@ -41,10 +43,9 @@ export function getWorksLastRead() {
       return lastReadHistoryParsed.filter((entry) => {
         return entry.workTitleSlug;
       });
-    }
-    catch(err) {
+    } catch (err) {
       // eslint-disable-next-line no-console
-      console.warn('The list of last read works could not be loaded');
+      console.warn("The list of last read works could not be loaded");
       return null; // The list could not be loaded
     }
   }
@@ -52,16 +53,21 @@ export function getWorksLastRead() {
   return null;
 }
 
-export function setWorkProgress(workTitleSlug, divisions, divisionReference) {
+export function setWorkProgress(
+  workTitleSlug,
+  divisions,
+  divisionReference,
+  storageOverride = null
+) {
+  const storage = storageOverride || localStorage;
+
   if (storageAvailable("localStorage")) {
     // See if the entry exists already
-    let lastReadHistory = getWorksLastRead();
+    let lastReadHistory = getWorksLastRead(storage);
 
     // Initialize the history object if we don't have one yet
     if (lastReadHistory === null) {
       lastReadHistory = [];
-    } else {
-      lastReadHistory = JSON.parse(lastReadHistory);
     }
 
     // Find the existing index if it exists
@@ -94,10 +100,11 @@ export function setWorkProgress(workTitleSlug, divisions, divisionReference) {
     }
 
     // Update the history
-    localStorage.setItem(LAST_READ_HISTORY, JSON.stringify(lastReadHistory));
+    storage.setItem(LAST_READ_HISTORY, JSON.stringify(lastReadHistory));
   }
 }
 
-export function clearWorksLastRead() {
-  localStorage.removeItem(LAST_READ_HISTORY);
+export function clearWorksLastRead(storageOverride = null) {
+  const storage = storageOverride || localStorage;
+  storage.removeItem(LAST_READ_HISTORY);
 }
