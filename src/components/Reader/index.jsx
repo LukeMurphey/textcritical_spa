@@ -1,25 +1,50 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
-  Button, Input, Icon, Dropdown, Container, Header, Grid, Placeholder, Segment,
-  Message, Menu, Popup, Sidebar, Image, Progress, Responsive,
-} from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { ENDPOINT_READ_WORK, ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from '../Endpoints';
-import { SEARCH, READ_WORK } from '../URLs';
-import { toTitleCase } from '../Utils';
-import Chapter from './Chapter';
-import ErrorMessage from '../ErrorMessage';
-import AboutWorkDialog from '../AboutWorkDialog';
-import AboutDialog from '../AboutDialog';
-import WorkDownloadDialog from '../WorkDownloadDialog';
-import WordInformation from '../WordInformation/WordInformationPopup';
-import FootnotePopup from '../FootnotePopup';
-import BookSelection from '../BookSelection';
-import NoWorkSelected from './NoWorkSelected';
-import LibraryIcon from '../Icons/Library.svg';
-import './index.scss';
+  Button,
+  Input,
+  Icon,
+  Dropdown,
+  Container,
+  Header,
+  Grid,
+  Placeholder,
+  Segment,
+  Message,
+  Menu,
+  Popup,
+  Sidebar,
+  Image,
+  Progress,
+  Responsive,
+} from "semantic-ui-react";
+import { withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import AwesomeDebouncePromise from "awesome-debounce-promise";
+import {
+  ENDPOINT_READ_WORK,
+  ENDPOINT_RESOLVE_REFERENCE,
+  ENDPOINT_WORK_IMAGE,
+} from "../Endpoints";
+import { setWorkProgress } from "../Settings";
+import { SEARCH, READ_WORK } from "../URLs";
+import { toTitleCase } from "../Utils";
+import Chapter from "./Chapter";
+import ErrorMessage from "../ErrorMessage";
+import AboutWorkDialog from "../AboutWorkDialog";
+import AboutDialog from "../AboutDialog";
+import WorkDownloadDialog from "../WorkDownloadDialog";
+import WordInformation from "../WordInformation/WordInformationPopup";
+import FootnotePopup from "../FootnotePopup";
+import BookSelection from "../BookSelection";
+import NoWorkSelected from "./NoWorkSelected";
+import LibraryIcon from "../Icons/Library.svg";
+import "./index.scss";
+import FavoriteWorks from "../FavoriteWorks";
+
+/**
+ * componentDidUpdate() will trigger the fetch of the work as necessary.
+ * loadChapter() will fetch the chapter and load it into the UI.
+ */
 
 const MODE_LOADING = 0;
 const MODE_ERROR = 1;
@@ -27,15 +52,15 @@ const MODE_DONE = 2;
 const MODE_NOT_READY = 3;
 
 const NextPageStyle = {
-  bottom: '20px',
-  right: '20px',
-  position: 'fixed',
+  bottom: "20px",
+  right: "20px",
+  position: "fixed",
 };
 
 const PriorPageStyle = {
-  bottom: '20px',
-  left: '20px',
-  position: 'fixed',
+  bottom: "20px",
+  left: "20px",
+  position: "fixed",
 };
 
 const ContainerStyle = {
@@ -43,13 +68,14 @@ const ContainerStyle = {
 };
 
 const SidebarStyle = {
-  height: '100vh',
+  height: "100vh",
   marginTop: 0,
 };
 
 const resolveReferenceDebounced = AwesomeDebouncePromise(
-  (titleSlug, reference) => fetch(ENDPOINT_RESOLVE_REFERENCE(titleSlug, reference)),
-  500,
+  (titleSlug, reference) =>
+    fetch(ENDPOINT_RESOLVE_REFERENCE(titleSlug, reference)),
+  500
 );
 
 /**
@@ -65,14 +91,13 @@ class Reader extends Component {
    * @param {array} divisions The list of divisions.
    */
   static hasLongDivisionNames(divisions) {
-    const countLongNames = (accumulator, division) => (
+    const countLongNames = (accumulator, division) =>
       division.full_title && division.full_title.length > LONG_DIVISION_NAME
         ? accumulator + 1
-        : accumulator
-    );
+        : accumulator;
     const longNames = divisions.reduce(countLongNames, 0);
 
-    return (longNames > 5 || longNames === divisions.length);
+    return longNames > 5 || longNames === divisions.length;
   }
 
   /**
@@ -81,11 +106,12 @@ class Reader extends Component {
    * @param {array} divisions The list of divisions.
    */
   static areDescriptorsNames(divisions) {
-    const countIndicators = (accumulator, division) => (
-      /^([0-9]+|[IVX]+|[A-Z])$/i.test(division.descriptor) ? accumulator + 1 : accumulator
-    );
+    const countIndicators = (accumulator, division) =>
+      /^([0-9]+|[IVX]+|[A-Z])$/i.test(division.descriptor)
+        ? accumulator + 1
+        : accumulator;
     const indicators = divisions.reduce(countIndicators, 0);
-    return (indicators !== divisions.length);
+    return indicators !== divisions.length;
   }
 
   /**
@@ -133,10 +159,11 @@ class Reader extends Component {
    */
   static workSearch(options, query) {
     const queryLower = query.toLowerCase();
-    return options.filter((opt) => (
-      opt.text.toLowerCase().includes(queryLower)
-      || opt.key.toLowerCase().includes(queryLower)
-    ));
+    return options.filter(
+      (opt) =>
+        opt.text.toLowerCase().includes(queryLower) ||
+        opt.key.toLowerCase().includes(queryLower)
+    );
   }
 
   /**
@@ -184,7 +211,7 @@ class Reader extends Component {
       divisions: null,
       loadedWork: null,
       referenceValid: true,
-      referenceValue: '',
+      referenceValue: "",
       selectedWord: null,
       popupX: null,
       popupY: null,
@@ -235,9 +262,7 @@ class Reader extends Component {
    */
   componentDidUpdate(prevProps) {
     const { location, match } = this.props;
-    const {
-      redirectedTo, data, highlightedVerse, loadedWork,
-    } = this.state;
+    const { redirectedTo, data, highlightedVerse, loadedWork } = this.state;
 
     // See if we know that this is a reference to this chapter
     const existingChapter = this.verseReferences[location.pathname];
@@ -245,14 +270,19 @@ class Reader extends Component {
     // Check if the chapter we have loaded already
     // This needs to check the loaded work too, since we need to recognize if we the reference is
     // the same reference but in a different work.
-    if (data && data.chapter && existingChapter
-      && existingChapter.chapter === data.chapter.full_descriptor
-      && (loadedWork && loadedWork === match.params.work)
+    if (
+      data &&
+      data.chapter &&
+      existingChapter &&
+      existingChapter.chapter === data.chapter.full_descriptor &&
+      loadedWork &&
+      loadedWork === match.params.work
     ) {
       // Get the highlighted verse
       const highlightedVerseRef = existingChapter.verse;
 
       if (highlightedVerse !== highlightedVerseRef) {
+        // eslint-disable-next-line react/no-did-update-set-state
         this.setState({
           highlightedVerse: highlightedVerseRef,
           referenceValue: existingChapter.referenceValue,
@@ -264,7 +294,10 @@ class Reader extends Component {
     }
 
     // Determine if the page changed
-    if (location.pathname !== prevProps.location.pathname && redirectedTo !== location.pathname) {
+    if (
+      location.pathname !== prevProps.location.pathname &&
+      redirectedTo !== location.pathname
+    ) {
       const divisions = [
         match.params.division0,
         match.params.division1,
@@ -291,7 +324,12 @@ class Reader extends Component {
     const { data } = this.state;
 
     // Add the verse to the list
-    this.addVerseToHistoryList(href, data.chapter.full_descriptor, verse, verseDescriptor);
+    this.addVerseToHistoryList(
+      href,
+      data.chapter.full_descriptor,
+      verse,
+      verseDescriptor
+    );
 
     this.setState({
       referenceValue: verseDescriptor,
@@ -315,7 +353,7 @@ class Reader extends Component {
   onWordClick(word, x, y, positionRight, positionBelow) {
     this.setState({
       selectedWord: word,
-      modal: 'word',
+      modal: "word",
       popupX: x,
       popupY: y,
       popupPositionRight: positionRight,
@@ -336,7 +374,7 @@ class Reader extends Component {
   onNoteClick(note, id, x, y, positionRight, positionBelow) {
     this.setState({
       selectedNote: note,
-      modal: 'note',
+      modal: "note",
       popupX: x,
       popupY: y,
       popupPositionRight: positionRight,
@@ -355,7 +393,7 @@ class Reader extends Component {
     // See if this is a related work
     if (data && data.related_works) {
       isRelated = data.related_works.find(
-        (relatedWork) => relatedWork.title_slug === work,
+        (relatedWork) => relatedWork.title_slug === work
       );
     }
 
@@ -372,7 +410,7 @@ class Reader extends Component {
    * @param {object} event The event from the key press.
    */
   onKeyPressed(event) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       this.goToReference();
     }
   }
@@ -381,19 +419,17 @@ class Reader extends Component {
    * Get the dialogs that ought to be rendered.
    */
   getDialogs() {
-    const {
-      modal, data, loading, loadedWork,
-    } = this.state;
+    const { modal, data, loading, loadedWork } = this.state;
 
     return (
       <>
-        {data && !loading && modal === 'aboutWork' && (
+        {data && !loading && modal === "aboutWork" && (
           <AboutWorkDialog
             work={loadedWork}
             onClose={() => this.closeModal()}
           />
         )}
-        {data && !loading && modal === 'downloadWork' && (
+        {data && !loading && modal === "downloadWork" && (
           <WorkDownloadDialog
             work={loadedWork}
             onClose={() => this.closeModal()}
@@ -408,15 +444,23 @@ class Reader extends Component {
    */
   getPopups() {
     const {
-      modal, data, loading, selectedWord, popupX, popupY, popupPositionRight, popupPositionBelow,
-      selectedNote, loadedWork,
+      modal,
+      data,
+      loading,
+      selectedWord,
+      popupX,
+      popupY,
+      popupPositionRight,
+      popupPositionBelow,
+      selectedNote,
+      loadedWork,
     } = this.state;
 
     const { inverted } = this.props;
 
     return (
       <>
-        {data && !loading && modal === 'word' && (
+        {data && !loading && modal === "word" && (
           <WordInformation
             inverted={inverted}
             positionBelow={popupPositionBelow}
@@ -428,7 +472,7 @@ class Reader extends Component {
             onClose={() => this.closeModal()}
           />
         )}
-        {data && !loading && modal === 'note' && (
+        {data && !loading && modal === "note" && (
           <FootnotePopup
             inverted={inverted}
             positionBelow={popupPositionBelow}
@@ -460,7 +504,7 @@ class Reader extends Component {
    * @param {string} errorDescription The description
    * @param {string} errorMessage The detailed error message (like from an AJAX call)
    */
-  setErrorState(errorTitle, errorDescription = '', errorMessage = null) {
+  setErrorState(errorTitle, errorDescription = "", errorMessage = null) {
     this.setState({
       errorMessage,
       errorDescription,
@@ -544,7 +588,7 @@ class Reader extends Component {
     });
 
     fetch(ENDPOINT_READ_WORK(work, ...divisions))
-      .then((res) => (Promise.all([res.status, res.json()])))
+      .then((res) => Promise.all([res.status, res.json()]))
       .then(([status, data]) => {
         if (status >= 200 && status < 300) {
           let redirectedFrom = null;
@@ -568,12 +612,15 @@ class Reader extends Component {
             highlightedVerse: data.verse_to_highlight,
           });
 
+          // Remember that we read this work
+          setWorkProgress(work, divisions, data.chapter.description);
+
           // Add the verse to the list
           this.addVerseToHistoryList(
             READ_WORK(work, ...divisions),
             data.chapter.full_descriptor,
             data.verse_to_highlight,
-            data.chapter.description,
+            data.chapter.description
           );
 
           // Update the URL if we were redirected
@@ -585,16 +632,16 @@ class Reader extends Component {
           this.preloadNextChapter();
         } else {
           this.setErrorState(
-            'Work could not be found',
-            'Yikes. The given work is not recognized as a valid work.',
+            "Work could not be found",
+            "Yikes. The given work is not recognized as a valid work."
           );
         }
       })
       .catch((e) => {
         this.setErrorState(
-          'Unable to load the content',
-          'The given chapter could not be loaded from the server',
-          e.toString(),
+          "Unable to load the content",
+          "The given chapter could not be loaded from the server",
+          e.toString()
         );
       });
   }
@@ -606,7 +653,9 @@ class Reader extends Component {
     const { data, loadedWork } = this.state;
 
     if (data.next_chapter) {
-      fetch(ENDPOINT_READ_WORK(`${loadedWork}/${data.next_chapter.full_descriptor}`));
+      fetch(
+        ENDPOINT_READ_WORK(`${loadedWork}/${data.next_chapter.full_descriptor}`)
+      );
     }
   }
 
@@ -617,7 +666,11 @@ class Reader extends Component {
     const { data, loadedWork } = this.state;
 
     if (data.previous_chapter) {
-      fetch(ENDPOINT_READ_WORK(`${loadedWork}/${data.previous_chapter.full_descriptor}`));
+      fetch(
+        ENDPOINT_READ_WORK(
+          `${loadedWork}/${data.previous_chapter.full_descriptor}`
+        )
+      );
     }
   }
 
@@ -625,7 +678,7 @@ class Reader extends Component {
    * Open the about modal.
    */
   openAboutModal() {
-    this.setState({ modal: 'about' });
+    this.setState({ modal: "about" });
   }
 
   /**
@@ -647,7 +700,7 @@ class Reader extends Component {
    * Open the info modal.
    */
   openWorkInfoModal() {
-    this.setState({ modal: 'aboutWork' });
+    this.setState({ modal: "aboutWork" });
   }
 
   /**
@@ -668,7 +721,7 @@ class Reader extends Component {
    * Open the modal for downloading a work.
    */
   openDownloadModal() {
-    this.setState({ modal: 'downloadWork' });
+    this.setState({ modal: "downloadWork" });
   }
 
   /**
@@ -717,7 +770,7 @@ class Reader extends Component {
     this.lastSetReference = info.value;
 
     resolveReferenceDebounced(loadedWork, info.value)
-      .then((res) => (Promise.all([res.status, res.json()])))
+      .then((res) => Promise.all([res.status, res.json()]))
       .then(([status, referenceInfo]) => {
         // If the user already changed the value again, just ignore it
         if (this.lastSetReference !== info.value) {
@@ -739,9 +792,9 @@ class Reader extends Component {
       })
       .catch((e) => {
         this.setErrorState(
-          'Unable to load the content',
-          'The given chapter could not be loaded from the server',
-          e.toString(),
+          "Unable to load the content",
+          "The given chapter could not be loaded from the server",
+          e.toString()
         );
       });
   }
@@ -759,7 +812,7 @@ class Reader extends Component {
 
     // Verify the reference is valid before going to it
     fetch(ENDPOINT_RESOLVE_REFERENCE(loadedWork, referenceValue))
-      .then((res) => (Promise.all([res.status, res.json()])))
+      .then((res) => Promise.all([res.status, res.json()]))
       .then(([status, referenceInfo]) => {
         if (status === 200) {
           this.setState({
@@ -778,9 +831,9 @@ class Reader extends Component {
       })
       .catch((e) => {
         this.setErrorState(
-          'Unable to load the content',
-          'The given chapter could not be loaded from the server',
-          e.toString(),
+          "Unable to load the content",
+          "The given chapter could not be loaded from the server",
+          e.toString()
         );
       });
   }
@@ -807,8 +860,19 @@ class Reader extends Component {
 
   render() {
     const {
-      modal, data, errorDescription, loading, referenceValid, referenceValue, bookSelectionOpen,
-      errorTitle, errorMessage, redirectedFrom, sidebarVisible, loadedWork, highlightedVerse,
+      modal,
+      data,
+      errorDescription,
+      loading,
+      referenceValid,
+      referenceValue,
+      bookSelectionOpen,
+      errorTitle,
+      errorMessage,
+      redirectedFrom,
+      sidebarVisible,
+      loadedWork,
+      highlightedVerse,
     } = this.state;
 
     const { inverted } = this.props;
@@ -826,22 +890,22 @@ class Reader extends Component {
     };
 
     // Figure out a description for the chapter
-    let description = '';
+    let description = "";
     let referenceDescription = referenceValue;
 
     if (data) {
       description = data.chapter.description;
 
-      if (referenceValue === '') {
+      if (referenceValue === "") {
         referenceDescription = description;
       }
     }
 
     // Create a custom className for signaling the desire to switch to inverted
-    let classNameSuffix = '';
+    let classNameSuffix = "";
 
     if (inverted) {
-      classNameSuffix = ' inverted';
+      classNameSuffix = " inverted";
     }
 
     // Determine what we ought to be rendering
@@ -859,11 +923,17 @@ class Reader extends Component {
 
     // Get the list of related works so that the book selector can put the related ones at the top
     const relatedWorks = data && data.related_works ? data.related_works : [];
-    const authors = data && data.authors ? data.authors.map((author) => author.name) : null;
+    const authors =
+      data && data.authors ? data.authors.map((author) => author.name) : null;
 
     return (
       <>
-        <Menu inverted={inverted} style={{ zIndex: 103 }} className={`control ${classNameSuffix}`} fixed="top">
+        <Menu
+          inverted={inverted}
+          style={{ zIndex: 103 }}
+          className={`control ${classNameSuffix}`}
+          fixed="top"
+        >
           <Container>
             <Menu.Item
               name="works"
@@ -887,9 +957,7 @@ class Reader extends Component {
               onOpen={() => this.setBookSelectionOpen(true)}
               open={bookSelectionOpen}
               trigger={(
-                <Menu.Item
-                  name="Library"
-                >
+                <Menu.Item name="Library">
                   <img style={{ width: 16 }} src={LibraryIcon} alt="Library" />
                 </Menu.Item>
               )}
@@ -898,18 +966,16 @@ class Reader extends Component {
               <Input
                 inverted={inverted}
                 className="referenceJumpInput"
-                action={
-                  (
-                    <Button
-                      disabled={!referenceValid}
-                      inverted={inverted}
-                      onClick={() => this.goToReference()}
-                      basic
-                    >
-                      Go
-                    </Button>
-                  )
-                }
+                action={(
+                  <Button
+                    disabled={!referenceValid}
+                    inverted={inverted}
+                    onClick={() => this.goToReference()}
+                    basic
+                  >
+                    Go
+                  </Button>
+                )}
                 placeholder="Jump to reference..."
                 value={referenceDescription}
                 error={!referenceValid}
@@ -917,7 +983,7 @@ class Reader extends Component {
                 onKeyPress={(e, d) => this.onKeyPressed(e, d)}
               />
             </Menu.Item>
-            <div style={{ float: 'right', marginLeft: 'auto', marginTop: 11 }}>
+            <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
               <Responsive minWidth={768}>
                 <Dropdown icon="ellipsis vertical" direction="left">
                   <Dropdown.Menu>
@@ -979,7 +1045,12 @@ class Reader extends Component {
                 Search
               </Menu.Item>
             </Sidebar>
-            <Sidebar.Pushable as={Segment} basic style={SidebarStyle} className={`${classNameSuffix}`}>
+            <Sidebar.Pushable
+              as={Segment}
+              basic
+              style={SidebarStyle}
+              className={`${classNameSuffix}`}
+            >
               <Sidebar.Pusher>
                 <Container className={`underMenu ${classNameSuffix}`}>
                   {this.getDialogs()}
@@ -996,11 +1067,19 @@ class Reader extends Component {
                                 deburr
                                 scrolling
                                 search={Reader.workSearch}
-                                options={Reader.convertDivisionsToOptions(data.divisions)}
+                                options={Reader.convertDivisionsToOptions(
+                                  data.divisions
+                                )}
                                 value={data.chapter.parent_division.descriptor}
-                                onChange={(event, info) => this.changeChapter(event, info)}
+                                onChange={(event, info) =>
+                                  this.changeChapter(event, info)}
                               />
-                              <div style={{ display: 'inline-block', paddingLeft: 6 }}>
+                              <div
+                                style={{
+                                  display: "inline-block",
+                                  paddingLeft: 6,
+                                }}
+                              >
                                 {data.chapter.type}
                                 {` ${data.chapter.descriptor}`}
                               </div>
@@ -1010,48 +1089,65 @@ class Reader extends Component {
                       </Grid.Column>
                       <Grid.Column width={8}>
                         <Container textAlign="right">
-                          <Header inverted={inverted} floated="right" as="h3">{data.work.title}</Header>
+                          <Header inverted={inverted} floated="right" as="h3">
+                            {data.work.title}
+                          </Header>
                         </Container>
                       </Grid.Column>
                     </Grid.Row>
                   </Grid>
                   <div style={{ marginTop: 6 }} />
-                  {data && data.warnings.map((warning) => (
-                    <Message
-                      className={classNameSuffix}
-                      warning
-                      key={warning[0]}
-                      header={warning[0]}
-                      content={warning[1]}
-                    />
-                  ))}
+                  {data &&
+                    data.warnings.map((warning) => (
+                      <Message
+                        className={classNameSuffix}
+                        warning
+                        key={warning[0]}
+                        header={warning[0]}
+                        content={warning[1]}
+                      />
+                    ))}
                   {redirectedFrom && (
-                  <Message info className={classNameSuffix}>
-                    <p>
-                      The URL you were using was old so you were redirected to the new one.
-                      You may want to update your shortcuts.
-                    </p>
-                  </Message>
+                    <Message info className={classNameSuffix}>
+                      <p>
+                        The URL you were using was old so you were redirected to
+                        the new one. You may want to update your shortcuts.
+                      </p>
+                    </Message>
                   )}
                   {data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
                     <>
-                      <Segment.Group horizontal style={{ border: 0, marginBottom: 4 }} className={`${classNameSuffix}`}>
+                      <Segment.Group
+                        horizontal
+                        style={{ border: 0, marginBottom: 4 }}
+                        className={`${classNameSuffix}`}
+                      >
                         <Segment basic inverted style={{ padding: 0 }}>
                           {data.completed_chapters_in_book}
                           {' '}
                           of
-                          {' '}
+                          {" "}
                           {data.total_chapters_in_book}
                           {' '}
                           chapters
-                          {' '}
+                          {" "}
                         </Segment>
-                        <Segment basic inverted style={{ textAlign: 'right', padding: 0 }}>
+                        <Segment
+                          basic
+                          inverted
+                          style={{ textAlign: "right", padding: 0 }}
+                        >
                           {Math.round(data.progress_in_book)}
                           % through the book
                         </Segment>
                       </Segment.Group>
-                      <Progress className="bookProgress" color="blue" style={{ margin: '0 0 8px 0' }} percent={data.progress_in_book} size="tiny" />
+                      <Progress
+                        className="bookProgress"
+                        color="blue"
+                        style={{ margin: "0 0 8px 0" }}
+                        percent={data.progress_in_book}
+                        size="tiny"
+                      />
                     </>
                   )}
 
@@ -1089,13 +1185,15 @@ class Reader extends Component {
         {mode === MODE_NOT_READY && (
           <Container style={ContainerStyle} className={`${classNameSuffix}`}>
             <div style={{ paddingTop: 24 }}>
-              <NoWorkSelected onClick={() => this.setBookSelectionOpen()} inverted={inverted} />
+              <NoWorkSelected
+                onClick={() => this.setBookSelectionOpen()}
+                inverted={inverted}
+              />
+              <FavoriteWorks inverted={inverted} />
             </div>
           </Container>
         )}
-        {modal === 'about' && (
-          <AboutDialog onClose={() => this.closeModal()} />
-        )}
+        {modal === "about" && <AboutDialog onClose={() => this.closeModal()} />}
       </>
     );
   }
