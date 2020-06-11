@@ -42,8 +42,9 @@ import "./index.scss";
 import FavoriteWorks from "../FavoriteWorks";
 
 /**
- * componentDidUpdate() will trigger the fetch of the work as necessary.
- * loadChapter() will fetch the chapter and load it into the UI.
+ * Below are some notes about how this works:
+ *   * componentDidUpdate() will trigger the fetch of the work as necessary when the URL changes.
+ *   * loadChapter() will fetch the chapter and load it into the UI.
  */
 
 const MODE_LOADING = 0;
@@ -575,6 +576,29 @@ class Reader extends Component {
    * @param {array} divisions The list of division indicators
    */
   loadChapter(work, ...divisions) {
+    // Load the start page if there is no work to load
+    if (!work) {
+      this.setState({
+        bookSelectionOpen: false,
+        modal: null,
+        errorTitle: null,
+        errorMessage: null,
+        errorDescription: null,
+        redirectedFrom: null,
+        redirectedTo: null,
+        highlightedVerse: null,
+        data: null,
+        loading: false,
+        loadedWork: null,
+        divisions: null,
+        referenceValue: null,
+        referenceValid: true,
+      });
+
+      return;
+    }
+
+    // Reset the state to show that we are loading
     this.setState({
       loading: true,
       bookSelectionOpen: false,
