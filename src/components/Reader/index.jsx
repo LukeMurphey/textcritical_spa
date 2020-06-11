@@ -637,7 +637,7 @@ class Reader extends Component {
           });
 
           // Remember that we read this work
-          setWorkProgress(work, divisions, data.chapter.description);
+          setWorkProgress(work, divisions, data.reference_descriptor);
 
           // Add the verse to the list
           this.addVerseToHistoryList(

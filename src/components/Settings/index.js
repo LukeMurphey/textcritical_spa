@@ -30,7 +30,7 @@ export function storageAvailable(type) {
   }
 }
 
-export function setWorkProgress(workTitleSlug, divisions, divisionTitle) {
+export function setWorkProgress(workTitleSlug, divisions, divisionReference) {
   if (storageAvailable("localStorage")) {
     // See if the entry exists already
     let lastReadHistory = localStorage.getItem(LAST_READ_HISTORY);
@@ -61,7 +61,7 @@ export function setWorkProgress(workTitleSlug, divisions, divisionTitle) {
     // Set the entry
     lastReadEntry.workTitleSlug = workTitleSlug;
     lastReadEntry.divisions = divisions;
-    lastReadEntry.divisionTitle = divisionTitle;
+    lastReadEntry.divisionReference = divisionReference;
 
     // Splice it in
     lastReadHistory.splice(0, 0, lastReadEntry);
@@ -83,4 +83,8 @@ export function getWorksLastRead() {
   }
 
   return null;
+}
+
+export function clearWorksLastRead() {
+  localStorage.removeItem(LAST_READ_HISTORY);
 }
