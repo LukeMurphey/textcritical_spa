@@ -1,4 +1,7 @@
 const LAST_READ_HISTORY = "lastReadHistory";
+export function maxHistoryCount(){
+  return 5;
+}
 
 export function storageAvailable(type) {
   let storage;
@@ -62,6 +65,11 @@ export function setWorkProgress(workTitleSlug, divisions, divisionTitle) {
 
     // Splice it in
     lastReadHistory.splice(0, 0, lastReadEntry);
+
+    // Shorten the list to the limit
+    if (lastReadHistory.length > maxHistoryCount()) {
+      lastReadHistory = lastReadHistory.slice(0, maxHistoryCount());
+    }
 
     // Update the history
     localStorage.setItem(LAST_READ_HISTORY, JSON.stringify(lastReadHistory));
