@@ -31,6 +31,7 @@ class BookSelection extends Component {
       error: null,
       search: '',
     };
+    this.searchInput = null;
   }
 
   componentDidMount() {
@@ -156,6 +157,7 @@ class BookSelection extends Component {
       .then((res) => res.json())
       .then((works) => {
         this.setState({ works: this.sortWorks(works) });
+        this.searchInput.focus();
       })
       .catch((e) => {
         this.setState({
@@ -179,37 +181,46 @@ class BookSelection extends Component {
     return (
       <>
         {!error && works && (
-        <div>
-          <Input onChange={onChangeDebounced} style={{ width: '100%' }} placeholder="Search..." />
-        </div>
+          <div>
+            <Input
+              ref={(input) => {
+                this.searchInput = input;
+              }}
+              onChange={onChangeDebounced}
+              style={{ width: "100%" }}
+              placeholder="Search..."
+            />
+          </div>
         )}
-        <div style={{ maxHeight: 400, width, overflowY: 'auto' }}>
+        <div style={{ maxHeight: 400, width, overflowY: "auto" }}>
           {error && (
-          <ErrorMessage
-            title="Unable to load the list of works"
-            description="Unable to get the list of works from the server"
-            message={error}
-          />
+            <ErrorMessage
+              title="Unable to load the list of works"
+              description="Unable to get the list of works from the server"
+              message={error}
+            />
           )}
           {!error && works && (
-          <Table basic="very" celled collapsing>
-            <Table.Body>
-              {works
-                .filter((work) => BookSelection.workMatchesSearch(work, searchLowerCase))
-                .map((work, index) => (
-                  this.getWorkRow(work, index > 15, onLargeScreen)
-                ))}
-            </Table.Body>
-          </Table>
+            <Table basic="very" celled collapsing>
+              <Table.Body>
+                {works
+                  .filter((work) =>
+                    BookSelection.workMatchesSearch(work, searchLowerCase)
+                  )
+                  .map((work, index) =>
+                    this.getWorkRow(work, index > 15, onLargeScreen)
+                  )}
+              </Table.Body>
+            </Table>
           )}
           {!error && !works && (
-          <Placeholder>
-            <Placeholder.Paragraph>
-              <Placeholder.Line />
-              <Placeholder.Line />
-              <Placeholder.Line />
-            </Placeholder.Paragraph>
-          </Placeholder>
+            <Placeholder>
+              <Placeholder.Paragraph>
+                <Placeholder.Line />
+                <Placeholder.Line />
+                <Placeholder.Line />
+              </Placeholder.Paragraph>
+            </Placeholder>
           )}
         </div>
       </>
