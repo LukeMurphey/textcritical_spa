@@ -967,12 +967,14 @@ class Reader extends Component {
           fixed="top"
         >
           <Container>
-            <Menu.Item
-              name="works"
-              onClick={() => this.setSidebarVisible(true)}
-            >
-              <Icon name="bars" />
-            </Menu.Item>
+            {loadedWork && (
+              <Menu.Item
+                name="works"
+                onClick={() => this.setSidebarVisible(true)}
+              >
+                <Icon name="bars" />
+              </Menu.Item>
+            )}
             <Popup
               content={(
                 <BookSelection
@@ -994,27 +996,29 @@ class Reader extends Component {
                 </Menu.Item>
               )}
             />
-            <Menu.Item>
-              <Input
-                inverted={inverted}
-                className="referenceJumpInput"
-                action={(
-                  <Button
-                    disabled={!referenceValid}
-                    inverted={inverted}
-                    onClick={() => this.goToReference()}
-                    basic
-                  >
-                    Go
-                  </Button>
-                )}
-                placeholder="Jump to reference..."
-                value={referenceDescription}
-                error={!referenceValid}
-                onChange={(e, d) => this.changeReference(e, d)}
-                onKeyPress={(e, d) => this.onKeyPressed(e, d)}
-              />
-            </Menu.Item>
+            {loadedWork && (
+              <Menu.Item>
+                <Input
+                  inverted={inverted}
+                  className="referenceJumpInput"
+                  action={(
+                    <Button
+                      disabled={!referenceValid}
+                      inverted={inverted}
+                      onClick={() => this.goToReference()}
+                      basic
+                    >
+                      Go
+                    </Button>
+                  )}
+                  placeholder="Jump to reference..."
+                  value={referenceDescription}
+                  error={!referenceValid}
+                  onChange={(e, d) => this.changeReference(e, d)}
+                  onKeyPress={(e, d) => this.onKeyPressed(e, d)}
+                />
+              </Menu.Item>
+            )}
             <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
               <Responsive minWidth={768}>
                 <Dropdown icon="ellipsis vertical" direction="left">
