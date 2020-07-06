@@ -1,10 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
 import { Container, Form, TextArea, Segment, Button } from 'semantic-ui-react';
 import { withRouter } from "react-router-dom";
 import { ENDPOINT_CONVERT_BETA_CODE_QUERY } from '../Endpoints';
 import { READ_WORK } from '../URLs';
 import FullscreenDialog from '../FullscreenDialog';
+import WordInformation from "../WordInformation/WordInformationPopup";
+import ErrorMessage from '../ErrorMessage';
+import { getPositionRecommendation } from '../PopupDialog';
+
+const SegmentStyle = {
+  marginTop: "20px",
+};
 
 const BetaCodeConverter = ({ inverted, history }) => {
   const [originalText, setOriginalText] = useState('');
@@ -12,9 +19,46 @@ const BetaCodeConverter = ({ inverted, history }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // The following are related to the popup
+  const [modal, setModal] = useState(null);
+  const [selectedWord, setSelectedWord] = useState(null);
+  const [popupX, setPopupX] = useState(null);
+  const [popupY, setPopupY] = useState(null);
+  const [popupPositionRight, setPopupPositionRight] = useState(null);
+  const [popupPositionBelow, setPopupPositionBelow] = useState(null);
+
   const onClickBack = () => {
     history.push(READ_WORK());
   };
+
+  const closeModal = () => {
+    setModal(null)
+  };
+
+  const convertText = (text) => {
+    const testSplit = text.split(" ");
+    return testSplit.map(t => (
+      <>
+        <span className="word">{t}</span>
+        {' '}
+      </>
+    ));
+  }
+
+  const handleWordClick = event => {
+    // Determine if we are clicking a word, verse, note, or just empty space
+    if (event.target.className.includes('word')) {
+      const word = event.target.textContent;
+      const [right, below] = getPositionRecommendation(event);
+
+      setPopupPositionRight(right);
+      setPopupPositionBelow(below);
+      setPopupX(event.layerX);
+      setPopupY(event.layerY);
+      setModal('word');
+      setSelectedWord(word);
+    }
+  }
 
   const getWordInfo = () => {
     setLoading(true);
@@ -30,14 +74,57 @@ const BetaCodeConverter = ({ inverted, history }) => {
       });
   }
 
+  useEffect(() => {
+    window.addEventListener('click', handleWordClick);
+    return () => {
+      window.removeEventListener('click', handleWordClick);
+    };
+  }, [handleWordClick]);
+
+  /**
+   * Get the popups.
+   */
+  const getPopups = () => {
+    return (
+      <>
+        {modal === "word" && (
+          <WordInformation
+            inverted={inverted}
+            positionBelow={popupPositionBelow}
+            positionRight={popupPositionRight}
+            x={popupX}
+            y={popupY}
+            word={selectedWord}
+            onClose={() => closeModal()}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <FullscreenDialog inverted={inverted} onClickBack={onClickBack} backTitle="Back to the Library">
+      {getPopups()}
       <Container>
+        {error && (
+        <ErrorMessage
+          title="Unable to load word information"
+          description="Unable to get information about the text from the server"
+          message={error}
+        />
+        )}
         <Segment inverted={inverted}>
           <Form>
+            Enter beta-code below and it will be converted to Greek Unicode automatically
             <TextArea placeholder='Enter beta-code here' value={originalText} onChange={(event, data) => setOriginalText(data.value)} />
-            <Segment inverted={inverted}>{convertedText}</Segment>
-            <Button primary onClick={getWordInfo}>Primary</Button>
+            <div style={SegmentStyle} />
+            {convertedText && (
+              <>
+                Results (click the word to do a morphological lookup):
+                <Segment inverted={inverted}>{convertText(convertedText)}</Segment>
+              </>
+            )}
+            <Button primary onClick={getWordInfo}>Convert</Button>
           </Form>
         </Segment>
       </Container>
