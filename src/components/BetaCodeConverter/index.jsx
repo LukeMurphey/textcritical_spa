@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
-import { Container, Form, TextArea, Segment, Button, Dimmer, Loader, Header } from 'semantic-ui-react';
+import { Container, Form, TextArea, Segment, Dimmer, Loader, Header } from 'semantic-ui-react';
 import { withRouter } from "react-router-dom";
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { ENDPOINT_CONVERT_BETA_CODE_QUERY } from '../Endpoints';
 import { READ_WORK } from '../URLs';
 import FullscreenDialog from '../FullscreenDialog';
@@ -12,6 +13,12 @@ import { getPositionRecommendation } from '../PopupDialog';
 const SegmentStyle = {
   marginTop: "20px",
 };
+
+const convertBetaCodeDebounced = AwesomeDebouncePromise(
+  (originalText) =>
+  fetch(ENDPOINT_CONVERT_BETA_CODE_QUERY(originalText)),
+  500
+);
 
 const BetaCodeConverter = ({ inverted, history }) => {
   const [originalText, setOriginalText] = useState('');
@@ -60,10 +67,10 @@ const BetaCodeConverter = ({ inverted, history }) => {
     }
   }
 
-  const getWordInfo = () => {
+  const getWordInfo = txt => {
     setLoading(true);
 
-    fetch(ENDPOINT_CONVERT_BETA_CODE_QUERY(originalText))
+    convertBetaCodeDebounced(txt)
       .then((res) => res.json())
       .then((data) => {
         setConvertedText(data);
@@ -119,7 +126,14 @@ const BetaCodeConverter = ({ inverted, history }) => {
           <Header as="h1">Beta-code Conversion</Header>
           <Form>
             Enter beta-code below and it will be converted to Greek Unicode automatically
-            <TextArea placeholder='Enter beta-code here' value={originalText} onChange={(event, data) => setOriginalText(data.value)} />
+            <TextArea
+              placeholder='Enter beta-code here'
+              value={originalText}
+              onChange={(event, data) => {
+                setOriginalText(data.value);
+                getWordInfo(data.value);
+            }}
+            />
             <div style={SegmentStyle} />
             {convertedText && (
               <>
@@ -134,7 +148,6 @@ const BetaCodeConverter = ({ inverted, history }) => {
                 </Segment>
               </>
             )}
-            <Button primary onClick={getWordInfo}>Convert</Button>
           </Form>
         </Segment>
       </Container>
