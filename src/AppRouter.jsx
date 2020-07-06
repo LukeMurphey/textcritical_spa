@@ -10,6 +10,7 @@ import BasicLoader from './components/BasicLoader';
 const ContactMe = React.lazy(() => import('./components/ContactMe'));
 const About = React.lazy(() => import('./components/About'));
 const Search = React.lazy(() => import('./components/Search'));
+const BetaCodeConverter = React.lazy(() => import('./components/BetaCodeConverter'));
 const App = React.lazy(() => import('./App'));
 
 const AppRouter = ({ inverted }) => (
@@ -33,6 +34,9 @@ const AppRouter = ({ inverted }) => (
         </Route>
         <Route exact path="/contact">
           <ContactMe inverted={inverted} />
+        </Route>
+        <Route exact path="/beta_code_converter">
+          <BetaCodeConverter inverted={inverted} />
         </Route>
         <Route>
           <NotFound inverted={inverted} />

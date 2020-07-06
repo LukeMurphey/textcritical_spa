@@ -26,7 +26,7 @@ import {
   ENDPOINT_WORK_IMAGE,
 } from "../Endpoints";
 import { setWorkProgress } from "../Settings";
-import { SEARCH, READ_WORK, START_PAGE } from "../URLs";
+import { SEARCH, READ_WORK, START_PAGE, BETA_CODE_CONVERT } from "../URLs";
 import { toTitleCase } from "../Utils";
 import Chapter from "./Chapter";
 import ErrorMessage from "../ErrorMessage";
@@ -714,6 +714,15 @@ class Reader extends Component {
   }
 
   /**
+   * Open the beta-code conversion page.
+   */
+  openBetaCodePage() {
+    const { history } = this.props;
+    history.push(BETA_CODE_CONVERT());
+  }
+  
+
+  /**
    * Preload the next and prior chapter
    */
   preloadChapters() {
@@ -1030,6 +1039,10 @@ class Reader extends Component {
                     <Dropdown.Item
                       text="Go to Start Page"
                       onClick={() => this.openStartPage()}
+                    />
+                    <Dropdown.Item
+                      text="Convert beta-code to Greek"
+                      onClick={() => this.openBetaCodePage()}
                     />
                   </Dropdown.Menu>
                 </Dropdown>

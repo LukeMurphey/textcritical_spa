@@ -76,3 +76,7 @@ export function ENDPOINT_SEARCH(query, page = 1, relatedForms = false, ignoreDia
 
   return `${getHostConfig()}/api/search/${encodeURIComponent(query)}?page=${page}&related_forms=${relatedFormsConverted}&ignore_diacritics=${ignoreDiacriticsConverted}`;
 }
+
+export function ENDPOINT_CONVERT_BETA_CODE_QUERY(query) {
+  return `${getHostConfig()}/api/convert_query_beta_code/?q=${query}`;
+}

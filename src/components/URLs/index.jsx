@@ -6,6 +6,10 @@ export function START_PAGE() {
   return '/';
 }
 
+export function BETA_CODE_CONVERT() {
+  return '/beta_code_converter';
+}
+
 export function READ_WORK(work = '', ...divisions) {
   let divisionReference = '';
 
