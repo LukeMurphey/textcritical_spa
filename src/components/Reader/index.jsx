@@ -1084,6 +1084,7 @@ class Reader extends Component {
                 className={`priorPage ${classNameSuffix}`}
                 disabled={data.previous_chapter === null}
                 onClick={() => this.goToPriorChapter()}
+                title="Go to prior chapter (or use shortcut shift + left arrow)"
               >
                 <Icon name="left chevron" />
               </Button>
@@ -1094,6 +1095,7 @@ class Reader extends Component {
                 className={`nextPage ${classNameSuffix}`}
                 disabled={data.next_chapter === null}
                 onClick={() => this.goToNextChapter()}
+                title="Go to next chapter (or use shortcut shift + right arrow)"
               >
                 <Icon name="right chevron" />
               </Button>
