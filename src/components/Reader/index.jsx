@@ -84,6 +84,14 @@ const resolveReferenceDebounced = AwesomeDebouncePromise(
  */
 const LONG_DIVISION_NAME = 30;
 
+const addHandler = (handler, type = 'click') => {
+  window.addEventListener(type, (event) => handler(event));
+}
+
+const removeHandler = (handler, type = 'click') => {
+  window.removeEventListener(type, (event) => handler(event));
+}
+
 class Reader extends Component {
   /**
    * Determine if the divisions tend to have long names. This is useful for determining if we ought
@@ -228,6 +236,10 @@ class Reader extends Component {
     // Keep a list of the verses so that we can know what chapter the verse is assopciated with.
     // This is needed so that we don't force a reload just to get the same chapter.
     this.verseReferences = {};
+
+    // Wire-up the handlers
+    this.handler = (event) => this.upHandler(event);
+    addHandler(this.handler, 'keyup');
   }
 
   componentDidMount() {
@@ -309,6 +321,10 @@ class Reader extends Component {
       ].filter((entry) => entry);
       this.loadChapter(match.params.work, ...divisions);
     }
+  }
+  
+  componentWillUnmount() {
+    removeHandler(this.handler);
   }
 
   /**
@@ -878,6 +894,16 @@ class Reader extends Component {
         );
       });
   }
+
+  upHandler({ key, shiftKey }) {
+    if (key === 'ArrowRight' && shiftKey) {
+      this.goToNextChapter();
+    }
+
+    if (key === 'ArrowLeft' && shiftKey) {
+      this.goToPriorChapter();
+    }
+  };
 
   /**
    * Go to the next chapter.
