@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
-import { Container, Form, TextArea, Segment, Button, Dimmer, Loader } from 'semantic-ui-react';
+import { Container, Form, TextArea, Segment, Button, Dimmer, Loader, Header } from 'semantic-ui-react';
 import { withRouter } from "react-router-dom";
 import { ENDPOINT_CONVERT_BETA_CODE_QUERY } from '../Endpoints';
 import { READ_WORK } from '../URLs';
@@ -116,6 +116,7 @@ const BetaCodeConverter = ({ inverted, history }) => {
         />
         )}
         <Segment inverted={inverted}>
+          <Header as="h1">Beta-code Conversion</Header>
           <Form>
             Enter beta-code below and it will be converted to Greek Unicode automatically
             <TextArea placeholder='Enter beta-code here' value={originalText} onChange={(event, data) => setOriginalText(data.value)} />
@@ -123,7 +124,7 @@ const BetaCodeConverter = ({ inverted, history }) => {
             {convertedText && (
               <>
                 Results (click the word to do a morphological lookup):
-                <Segment inverted={inverted}>
+                <Segment secondary inverted={inverted}>
                   { loading && (
                   <Dimmer active>
                     <Loader />
