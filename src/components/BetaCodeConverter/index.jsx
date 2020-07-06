@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
-import { Container, Form, TextArea, Segment, Button } from 'semantic-ui-react';
+import { Container, Form, TextArea, Segment, Button, Dimmer, Loader } from 'semantic-ui-react';
 import { withRouter } from "react-router-dom";
 import { ENDPOINT_CONVERT_BETA_CODE_QUERY } from '../Endpoints';
 import { READ_WORK } from '../URLs';
@@ -67,6 +67,8 @@ const BetaCodeConverter = ({ inverted, history }) => {
       .then((res) => res.json())
       .then((data) => {
         setConvertedText(data);
+        setLoading(false);
+        setError(null);
       })
       .catch((e) => {
         setError(e);
@@ -121,7 +123,14 @@ const BetaCodeConverter = ({ inverted, history }) => {
             {convertedText && (
               <>
                 Results (click the word to do a morphological lookup):
-                <Segment inverted={inverted}>{convertText(convertedText)}</Segment>
+                <Segment inverted={inverted}>
+                  { loading && (
+                  <Dimmer active>
+                    <Loader />
+                  </Dimmer>
+                  )}
+                  {convertText(convertedText)}
+                </Segment>
               </>
             )}
             <Button primary onClick={getWordInfo}>Convert</Button>
