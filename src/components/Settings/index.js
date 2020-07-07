@@ -137,6 +137,37 @@ export function removeFavoriteWork(
   }
 }
 
+export function setFavoritesProgress(
+  workTitleSlug,
+  divisions,
+  divisionReference,
+  storageOverride = null
+) {
+  const storage = storageOverride || localStorage;
+
+  if (storageAvailable("localStorage")) {
+    // See if the entry exists in the list of favorites
+    let favoriteWorks = getFavoriteWorks(storage);
+
+    if (!favoriteWorks) {
+      favoriteWorks = [];
+    }
+
+    const index = favoriteWorks.findIndex(
+      (entry) => entry.workTitleSlug === workTitleSlug
+    );
+
+    // Update the entry if it exists
+    if (index >= 0) {
+      favoriteWorks[index].divisions = divisions;
+      favoriteWorks[index].divisionReference = divisionReference;
+
+      // Update the list
+      storage.setItem(FAVORITE_WORKS, JSON.stringify(favoriteWorks));
+    }
+  }
+}
+
 export function setWorkProgress(
   workTitleSlug,
   divisions,
@@ -185,6 +216,8 @@ export function setWorkProgress(
 
     // Update the history
     storage.setItem(LAST_READ_HISTORY, JSON.stringify(lastReadHistory));
+
+    setFavoritesProgress(workTitleSlug, divisions, divisionReference, storageOverride);
   }
 }
 

@@ -1,4 +1,4 @@
-import { setWorkProgress, getWorksLastRead, maxHistoryCount } from "./index";
+import { setWorkProgress, getWorksLastRead, maxHistoryCount, setFavoriteWork, getFavoriteWorks } from "./index";
 
 // Setup a local storage mock
 class LocalStorageMock {
@@ -91,4 +91,27 @@ test("ignores invalid entries", () => {
   );
 
   expect(getWorksLastRead(storageMock)).toHaveLength(1);
+});
+
+test("the progress gets set for favorites", () => {
+  const storageMock = new LocalStorageMock();
+  
+  // Set a work as a favorite
+  setFavoriteWork('new-testament', storageMock);
+  expect(getFavoriteWorks(storageMock)).toHaveLength(1);
+
+  // Set progress for the work
+  setWorkProgress(
+    "new-testament",
+    ["Luke", "15"],
+    "Luke 15",
+    storageMock
+  );
+  expect(getFavoriteWorks(storageMock)).toHaveLength(1);
+
+  // Make sure the latest entry is correct
+  const records = getFavoriteWorks(storageMock);
+  expect(records[0].workTitleSlug).toBe("new-testament");
+  expect(records[0].divisions).toEqual(["Luke", "15"]);
+  expect(records[0].divisionReference).toBe("Luke 15");
 });
