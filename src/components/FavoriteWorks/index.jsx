@@ -8,6 +8,7 @@ import {
   getFavoriteWorks,
   clearFavorites,
   setFavoriteWork,
+  removeFavoriteWork,
 } from "../Settings";
 import WorkCard from "./WorkCard";
 
@@ -18,6 +19,11 @@ const FavoriteWorks = ({ inverted }) => {
 
   const onFavWork = work => {
     setFavoriteWork(work);
+    setValue(value + 1)
+  }
+
+  const onUnFavWork = work => {
+    removeFavoriteWork(work);
     setValue(value + 1)
   }
 
@@ -82,6 +88,7 @@ const FavoriteWorks = ({ inverted }) => {
                 work={work.workTitleSlug}
                 divisions={work.divisions}
                 divisionReference={work.divisionReference}
+                removeFavoriteWork={onUnFavWork}
               />
             ))}
           </Card.Group>

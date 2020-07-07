@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Card, Image, Button, Loader, Icon, Popup } from "semantic-ui-react";
+import { Card, Image, Button, Loader, Icon, Dropdown } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import { ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from "../Endpoints";
 import { READ_WORK } from "../URLs";
@@ -17,6 +17,7 @@ const WorkCard = ({
   divisionReference,
   history,
   setFavoriteWork,
+  removeFavoriteWork,
 }) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -54,6 +55,9 @@ const WorkCard = ({
   // Determine the classname
   const className = inverted ? 'inverted' : '';
 
+  // Determine if we have options
+  const provideDropdown = removeFavoriteWork || setFavoriteWork;
+
   return (
     <Card className={className}>
       <Card.Content>
@@ -80,17 +84,39 @@ const WorkCard = ({
       </Card.Content>
       <Card.Content extra>
         <div className="ui two buttons">
-          {setFavoriteWork && (
-          <Button.Group>
-            <Button basic icon onClick={() => setFavoriteWork(work)}>
-              <Icon color='red' name='heart' />
-            </Button>
-            <Button basic color="green" onClick={onLoadWork}>
-              Read
-            </Button>
-          </Button.Group>
+          {provideDropdown && (
+            <>
+              <Dropdown text="ellipsis vertical">
+                <Dropdown.Menu>
+                  <Dropdown.Item
+                    text="Set as favorite"
+                    onClick={() => setFavoriteWork(work)}
+                  />
+                </Dropdown.Menu>
+              </Dropdown>
+              <Button.Group color='green'>
+                <Button fluid basic color="green" onClick={onLoadWork}>
+                  Read
+                </Button>
+                <Dropdown
+                  basic
+                  className='button icon'
+                  floating
+                  trigger={<></>}
+                >
+                  <Dropdown.Menu>
+                    {setFavoriteWork && (
+                      <Dropdown.Item icon='heart' text='Set as favorite' onClick={() => setFavoriteWork(work)} />
+                    )}
+                    {removeFavoriteWork && (
+                      <Dropdown.Item icon='remove' text='Remove from favorites' onClick={() => removeFavoriteWork(work)} />
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Button.Group>
+            </>
           )}
-          {!setFavoriteWork && (
+          {!provideDropdown && (
           <Button basic color="green" onClick={onLoadWork}>
             Read
           </Button>
@@ -109,6 +135,7 @@ WorkCard.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   history: PropTypes.object.isRequired,
   setFavoriteWork: PropTypes.func,
+  removeFavoriteWork: PropTypes.func,
 };
 
 WorkCard.defaultProps = {
@@ -116,6 +143,7 @@ WorkCard.defaultProps = {
   divisionReference: null,
   divisions: [],
   setFavoriteWork: null,
+  removeFavoriteWork: null,
 };
 
 export default withRouter(WorkCard);
