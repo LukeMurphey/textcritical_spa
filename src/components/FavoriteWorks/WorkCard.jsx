@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Card, Image, Button, Loader, Icon } from "semantic-ui-react";
+import { Card, Image, Button, Loader, Icon, Popup } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import { ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from "../Endpoints";
 import { READ_WORK } from "../URLs";
@@ -16,6 +16,7 @@ const WorkCard = ({
   divisions,
   divisionReference,
   history,
+  setFavoriteWork,
 }) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -79,9 +80,21 @@ const WorkCard = ({
       </Card.Content>
       <Card.Content extra>
         <div className="ui two buttons">
+          {setFavoriteWork && (
+          <Button.Group>
+            <Button basic icon onClick={() => setFavoriteWork(work)}>
+              <Icon color='red' name='heart' />
+            </Button>
+            <Button basic color="green" onClick={onLoadWork}>
+              Read
+            </Button>
+          </Button.Group>
+          )}
+          {!setFavoriteWork && (
           <Button basic color="green" onClick={onLoadWork}>
-            Read now
+            Read
           </Button>
+          )}
         </div>
       </Card.Content>
     </Card>
@@ -95,12 +108,14 @@ WorkCard.propTypes = {
   divisions: PropTypes.arrayOf(PropTypes.string),
   // eslint-disable-next-line react/forbid-prop-types
   history: PropTypes.object.isRequired,
+  setFavoriteWork: PropTypes.func,
 };
 
 WorkCard.defaultProps = {
   inverted: false,
   divisionReference: null,
   divisions: [],
+  setFavoriteWork: null,
 };
 
 export default withRouter(WorkCard);

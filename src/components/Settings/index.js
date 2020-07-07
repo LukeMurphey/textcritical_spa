@@ -1,6 +1,8 @@
 const LAST_READ_HISTORY = "lastReadHistory";
+const FAVORITE_WORKS = "favoriteWorks";
+
 export function maxHistoryCount() {
-  return 5;
+  return 6;
 }
 
 export function storageAvailable(type) {
@@ -30,27 +32,109 @@ export function storageAvailable(type) {
   }
 }
 
-export function getWorksLastRead(storageOverride = null) {
+export function getWorksList(name, storageOverride = null) {
   const storage = storageOverride || localStorage;
 
-  const lastReadHistory = storage.getItem(LAST_READ_HISTORY);
+  const worksList = storage.getItem(name);
 
-  if (lastReadHistory) {
+  if (worksList) {
     try {
-      const lastReadHistoryParsed = JSON.parse(lastReadHistory);
+      const worksListParsed = JSON.parse(worksList);
 
       // Make sure that the list is an array and has the necesary properties.
-      return lastReadHistoryParsed.filter((entry) => {
+      return worksListParsed.filter((entry) => {
         return entry.workTitleSlug;
       });
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.warn("The list of last read works could not be loaded");
+      console.warn("The list of works could not be loaded");
       return null; // The list could not be loaded
     }
   }
 
   return null;
+}
+
+export function getWorksLastRead(storageOverride = null) {
+  return getWorksList(LAST_READ_HISTORY, storageOverride);
+}
+
+export function getFavoriteWorks(storageOverride = null) {
+  return getWorksList(FAVORITE_WORKS, storageOverride);
+}
+
+export function setFavoriteWork(
+  workTitleSlug,
+  storageOverride = null
+) {
+  const storage = storageOverride || localStorage;
+
+  if (storageAvailable("localStorage")) {
+    // See if the entry exists already
+    let favoriteWorks = getFavoriteWorks(storage);
+
+    // Initialize the history object if we don't have one yet
+    if (favoriteWorks === null) {
+      favoriteWorks = [];
+    }
+
+    // Find the existing index if it exists
+    const index = favoriteWorks.findIndex(
+      (entry) => entry.workTitleSlug === workTitleSlug
+    );
+
+    // Get the existing entry or initial it
+    const favoriteEntry = index >= 0 ? favoriteWorks[index] : {};
+
+    // Update the records to remove the existing entry
+    if (index >= 0) {
+      favoriteWorks = [
+        ...favoriteWorks.slice(0, index),
+        ...favoriteWorks.slice(index + 1),
+      ];
+    }
+
+    // Set the entry
+    favoriteEntry.workTitleSlug = workTitleSlug;
+
+    // Splice it in
+    favoriteWorks.splice(0, 0, favoriteEntry);
+
+    // Shorten the list to the limit
+    if (favoriteWorks.length > maxHistoryCount()) {
+      favoriteWorks = favoriteWorks.slice(0, maxHistoryCount());
+    }
+
+    // Update the history
+    storage.setItem(FAVORITE_WORKS, JSON.stringify(favoriteWorks));
+  }
+}
+
+export function removeFavoriteWork(
+  workTitleSlug,
+  storageOverride = null
+) {
+  const storage = storageOverride || localStorage;
+
+  if (storageAvailable("localStorage")) {
+    // See if the entry exists already
+    let favoriteWorks = getFavoriteWorks(storage);
+
+    const index = favoriteWorks.findIndex(
+      (entry) => entry.workTitleSlug === workTitleSlug
+    );
+
+    // Update the history to remove the existing entry
+    if (index >= 0) {
+      favoriteWorks = [
+        ...favoriteWorks.slice(0, index),
+        ...favoriteWorks.slice(index + 1),
+      ];
+
+      // Update the history
+      storage.setItem(FAVORITE_WORKS, JSON.stringify(favoriteWorks));
+    }
+  }
 }
 
 export function setWorkProgress(
@@ -75,7 +159,7 @@ export function setWorkProgress(
       (entry) => entry.workTitleSlug === workTitleSlug
     );
 
-    // Get the existing entry or initial it
+    // Get the existing entry or initialize it
     const lastReadEntry = index >= 0 ? lastReadHistory[index] : {};
 
     // Update the history to remove the existing entry
@@ -107,4 +191,9 @@ export function setWorkProgress(
 export function clearWorksLastRead(storageOverride = null) {
   const storage = storageOverride || localStorage;
   storage.removeItem(LAST_READ_HISTORY);
+}
+
+export function clearFavorites(storageOverride = null) {
+  const storage = storageOverride || localStorage;
+  storage.removeItem(FAVORITE_WORKS);
 }
