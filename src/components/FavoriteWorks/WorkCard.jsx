@@ -86,20 +86,12 @@ const WorkCard = ({
         <div className="ui two buttons">
           {provideDropdown && (
             <>
-              <Dropdown text="ellipsis vertical">
-                <Dropdown.Menu>
-                  <Dropdown.Item
-                    text="Set as favorite"
-                    onClick={() => setFavoriteWork(work)}
-                  />
-                </Dropdown.Menu>
-              </Dropdown>
-              <Button.Group color='green'>
-                <Button fluid basic color="green" onClick={onLoadWork}>
+              <Button.Group fluid color='green'>
+                <Button color='green' onClick={onLoadWork}>
                   Read
                 </Button>
                 <Dropdown
-                  basic
+                  style={{textAlign: 'center'}}
                   className='button icon'
                   floating
                   trigger={<></>}
