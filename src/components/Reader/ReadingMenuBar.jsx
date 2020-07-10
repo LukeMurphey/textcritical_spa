@@ -67,6 +67,9 @@ const ReadingMenuBar = ({
 
     // Indicates if the reference is valid
     const [ referenceValid, setReferenceValid ] = useState(true);
+
+    // Indicates we got an error somewhere
+    const [ error, setError ] = useState(null);
   
   /**
    * Go to the reference defined in the input box but only if it is valid.
@@ -112,6 +115,7 @@ const ReadingMenuBar = ({
 
       setTempReferenceValue(info.value);
       setReferenceValid(true);
+      setError(null);
 
       // Store this entry so that we can avoid updating the reference if the user entered another
       // reference before the server's response came back
@@ -133,14 +137,7 @@ const ReadingMenuBar = ({
           }
         })
         .catch((e) => {
-          console.log(e.toString());
-          /*
-          this.setErrorState(
-            "Unable to load the content",
-            "The given chapter could not be loaded from the server",
-            e.toString()
-          );
-          */
+          setError(e.toString());
         });
     }
 
@@ -285,6 +282,7 @@ const ReadingMenuBar = ({
               onChange={(e, d) => changeReference(e, d)}
               onKeyPress={(e, d) => onKeyPressed(e, d)}
             />
+            {error && (<Popup inverted={inverted} content={error} trigger={<Icon style={{paddingLeft: 8}} color="red" name="warning sign" />} />)}
           </Menu.Item>
         )}
           <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
