@@ -46,6 +46,8 @@ class Reader extends Component {
     this.state = {
       modal: null,
       data: null,
+      secondWorkData: null,
+      secondWork: null,
       errorTitle: null,
       errorMessage: null,
       errorDescription: null,
@@ -372,6 +374,11 @@ class Reader extends Component {
       highlightedVerse: null,
     });
 
+    const { secondWork } = this.state;
+    if (secondWork) {
+      this.loadSecondWorkChapter(secondWork, ...divisions);
+    }
+
     fetch(ENDPOINT_READ_WORK(work, ...divisions))
       .then((res) => Promise.all([res.status, res.json()]))
       .then(([status, data]) => {
@@ -411,6 +418,52 @@ class Reader extends Component {
           if (redirectedFrom) {
             this.updateHistory(data.work.title_slug, ...divisions);
           }
+        } else {
+          this.setErrorState(
+            "Work could not be found",
+            "Yikes. The given work is not recognized as a valid work."
+          );
+        }
+      })
+      .catch((e) => {
+        this.setErrorState(
+          "Unable to load the content",
+          "The given chapter could not be loaded from the server",
+          e.toString()
+        );
+      });
+  }
+
+  /**
+   * Load the given chapter.
+   *
+   * @param {string} work The title slug of the work
+   * @param {array} divisions The list of division indicators
+   */
+  loadSecondWorkChapter(work, ...divisions) {
+    // Load the start page if there is no work to load
+    if (!work) {
+      return;
+    }
+
+    // Reset the state to show that we are loading
+    this.setState({
+      secondWork: work,
+      secondWorkData: null,
+    });
+
+    fetch(ENDPOINT_READ_WORK(work, ...divisions))
+      .then((res) => Promise.all([res.status, res.json()]))
+      .then(([status, data]) => {
+        if (status >= 200 && status < 300) {
+          this.setState({
+            secondWorkData: data,
+            secondWork: work,
+          });
+
+          // Remember that we read this work
+          setWorkProgress(work, divisions, data.reference_descriptor);
+
         } else {
           this.setErrorState(
             "Work could not be found",
@@ -548,7 +601,9 @@ class Reader extends Component {
       popupY,
       popupPositionRight,
       popupPositionBelow,
-      selectedNote
+      selectedNote,
+      secondWork,
+      secondWorkData,
     } = this.state;
 
     const { inverted } = this.props;
@@ -662,17 +717,56 @@ class Reader extends Component {
                 {redirectedFrom && <StaleURLMessage inverted={inverted} />}
                 <BookProgress data={data} />
 
-                <Chapter
-                  chapter={data.chapter}
-                  content={data.content}
-                  work={data.work}
-                  onVerseClick={onVerseClick}
-                  onWordClick={onWordClick}
-                  onNoteClick={onNoteClick}
-                  onClickAway={() => this.closeModal()}
-                  highlightedVerse={highlightedVerse}
-                  inverted={inverted}
-                />
+                {!secondWork && (
+                  <Chapter
+                    chapter={data.chapter}
+                    content={data.content}
+                    work={data.work}
+                    onVerseClick={onVerseClick}
+                    onWordClick={onWordClick}
+                    onNoteClick={onNoteClick}
+                    onClickAway={() => this.closeModal()}
+                    highlightedVerse={highlightedVerse}
+                    inverted={inverted}
+                  />
+                )}
+
+                {secondWork && (
+                  <Grid divided='vertically'>
+                    <Grid.Row columns={2}>
+                      <Grid.Column>
+                        <Chapter
+                          chapter={data.chapter}
+                          content={data.content}
+                          work={data.work}
+                          onVerseClick={onVerseClick}
+                          onWordClick={onWordClick}
+                          onNoteClick={onNoteClick}
+                          onClickAway={() => this.closeModal()}
+                          highlightedVerse={highlightedVerse}
+                          inverted={inverted}
+                        />
+                      </Grid.Column>
+                      <Grid.Column>
+                        {secondWorkData && (
+                          <Chapter
+                            chapter={secondWorkData.chapter}
+                            content={secondWorkData.content}
+                            work={secondWorkData.work}
+                            onVerseClick={onVerseClick}
+                            onWordClick={onWordClick}
+                            onNoteClick={onNoteClick}
+                            onClickAway={() => this.closeModal()}
+                            highlightedVerse={highlightedVerse}
+                            inverted={inverted}
+                          />
+                        )}
+                        {!secondWorkData && 'loading...'}
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
+
+                )}
               </Container>
             </Sidebar.Pusher>
           </Sidebar.Pushable>
