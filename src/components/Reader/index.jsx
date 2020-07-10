@@ -11,7 +11,6 @@ import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import {
   ENDPOINT_READ_WORK,
-  ENDPOINT_RESOLVE_REFERENCE,
 } from "../Endpoints";
 import { setWorkProgress } from "../Settings";
 import { SEARCH, READ_WORK } from "../URLs";
@@ -50,14 +49,6 @@ const SidebarStyle = {
   marginTop: 0,
 };
 
-const addHandler = (handler, type = 'click') => {
-  window.addEventListener(type, (event) => handler(event));
-}
-
-const removeHandler = (handler, type = 'click') => {
-  window.removeEventListener(type, (event) => handler(event));
-}
-
 class Reader extends Component {
 
   constructor(props) {
@@ -71,7 +62,6 @@ class Reader extends Component {
       loading: false,
       divisions: null,
       loadedWork: null,
-      referenceValid: true,
       referenceValue: "",
       selectedWord: null,
       popupX: null,
@@ -81,17 +71,9 @@ class Reader extends Component {
       sidebarVisible: false,
     };
 
-    // This will store the last reference set so that we make sure not to replace the reference
-    // we did a reference resolution check against the server for.
-    this.lastSetReference = null;
-
     // Keep a list of the verses so that we can know what chapter the verse is assopciated with.
     // This is needed so that we don't force a reload just to get the same chapter.
     this.verseReferences = {};
-
-    // Wire-up the handlers
-    this.handler = (event) => this.upHandler(event);
-    addHandler(this.handler, 'keyup');
   }
 
   componentDidMount() {
@@ -174,10 +156,6 @@ class Reader extends Component {
       this.loadChapter(match.params.work, ...divisions);
     }
   }
-  
-  componentWillUnmount() {
-    removeHandler(this.handler);
-  }
 
   /**
    * Handle the clicking of a verse.
@@ -202,11 +180,9 @@ class Reader extends Component {
 
     this.setState({
       referenceValue: verseDescriptor,
-      referenceValid: true,
     });
 
     const { history } = this.props;
-
     history.push(href);
   }
 
@@ -460,7 +436,6 @@ class Reader extends Component {
         loadedWork: null,
         divisions: null,
         referenceValue: null,
-        referenceValid: true,
       });
 
       return;
@@ -498,7 +473,6 @@ class Reader extends Component {
             loadedWork: data.work.title_slug,
             divisions,
             referenceValue: data.reference_descriptor,
-            referenceValid: true,
             redirectedFrom,
             redirectedTo,
             highlightedVerse: data.verse_to_highlight,
@@ -519,9 +493,6 @@ class Reader extends Component {
           if (redirectedFrom) {
             this.updateHistory(data.work.title_slug, ...divisions);
           }
-
-          // Preload the next chapter so that it is cached
-          this.preloadNextChapter();
         } else {
           this.setErrorState(
             "Work could not be found",
@@ -539,46 +510,10 @@ class Reader extends Component {
   }
 
   /**
-   * Preload the next chapter.
-   */
-  preloadNextChapter() {
-    const { data, loadedWork } = this.state;
-
-    if (data.next_chapter) {
-      fetch(
-        ENDPOINT_READ_WORK(`${loadedWork}/${data.next_chapter.full_descriptor}`)
-      );
-    }
-  }
-
-  /**
-   * Preload the prior chapter.
-   */
-  preloadPriorChapter() {
-    const { data, loadedWork } = this.state;
-
-    if (data.previous_chapter) {
-      fetch(
-        ENDPOINT_READ_WORK(
-          `${loadedWork}/${data.previous_chapter.full_descriptor}`
-        )
-      );
-    }
-  }
-
-  /**
    * Open the about modal.
    */
   openAboutModal() {
     this.setState({ modal: "about" });
-  }
-
-  /**
-   * Preload the next and prior chapter
-   */
-  preloadChapters() {
-    this.preloadNextChapter();
-    this.preloadPriorChapter();
   }
 
   /**
@@ -641,50 +576,20 @@ class Reader extends Component {
   /**
    * Go to the reference defined in the input box.
    */
-  goToReference(requestedWork, referenceValue) {
+  goToReference(requestedWork, referenceValue, referenceInfo) {
 
     // Stop if we have no where to go
     if (!requestedWork || !referenceValue) {
       return;
     }
 
-    // Verify the reference is valid before going to it
-    fetch(ENDPOINT_RESOLVE_REFERENCE(requestedWork, referenceValue))
-      .then((res) => Promise.all([res.status, res.json()]))
-      .then(([status, referenceInfo]) => {
-        if (status === 200) {
-          this.setState({
-            divisions: referenceInfo.divisions,
-            referenceValue,
-            referenceValid: true,
-          });
+    this.setState({
+      divisions: referenceInfo.divisions,
+      referenceValue,
+    });
 
-          this.navigateToChapter(requestedWork, ...referenceInfo.divisions);
-        } else {
-          this.setState({
-            referenceValue,
-            referenceValid: false,
-          });
-        }
-      })
-      .catch((e) => {
-        this.setErrorState(
-          "Unable to load the content",
-          "The given chapter could not be loaded from the server",
-          e.toString()
-        );
-      });
+    this.navigateToChapter(requestedWork, ...referenceInfo.divisions);
   }
-
-  upHandler({ key, shiftKey }) {
-    if (key === 'ArrowRight' && shiftKey) {
-      this.goToNextChapter();
-    }
-
-    if (key === 'ArrowLeft' && shiftKey) {
-      this.goToPriorChapter();
-    }
-  };
 
   /**
    * Go to the next chapter.
@@ -791,6 +696,8 @@ class Reader extends Component {
           referenceValue={referenceDescription}
           hasNextChapter={!loading && data && data.next_chapter !== null}
           hasPriorChapter={!loading && data && data.previous_chapter !== null}
+          nextChapterDescriptor={data && data.previous_chapter && data.previous_chapter.full_descriptor}
+          previousChapterDescriptor={data && data.next_chapter && data.next_chapter.full_descriptor}
         />
         {mode === MODE_DONE && (
         <>
@@ -874,7 +781,7 @@ class Reader extends Component {
                   )}
                 {data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
                 <BookProgress data={data} />
-                  )}
+                )}
 
                 <Chapter
                   chapter={data.chapter}

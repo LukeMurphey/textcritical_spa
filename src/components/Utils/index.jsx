@@ -5,3 +5,11 @@ export function toTitleCase(str) {
 export function truncate(str, maxLength) {
     return str.length > maxLength ? `${str.substring(0, (maxLength-3))}...` : str;
 }
+
+export function addHandler(handler, type = 'click') {
+  window.addEventListener(type, (event) => handler(event));
+}
+
+export function removeHandler(handler, type = 'click') {
+  window.removeEventListener(type, handler);
+}

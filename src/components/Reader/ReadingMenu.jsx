@@ -6,8 +6,10 @@ import AwesomeDebouncePromise from "awesome-debounce-promise";
 import { START_PAGE, BETA_CODE_CONVERT } from "../URLs";
 import LibraryIcon from "../Icons/Library.svg";
 import BookSelection from '../BookSelection';
+import { addHandler, removeHandler } from '../Utils';
 import {
   ENDPOINT_RESOLVE_REFERENCE,
+  ENDPOINT_READ_WORK
 } from "../Endpoints";
 
 const NextPageStyle = {
@@ -28,6 +30,8 @@ const resolveReferenceDebounced = AwesomeDebouncePromise(
   500
 );
 
+// This will store the last reference set so that we make sure not to replace the reference
+// we did a reference resolution check against the server for.
 let lastSetReference = null;
 
 const ReadingMenuBar = ({
@@ -47,6 +51,8 @@ const ReadingMenuBar = ({
   hasNextChapter,
   goToPriorChapter,
   goToNextChapter,
+  nextChapterDescriptor,
+  previousChapterDescriptor
  }) => {
     // Create a custom className for signaling the desire to switch to inverted
     let classNameSuffix = "";
@@ -62,6 +68,25 @@ const ReadingMenuBar = ({
     // Indicates if the reference is valid
     const [ referenceValid, setReferenceValid ] = useState(true);
   
+  /**
+   * Go to the reference defined in the input box but only if it is valid.
+   */
+  const checkAndGoToReference = (requestedWork, requestedReferenceValue) => {
+    // Stop if we have no where to go
+    if (!requestedWork || !requestedReferenceValue) {
+      return;
+    }
+
+    // Verify the reference is valid before going to it
+    fetch(ENDPOINT_RESOLVE_REFERENCE(requestedWork, requestedReferenceValue))
+      .then((res) => Promise.all([res.status, res.json()]))
+      .then(([status, referenceInfo]) => {
+        if (status === 200) {
+          goToReference(requestedWork, requestedReferenceValue, ...referenceInfo.divisions);
+        }
+      })
+  }
+
     /**
      * Accept the enter key as a jumop to execute the reference jump.
      * @param {object} event The event from the key press.
@@ -69,7 +94,7 @@ const ReadingMenuBar = ({
     const onKeyPressed = (event) => {
       if (event.key === "Enter") {
         setTempReferenceValue(null);
-        goToReference(loadedWork, tempReferenceValue || referenceValue);
+        checkAndGoToReference(loadedWork, tempReferenceValue || referenceValue);
       }
     }
 
@@ -119,6 +144,38 @@ const ReadingMenuBar = ({
         });
     }
 
+  /**
+   * Preload the next chapter.
+   */
+  const preloadNextChapter = () => {
+    if (nextChapterDescriptor) {
+      fetch(
+        ENDPOINT_READ_WORK(`${loadedWork}/${nextChapterDescriptor}`)
+      );
+    }
+  }
+
+  /**
+   * Preload the prior chapter.
+   */
+  const preloadPriorChapter = () => {
+    if (previousChapterDescriptor) {
+      fetch(
+        ENDPOINT_READ_WORK(
+          `${loadedWork}/${previousChapterDescriptor}`
+        )
+      );
+    }
+  }
+
+    /**
+     * Preload the next and prior chapter
+     */
+    const preloadChapters = () => {
+      preloadNextChapter();
+      preloadPriorChapter();
+    }
+
     /**
      * Open the start page.
      */
@@ -140,7 +197,32 @@ const ReadingMenuBar = ({
      */
     useEffect(() => {
       setTempReferenceValue(null);
+      preloadChapters();
     }, [referenceValue]);
+
+    /**
+     * Handle key presses
+     */
+    const upHandler = ({ key, shiftKey }) => {
+      if (key === 'ArrowRight' && shiftKey) {
+        if(goToNextChapter) {
+          goToNextChapter();
+        }
+      }
+  
+      if (key === 'ArrowLeft' && shiftKey) {
+        if(goToPriorChapter) {
+          goToPriorChapter();
+        }
+      }
+    };
+
+    // Wire-up the handlers
+    const handler = (event) => upHandler(event);
+    useEffect(() => {
+      addHandler(handler, 'keyup');
+      return () => removeHandler(handler, 'keyup');
+    });
 
     return (
       <Menu
@@ -190,7 +272,7 @@ const ReadingMenuBar = ({
                   inverted={inverted}
                   onClick={() => {
                     setTempReferenceValue(null);
-                    goToReference(loadedWork, tempReferenceValue || referenceValue);
+                    checkAndGoToReference(loadedWork, tempReferenceValue || referenceValue);
                   }}
                   basic
                 >
@@ -267,13 +349,15 @@ ReadingMenuBar.propTypes = {
   bookSelectionOpen: PropTypes.bool,
   goToReference: PropTypes.func.isRequired,
   openAboutModal: PropTypes.func.isRequired,
-  goToPriorChapter: PropTypes.func.isRequired,
-  goToNextChapter: PropTypes.func.isRequired,
+  goToPriorChapter: PropTypes.func,
+  goToNextChapter: PropTypes.func,
   referenceValue: PropTypes.string,
   hasNextChapter: PropTypes.bool,
   hasPriorChapter: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   history: PropTypes.object.isRequired,
+  nextChapterDescriptor: PropTypes.string,
+  previousChapterDescriptor: PropTypes.string,
 }
 
 ReadingMenuBar.defaultProps = {
@@ -284,6 +368,10 @@ ReadingMenuBar.defaultProps = {
   bookSelectionOpen: false,
   hasNextChapter: false,
   hasPriorChapter: false,
+  goToPriorChapter: null,
+  goToNextChapter: null,
+  nextChapterDescriptor: null,
+  previousChapterDescriptor: null,
 }
 
 export default withRouter(ReadingMenuBar);
