@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Header, Grid, Segment, Sidebar, Button } from "semantic-ui-react";
+import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { ENDPOINT_READ_WORK } from "../Endpoints";
@@ -728,7 +728,7 @@ class Reader extends Component {
                             <>
                               {' / '}
                               {secondWorkTitle}
-                              <Button compact size='tiny' inverted={inverted} basic icon='close' onClick={() => this.closeSecondWork()} />
+                              <Icon title={`Close ${secondWorkTitle}`} size='mini' style={{cursor: 'pointer', fontSize: 13}} inverted={inverted} name='close' onClick={() => this.closeSecondWork()} />
                             </>
                           )}
                         </Header>
