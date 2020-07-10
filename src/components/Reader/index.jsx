@@ -1,33 +1,21 @@
 import React, { Component } from "react";
-import {
-  Button,
-  Input,
-  Icon,
-  Dropdown,
+import {Dropdown,
   Container,
   Header,
   Grid,
-  Placeholder,
   Segment,
   Message,
-  Menu,
-  Popup,
   Sidebar,
-  Image,
-  Progress,
-  Responsive,
 } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
-import AwesomeDebouncePromise from "awesome-debounce-promise";
 import {
   ENDPOINT_READ_WORK,
   ENDPOINT_RESOLVE_REFERENCE,
-  ENDPOINT_WORK_IMAGE,
 } from "../Endpoints";
 import { setWorkProgress } from "../Settings";
-import { SEARCH, READ_WORK, START_PAGE, BETA_CODE_CONVERT } from "../URLs";
-import { toTitleCase } from "../Utils";
+import { SEARCH, READ_WORK } from "../URLs";
+import { convertDivisionsToOptions, workSearch, getPlaceholder }  from "./shortcuts";
 import Chapter from "./Chapter";
 import ErrorMessage from "../ErrorMessage";
 import AboutWorkDialog from "../AboutWorkDialog";
@@ -35,11 +23,12 @@ import AboutDialog from "../AboutDialog";
 import WorkDownloadDialog from "../WorkDownloadDialog";
 import WordInformation from "../WordInformation/WordInformationPopup";
 import FootnotePopup from "../FootnotePopup";
-import BookSelection from "../BookSelection";
 import NoWorkSelected from "./NoWorkSelected";
-import LibraryIcon from "../Icons/Library.svg";
 import "./index.scss";
 import FavoriteWorks from "../FavoriteWorks";
+import BookProgress from "./BookProgress";
+import BookSidebar from "./BookSidebar";
+import ReadingMenuBar from "./ReadingMenu";
 
 /**
  * Below are some notes about how this works:
@@ -52,18 +41,6 @@ const MODE_ERROR = 1;
 const MODE_DONE = 2;
 const MODE_NOT_READY = 3;
 
-const NextPageStyle = {
-  bottom: "20px",
-  right: "20px",
-  position: "fixed",
-};
-
-const PriorPageStyle = {
-  bottom: "20px",
-  left: "20px",
-  position: "fixed",
-};
-
 const ContainerStyle = {
   paddingTop: 60,
 };
@@ -72,17 +49,6 @@ const SidebarStyle = {
   height: "100vh",
   marginTop: 0,
 };
-
-const resolveReferenceDebounced = AwesomeDebouncePromise(
-  (titleSlug, reference) =>
-    fetch(ENDPOINT_RESOLVE_REFERENCE(titleSlug, reference)),
-  500
-);
-
-/**
- * Defines how long a division name can get before it is considered long.
- */
-const LONG_DIVISION_NAME = 30;
 
 const addHandler = (handler, type = 'click') => {
   window.addEventListener(type, (event) => handler(event));
@@ -93,120 +59,6 @@ const removeHandler = (handler, type = 'click') => {
 }
 
 class Reader extends Component {
-  /**
-   * Determine if the divisions tend to have long names. This is useful for determining if we ought
-   * to use the titles or the shorter descriptors.
-   *
-   * @param {array} divisions The list of divisions.
-   */
-  static hasLongDivisionNames(divisions) {
-    const countLongNames = (accumulator, division) =>
-      division.full_title && division.full_title.length > LONG_DIVISION_NAME
-        ? accumulator + 1
-        : accumulator;
-    const longNames = divisions.reduce(countLongNames, 0);
-
-    return longNames > 5 || longNames === divisions.length;
-  }
-
-  /**
-   * Determine if the division descriptors appear to be names.
-   *
-   * @param {array} divisions The list of divisions.
-   */
-  static areDescriptorsNames(divisions) {
-    const countIndicators = (accumulator, division) =>
-      /^([0-9]+|[IVX]+|[A-Z])$/i.test(division.descriptor)
-        ? accumulator + 1
-        : accumulator;
-    const indicators = divisions.reduce(countIndicators, 0);
-    return indicators !== divisions.length;
-  }
-
-  /**
-   * Get the the division descriptor.
-   *
-   * @param {array} division The list of divisions.
-   * @param {*} useTitles Whether titles ought to be used.
-   * @param {*} descriptorsAreNames Whether descriptors appear to be names.
-   */
-  static getDivisionText(division, useTitles, descriptorsAreNames) {
-    // Use the title (from the full_title of the division)
-    if (useTitles) {
-      return toTitleCase(division.label);
-    }
-    // Are the descriptors names (like "Matthew" insread of "1")
-    if (descriptorsAreNames) {
-      return division.descriptor;
-    }
-    return `${division.type} ${division.descriptor}`;
-  }
-
-  /**
-   * Convert the list of divisions to options that can be processed by the dropdown menu.
-   *
-   * @param {array} divisions The list of divisions.
-   */
-  static convertDivisionsToOptions(divisions) {
-    const useTitles = !Reader.hasLongDivisionNames(divisions);
-    const descriptorsAreNames = Reader.areDescriptorsNames(divisions);
-
-    return divisions.map((d) => ({
-      key: d.description,
-      text: Reader.getDivisionText(d, useTitles, descriptorsAreNames),
-      value: d.descriptor,
-    }));
-  }
-
-  /**
-   * This function looks for the chapter the user entered. It looks both in the description as well
-   * as the key.
-   * This is useful because the works often use a Greek name as the description but an English
-   * description too and we want both to be searchable (don't want users to have to type Μαρκον).
-   * @param {array} options List of dropdown options
-   * @param {string} query The string that the user entered that we are searching for
-   */
-  static workSearch(options, query) {
-    const queryLower = query.toLowerCase();
-    return options.filter(
-      (opt) =>
-        opt.text.toLowerCase().includes(queryLower) ||
-        opt.key.toLowerCase().includes(queryLower)
-    );
-  }
-
-  /**
-   * Get a placeholder for the content.
-   */
-  static getPlaceholder(inverted = false) {
-    return (
-      <div style={{ paddingTop: 16 }}>
-        <Placeholder inverted={inverted}>
-          <Placeholder.Header>
-            <Placeholder.Line />
-          </Placeholder.Header>
-          <Placeholder.Paragraph>
-            <Placeholder.Line />
-            <Placeholder.Line />
-            <Placeholder.Line />
-            <Placeholder.Line />
-          </Placeholder.Paragraph>
-          <Placeholder.Paragraph>
-            <Placeholder.Line />
-            <Placeholder.Line />
-            <Placeholder.Line />
-            <Placeholder.Line />
-            <Placeholder.Line />
-          </Placeholder.Paragraph>
-          <Placeholder.Paragraph>
-            <Placeholder.Line />
-            <Placeholder.Line />
-            <Placeholder.Line />
-          </Placeholder.Paragraph>
-        </Placeholder>
-      </div>
-    );
-  }
 
   constructor(props) {
     super(props);
@@ -423,16 +275,6 @@ class Reader extends Component {
   }
 
   /**
-   * Accept the enter key as a jumop to execute the reference jump.
-   * @param {object} event The event from the key press.
-   */
-  onKeyPressed(event) {
-    if (event.key === "Enter") {
-      this.goToReference();
-    }
-  }
-
-  /**
    * Get the dialogs that ought to be rendered.
    */
   getDialogs() {
@@ -536,6 +378,16 @@ class Reader extends Component {
   setSidebarVisible(visible = true) {
     this.setState({
       sidebarVisible: visible,
+    });
+  }
+
+  /**
+   * Opens or closes the sidebar.
+   */
+  toggleSidebarVisible() {
+    const { sidebarVisible } = this.state;
+    this.setState({
+      sidebarVisible: !sidebarVisible,
     });
   }
 
@@ -722,23 +574,6 @@ class Reader extends Component {
   }
 
   /**
-   * Open the start page.
-   */
-  openStartPage() {
-    const { history } = this.props;
-    history.push(START_PAGE());
-  }
-
-  /**
-   * Open the beta-code conversion page.
-   */
-  openBetaCodePage() {
-    const { history } = this.props;
-    history.push(BETA_CODE_CONVERT());
-  }
-  
-
-  /**
    * Preload the next and prior chapter
    */
   preloadChapters() {
@@ -804,71 +639,17 @@ class Reader extends Component {
   }
 
   /**
-   * Handle a change in the reference input.
-   *
-   * @param {*} event React's original SyntheticEvent.
-   * @param {*} info All props.
-   */
-  changeReference(event, info) {
-    const { loadedWork } = this.state;
-
-    // Stop if we have nothing to lookup
-    if (!loadedWork || !info.value) {
-      return;
-    }
-
-    this.setState({
-      referenceValue: info.value,
-      referenceValid: true,
-    });
-
-    // Store this entry so that we can avoid updating the reference if the user entered another
-    // reference before the server's response came back
-    this.lastSetReference = info.value;
-
-    resolveReferenceDebounced(loadedWork, info.value)
-      .then((res) => Promise.all([res.status, res.json()]))
-      .then(([status, referenceInfo]) => {
-        // If the user already changed the value again, just ignore it
-        if (this.lastSetReference !== info.value) {
-          return;
-        }
-
-        if (status === 200) {
-          this.setState({
-            divisions: referenceInfo.divisions,
-            referenceValue: info.value,
-            referenceValid: true,
-          });
-        } else {
-          this.setState({
-            referenceValue: info.value,
-            referenceValid: false,
-          });
-        }
-      })
-      .catch((e) => {
-        this.setErrorState(
-          "Unable to load the content",
-          "The given chapter could not be loaded from the server",
-          e.toString()
-        );
-      });
-  }
-
-  /**
    * Go to the reference defined in the input box.
    */
-  goToReference() {
-    const { loadedWork, referenceValue } = this.state;
+  goToReference(requestedWork, referenceValue) {
 
     // Stop if we have no where to go
-    if (!loadedWork || !referenceValue) {
+    if (!requestedWork || !referenceValue) {
       return;
     }
 
     // Verify the reference is valid before going to it
-    fetch(ENDPOINT_RESOLVE_REFERENCE(loadedWork, referenceValue))
+    fetch(ENDPOINT_RESOLVE_REFERENCE(requestedWork, referenceValue))
       .then((res) => Promise.all([res.status, res.json()]))
       .then(([status, referenceInfo]) => {
         if (status === 200) {
@@ -878,7 +659,7 @@ class Reader extends Component {
             referenceValid: true,
           });
 
-          this.navigateToChapter(loadedWork, ...referenceInfo.divisions);
+          this.navigateToChapter(requestedWork, ...referenceInfo.divisions);
         } else {
           this.setState({
             referenceValue,
@@ -931,7 +712,6 @@ class Reader extends Component {
       data,
       errorDescription,
       loading,
-      referenceValid,
       referenceValue,
       bookSelectionOpen,
       errorTitle,
@@ -995,190 +775,86 @@ class Reader extends Component {
 
     return (
       <>
-        <Menu
+        <ReadingMenuBar
           inverted={inverted}
-          style={{ zIndex: 103 }}
-          className={`control ${classNameSuffix}`}
-          fixed="top"
-        >
-          <Container>
-            {loadedWork && (
-              <Menu.Item
-                name="works"
-                onClick={() => this.setSidebarVisible(true)}
-              >
-                <Icon name="bars" />
-              </Menu.Item>
-            )}
-            <Popup
-              content={(
-                <BookSelection
-                  relatedWorks={relatedWorks}
-                  authors={authors}
-                  onSelectWork={(work) => this.onSelectWork(work)}
-                  loadedWork={loadedWork}
-                />
-              )}
-              on="click"
-              position="bottom left"
-              pinned
-              onClose={() => this.setBookSelectionOpen(false)}
-              onOpen={() => this.setBookSelectionOpen(true)}
-              open={bookSelectionOpen}
-              trigger={(
-                <Menu.Item name="Library">
-                  <img style={{ width: 16 }} src={LibraryIcon} alt="Library" />
-                </Menu.Item>
-              )}
-            />
-            {loadedWork && (
-              <Menu.Item>
-                <Input
-                  inverted={inverted}
-                  className="referenceJumpInput"
-                  action={(
-                    <Button
-                      disabled={!referenceValid}
-                      inverted={inverted}
-                      onClick={() => this.goToReference()}
-                      basic
-                    >
-                      Go
-                    </Button>
-                  )}
-                  placeholder="Jump to reference..."
-                  value={referenceDescription}
-                  error={!referenceValid}
-                  onChange={(e, d) => this.changeReference(e, d)}
-                  onKeyPress={(e, d) => this.onKeyPressed(e, d)}
-                />
-              </Menu.Item>
-            )}
-            <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
-              <Responsive minWidth={768}>
-                <Dropdown icon="ellipsis vertical" direction="left">
-                  <Dropdown.Menu>
-                    <Dropdown.Item
-                      text="About TextCritical.net"
-                      onClick={() => this.openAboutModal()}
-                    />
-                    <Dropdown.Item
-                      text="Go to Start Page"
-                      onClick={() => this.openStartPage()}
-                    />
-                    <Dropdown.Item
-                      text="Convert beta-code to Greek"
-                      onClick={() => this.openBetaCodePage()}
-                    />
-                  </Dropdown.Menu>
-                </Dropdown>
-              </Responsive>
-            </div>
-          </Container>
-          {mode === MODE_DONE && (
-            <>
-              <Button
-                icon
-                inverted={inverted}
-                style={PriorPageStyle}
-                className={`priorPage ${classNameSuffix}`}
-                disabled={data.previous_chapter === null}
-                onClick={() => this.goToPriorChapter()}
-                title="Go to prior chapter (or use shortcut shift + left arrow)"
-              >
-                <Icon name="left chevron" />
-              </Button>
-              <Button
-                icon
-                inverted={inverted}
-                style={NextPageStyle}
-                className={`nextPage ${classNameSuffix}`}
-                disabled={data.next_chapter === null}
-                onClick={() => this.goToNextChapter()}
-                title="Go to next chapter (or use shortcut shift + right arrow)"
-              >
-                <Icon name="right chevron" />
-              </Button>
-            </>
-          )}
-        </Menu>
+          relatedWorks={relatedWorks}
+          authors={authors}
+          loadedWork={loadedWork}
+          toggleSidebarVisible={() => this.toggleSidebarVisible()}
+          onSelectWork={(work) => this.onSelectWork(work)}
+          setBookSelectionOpen={(b) => this.setBookSelectionOpen(b)}
+          bookSelectionOpen={bookSelectionOpen}
+          goToReference={(newWork, newReferenceValue) => this.goToReference(newWork, newReferenceValue)}
+          openAboutModal={() => this.openAboutModal()}
+          goToPriorChapter={loading ? null : () => this.goToPriorChapter()}
+          goToNextChapter={loading ? null : () => this.goToNextChapter()}
+          referenceValue={referenceDescription}
+          hasNextChapter={!loading && data && data.next_chapter !== null}
+          hasPriorChapter={!loading && data && data.previous_chapter !== null}
+        />
         {mode === MODE_DONE && (
-          <>
-            <Sidebar
-              as={Menu}
-              animation="overlay"
-              icon="labeled"
-              style={{ width: 200, paddingTop: 50 }}
-              inverted
-              visible={sidebarVisible}
-              onHide={() => this.setSidebarVisible(false)}
-              vertical
-              width="thin"
-            >
-              <Image src={ENDPOINT_WORK_IMAGE(loadedWork, 400)} />
-              <Menu.Item as="a" onClick={() => this.openWorkInfoModal()}>
-                Information
-              </Menu.Item>
-              <Menu.Item as="a" onClick={() => this.openDownloadModal()}>
-                Download
-              </Menu.Item>
-              <Menu.Item as="a" onClick={() => this.openSearch()}>
-                Search
-              </Menu.Item>
-            </Sidebar>
-            <Sidebar.Pushable
-              as={Segment}
-              basic
-              style={SidebarStyle}
-              className={`${classNameSuffix}`}
-            >
-              <Sidebar.Pusher>
-                <Container className={`underMenu ${classNameSuffix}`}>
-                  {this.getDialogs()}
-                  {this.getPopups()}
-                  <Grid inverted={inverted}>
-                    <Grid.Row>
-                      <Grid.Column width={8}>
-                        <Header inverted={inverted} floated="left" as="h3">
-                          {data.chapter.parent_division && (
-                            <>
-                              <Dropdown
-                                inline
-                                floating
-                                deburr
-                                scrolling
-                                search={Reader.workSearch}
-                                options={Reader.convertDivisionsToOptions(
+        <>
+          <BookSidebar
+            sidebarVisible={sidebarVisible}
+            work={loadedWork}
+            openWorkInfoModal={() => this.openWorkInfoModal()}
+            openDownloadModal={() => this.openDownloadModal()}
+            openSearch={() => this.openSearch()}
+            setSidebarVisible={() => this.setSidebarVisible()}
+          />
+          <Sidebar.Pushable
+            as={Segment}
+            basic
+            style={SidebarStyle}
+            className={`${classNameSuffix}`}
+          >
+            <Sidebar.Pusher>
+              <Container className={`underMenu ${classNameSuffix}`}>
+                {this.getDialogs()}
+                {this.getPopups()}
+                <Grid inverted={inverted}>
+                  <Grid.Row>
+                    <Grid.Column width={8}>
+                      <Header inverted={inverted} floated="left" as="h3">
+                        {data.chapter.parent_division && (
+                        <>
+                          <Dropdown
+                            inline
+                            floating
+                            deburr
+                            scrolling
+                            search={workSearch}
+                            options={convertDivisionsToOptions(
                                   data.divisions
                                 )}
-                                value={data.chapter.parent_division.descriptor}
-                                onChange={(event, info) =>
+                            value={data.chapter.parent_division.descriptor}
+                            onChange={(event, info) =>
                                   this.changeChapter(event, info)}
-                              />
-                              <div
-                                style={{
+                          />
+                          <div
+                            style={{
                                   display: "inline-block",
                                   paddingLeft: 6,
                                 }}
-                              >
-                                {data.chapter.type}
-                                {` ${data.chapter.descriptor}`}
-                              </div>
-                            </>
+                          >
+                            {data.chapter.type}
+                            {` ${data.chapter.descriptor}`}
+                          </div>
+                        </>
                           )}
+                      </Header>
+                    </Grid.Column>
+                    <Grid.Column width={8}>
+                      <Container textAlign="right">
+                        <Header inverted={inverted} floated="right" as="h3">
+                          {data.work.title}
                         </Header>
-                      </Grid.Column>
-                      <Grid.Column width={8}>
-                        <Container textAlign="right">
-                          <Header inverted={inverted} floated="right" as="h3">
-                            {data.work.title}
-                          </Header>
-                        </Container>
-                      </Grid.Column>
-                    </Grid.Row>
-                  </Grid>
-                  <div style={{ marginTop: 6 }} />
-                  {data &&
+                      </Container>
+                    </Grid.Column>
+                  </Grid.Row>
+                </Grid>
+                <div style={{ marginTop: 6 }} />
+                {data &&
                     data.warnings.map((warning) => (
                       <Message
                         className={classNameSuffix}
@@ -1188,65 +864,33 @@ class Reader extends Component {
                         content={warning[1]}
                       />
                     ))}
-                  {redirectedFrom && (
-                    <Message info className={classNameSuffix}>
-                      <p>
-                        The URL you were using was old so you were redirected to
-                        the new one. You may want to update your shortcuts.
-                      </p>
-                    </Message>
+                {redirectedFrom && (
+                <Message info className={classNameSuffix}>
+                  <p>
+                    The URL you were using was old so you were redirected to
+                    the new one. You may want to update your shortcuts.
+                  </p>
+                </Message>
                   )}
-                  {data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
-                    <>
-                      <Segment.Group
-                        horizontal
-                        style={{ border: 0, marginBottom: 4 }}
-                        className={`${classNameSuffix}`}
-                      >
-                        <Segment basic inverted style={{ padding: 0 }}>
-                          {data.completed_chapters_in_book}
-                          {' '}
-                          of
-                          {" "}
-                          {data.total_chapters_in_book}
-                          {' '}
-                          chapters
-                          {" "}
-                        </Segment>
-                        <Segment
-                          basic
-                          inverted
-                          style={{ textAlign: "right", padding: 0 }}
-                        >
-                          {Math.round(data.progress_in_book)}
-                          % through the book
-                        </Segment>
-                      </Segment.Group>
-                      <Progress
-                        className="bookProgress"
-                        color="blue"
-                        style={{ margin: "0 0 8px 0" }}
-                        percent={data.progress_in_book}
-                        size="tiny"
-                      />
-                    </>
+                {data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
+                <BookProgress data={data} />
                   )}
 
-                  <Chapter
-                    chapter={data.chapter}
-                    content={data.content}
-                    work={data.work}
-                    onVerseClick={onVerseClick}
-                    onWordClick={onWordClick}
-                    onNoteClick={onNoteClick}
-                    onClickAway={() => this.closeModal()}
-                    highlightedVerse={highlightedVerse}
-                    inverted={inverted}
-                  />
-                </Container>
-              </Sidebar.Pusher>
-            </Sidebar.Pushable>
-          </>
+                <Chapter
+                  chapter={data.chapter}
+                  content={data.content}
+                  work={data.work}
+                  onVerseClick={onVerseClick}
+                  onWordClick={onWordClick}
+                  onNoteClick={onNoteClick}
+                  onClickAway={() => this.closeModal()}
+                  highlightedVerse={highlightedVerse}
+                  inverted={inverted}
+                />
+              </Container>
+            </Sidebar.Pusher>
+          </Sidebar.Pushable>
+        </>
         )}
         {mode === MODE_ERROR && (
           <Container style={ContainerStyle} className={`${classNameSuffix}`}>
@@ -1260,7 +904,7 @@ class Reader extends Component {
         )}
         {mode === MODE_LOADING && (
           <Container style={ContainerStyle} className={`${classNameSuffix}`}>
-            {Reader.getPlaceholder(inverted)}
+            {getPlaceholder(inverted)}
           </Container>
         )}
         {mode === MODE_NOT_READY && (
