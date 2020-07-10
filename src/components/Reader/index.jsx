@@ -224,7 +224,7 @@ class Reader extends Component {
    * @param {string} work the title slug of a work to load
    */
   onSelectWork(work) {
-    const { data, divisions } = this.state;
+    const { data, divisions, loadedWork } = this.state;
     let isRelated = false;
 
     // See if this is a related work
@@ -235,10 +235,12 @@ class Reader extends Component {
     }
 
     // If this is related work, then use the same divisions
-    if (isRelated) {
+    if (isRelated && work !== loadedWork) {
       this.setState({ bookSelectionOpen: false });
       this.loadSecondWorkChapter(work, ...divisions);
     } else {
+      // Drop the second work since this one is not related
+      this.setState({ secondWork: null, secondWorkData: null });
       this.navigateToChapter(work);
     }
   }
