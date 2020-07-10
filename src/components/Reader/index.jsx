@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Header, Grid, Segment, Sidebar } from "semantic-ui-react";
+import { Container, Header, Grid, Segment, Sidebar, Button } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { ENDPOINT_READ_WORK } from "../Endpoints";
@@ -377,6 +377,7 @@ class Reader extends Component {
       highlightedVerse: null,
     });
 
+    // Load the second work if necessary
     const { secondWork } = this.state;
     if (secondWork) {
       this.loadSecondWorkChapter(secondWork, ...divisions);
@@ -453,6 +454,7 @@ class Reader extends Component {
     this.setState({
       secondWork: work,
       secondWorkData: null,
+      secondWorkTitle: null,
     });
 
     fetch(ENDPOINT_READ_WORK(work, ...divisions))
@@ -462,6 +464,7 @@ class Reader extends Component {
           this.setState({
             secondWorkData: data,
             secondWork: work,
+            secondWorkTitle: data.work.title,
           });
 
           // Remember that we read this work
@@ -585,6 +588,16 @@ class Reader extends Component {
     }
   }
 
+  /**
+   * Close the second work
+   */
+  closeSecondWork() {
+    this.setState({
+      secondWork: null,
+      secondWorkData: null,
+    })
+  }
+
   render() {
     const {
       modal,
@@ -607,6 +620,7 @@ class Reader extends Component {
       selectedNote,
       secondWork,
       secondWorkData,
+      secondWorkTitle,
     } = this.state;
 
     const { inverted } = this.props;
@@ -710,6 +724,13 @@ class Reader extends Component {
                       <Container textAlign="right">
                         <Header inverted={inverted} floated="right" as="h3">
                           {data.work.title}
+                          {secondWork && secondWorkTitle && (
+                            <>
+                              {' / '}
+                              {secondWorkTitle}
+                              <Button compact size='tiny' inverted={inverted} basic icon='close' onClick={() => this.closeSecondWork()} />
+                            </>
+                          )}
                         </Header>
                       </Container>
                     </Grid.Column>
