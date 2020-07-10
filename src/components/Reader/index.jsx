@@ -4,7 +4,6 @@ import {
   Header,
   Grid,
   Segment,
-  Message,
   Sidebar,
 } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
@@ -26,6 +25,7 @@ import BookSidebar from "./BookSidebar";
 import ReadingMenuBar from "./ReadingMenuBar";
 import ChapterHeader from "./ChapterHeader";
 import StaleURLMessage from "./StaleURLMessage";
+import WarningMessages from "./WarningMessages";
 
 /**
  * Below are some notes about how this works:
@@ -666,22 +666,9 @@ class Reader extends Component {
                   </Grid.Row>
                 </Grid>
                 <div style={{ marginTop: 6 }} />
-                {data &&
-                    data.warnings.map((warning) => (
-                      <Message
-                        className={classNameSuffix}
-                        warning
-                        key={warning[0]}
-                        header={warning[0]}
-                        content={warning[1]}
-                      />
-                    ))}
-                {redirectedFrom && (
-                  <StaleURLMessage inverted={inverted} />
-                )}
-                {data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
+                {data && <WarningMessages warnings={data.warnings} />}
+                {redirectedFrom && <StaleURLMessage inverted={inverted} />}
                 <BookProgress data={data} />
-                )}
 
                 <Chapter
                   chapter={data.chapter}

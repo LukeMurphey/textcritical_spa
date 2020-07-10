@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 
 const StaleURLMessage = ({ inverted }) => {
 
-    // Create a custom className for signaling the desire to switch to inverted
-    let classNameSuffix = "";
+  // Create a custom className for signaling the desire to switch to inverted
+  let classNameSuffix = "";
 
-    if (inverted) {
-      classNameSuffix = " inverted";
-    }
+  if (inverted) {
+    classNameSuffix = " inverted";
+  }
 
   return (
     <Message info className={classNameSuffix}>

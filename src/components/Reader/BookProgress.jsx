@@ -13,7 +13,7 @@ const BookProgress = ({ data, inverted }) => {
 
     return (
       <>
-        { data && (
+        { data && data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
           <>
             <Segment.Group
               horizontal
@@ -56,6 +56,7 @@ BookProgress.propTypes = {
     progress_in_book: PropTypes.number,
     total_chapters_in_book: PropTypes.number,
     completed_chapters_in_book: PropTypes.number,
+    total_chapters: PropTypes.number,
 }),
   inverted: PropTypes.bool,
 };
