@@ -1,16 +1,8 @@
 import React, { Component } from "react";
-import {
-  Container,
-  Header,
-  Grid,
-  Segment,
-  Sidebar,
-} from "semantic-ui-react";
+import { Container, Header, Grid, Segment, Sidebar } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
-import {
-  ENDPOINT_READ_WORK,
-} from "../Endpoints";
+import { ENDPOINT_READ_WORK } from "../Endpoints";
 import { setWorkProgress } from "../Settings";
 import { SEARCH, READ_WORK } from "../URLs";
 import { getPlaceholder, getDialogs, getPopups }  from "./shortcuts";
@@ -688,12 +680,7 @@ class Reader extends Component {
         )}
         {mode === MODE_ERROR && (
           <Container style={ContainerStyle} className={`${classNameSuffix}`}>
-            <ErrorMessage
-              inverted={inverted}
-              title={errorTitle}
-              description={errorDescription}
-              message={errorMessage}
-            />
+            <ErrorMessage inverted={inverted} title={errorTitle} description={errorDescription} message={errorMessage} />
           </Container>
         )}
         {mode === MODE_LOADING && (
