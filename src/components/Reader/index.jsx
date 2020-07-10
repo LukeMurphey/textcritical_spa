@@ -236,7 +236,8 @@ class Reader extends Component {
 
     // If this is related work, then use the same divisions
     if (isRelated) {
-      this.navigateToChapter(work, ...divisions);
+      this.setState({ bookSelectionOpen: false });
+      this.loadSecondWorkChapter(work, ...divisions);
     } else {
       this.navigateToChapter(work);
     }
@@ -761,7 +762,7 @@ class Reader extends Component {
                             inverted={inverted}
                           />
                         )}
-                        {!secondWorkData && 'loading...'}
+                        {!secondWorkData && getPlaceholder(inverted)}
                       </Grid.Column>
                     </Grid.Row>
                   </Grid>
