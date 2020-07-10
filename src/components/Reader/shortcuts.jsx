@@ -3,6 +3,10 @@ import {
   Placeholder,
 } from "semantic-ui-react";
 import { toTitleCase } from "../Utils";
+import AboutWorkDialog from "../AboutWorkDialog";
+import WorkDownloadDialog from "../WorkDownloadDialog";
+import WordInformation from "../WordInformation/WordInformationPopup";
+import FootnotePopup from "../FootnotePopup";
 
 /**
  * Defines how long a division name can get before it is considered long.
@@ -121,5 +125,73 @@ export function getPlaceholder(inverted = false) {
         </Placeholder.Paragraph>
       </Placeholder>
     </div>
+  );
+}
+
+/**
+ * Get the dialogs that ought to be rendered.
+ */
+export function getDialogs(modal, data, loading, loadedWork, closeModal) {
+  return (
+    <>
+      {data && !loading && modal === "aboutWork" && (
+        <AboutWorkDialog
+          work={loadedWork}
+          onClose={() => closeModal()}
+        />
+      )}
+      {data && !loading && modal === "downloadWork" && (
+        <WorkDownloadDialog
+          work={loadedWork}
+          onClose={() => closeModal()}
+        />
+      )}
+    </>
+  );
+}
+
+
+/**
+ * Get the popups.
+ */
+export function getPopups(modal,
+  data,
+  loading,
+  selectedWord,
+  popupX,
+  popupY,
+  popupPositionRight,
+  popupPositionBelow,
+  selectedNote,
+  loadedWork,
+  closeModal,
+  inverted) {
+
+  return (
+    <>
+      {data && !loading && modal === "word" && (
+        <WordInformation
+          inverted={inverted}
+          positionBelow={popupPositionBelow}
+          positionRight={popupPositionRight}
+          x={popupX}
+          y={popupY}
+          word={selectedWord}
+          work={loadedWork}
+          onClose={() => closeModal()}
+        />
+      )}
+      {data && !loading && modal === "note" && (
+        <FootnotePopup
+          inverted={inverted}
+          positionBelow={popupPositionBelow}
+          positionRight={popupPositionRight}
+          x={popupX}
+          y={popupY}
+          notes={selectedNote}
+          onClose={() => closeModal()}
+        />
+      )}
+    </>
   );
 }

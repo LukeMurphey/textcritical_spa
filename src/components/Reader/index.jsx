@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Dropdown,
+import {
   Container,
   Header,
   Grid,
@@ -14,20 +14,18 @@ import {
 } from "../Endpoints";
 import { setWorkProgress } from "../Settings";
 import { SEARCH, READ_WORK } from "../URLs";
-import { convertDivisionsToOptions, workSearch, getPlaceholder }  from "./shortcuts";
+import { getPlaceholder, getDialogs, getPopups }  from "./shortcuts";
 import Chapter from "./Chapter";
 import ErrorMessage from "../ErrorMessage";
-import AboutWorkDialog from "../AboutWorkDialog";
 import AboutDialog from "../AboutDialog";
-import WorkDownloadDialog from "../WorkDownloadDialog";
-import WordInformation from "../WordInformation/WordInformationPopup";
-import FootnotePopup from "../FootnotePopup";
 import NoWorkSelected from "./NoWorkSelected";
 import "./index.scss";
 import FavoriteWorks from "../FavoriteWorks";
 import BookProgress from "./BookProgress";
 import BookSidebar from "./BookSidebar";
-import ReadingMenuBar from "./ReadingMenu";
+import ReadingMenuBar from "./ReadingMenuBar";
+import ChapterHeader from "./ChapterHeader";
+import StaleURLMessage from "./StaleURLMessage";
 
 /**
  * Below are some notes about how this works:
@@ -248,78 +246,6 @@ class Reader extends Component {
     } else {
       this.navigateToChapter(work);
     }
-  }
-
-  /**
-   * Get the dialogs that ought to be rendered.
-   */
-  getDialogs() {
-    const { modal, data, loading, loadedWork } = this.state;
-
-    return (
-      <>
-        {data && !loading && modal === "aboutWork" && (
-          <AboutWorkDialog
-            work={loadedWork}
-            onClose={() => this.closeModal()}
-          />
-        )}
-        {data && !loading && modal === "downloadWork" && (
-          <WorkDownloadDialog
-            work={loadedWork}
-            onClose={() => this.closeModal()}
-          />
-        )}
-      </>
-    );
-  }
-
-  /**
-   * Get the popups.
-   */
-  getPopups() {
-    const {
-      modal,
-      data,
-      loading,
-      selectedWord,
-      popupX,
-      popupY,
-      popupPositionRight,
-      popupPositionBelow,
-      selectedNote,
-      loadedWork,
-    } = this.state;
-
-    const { inverted } = this.props;
-
-    return (
-      <>
-        {data && !loading && modal === "word" && (
-          <WordInformation
-            inverted={inverted}
-            positionBelow={popupPositionBelow}
-            positionRight={popupPositionRight}
-            x={popupX}
-            y={popupY}
-            word={selectedWord}
-            work={loadedWork}
-            onClose={() => this.closeModal()}
-          />
-        )}
-        {data && !loading && modal === "note" && (
-          <FootnotePopup
-            inverted={inverted}
-            positionBelow={popupPositionBelow}
-            positionRight={popupPositionRight}
-            x={popupX}
-            y={popupY}
-            notes={selectedNote}
-            onClose={() => this.closeModal()}
-          />
-        )}
-      </>
-    );
   }
 
   /**
@@ -625,6 +551,12 @@ class Reader extends Component {
       sidebarVisible,
       loadedWork,
       highlightedVerse,
+      selectedWord,
+      popupX,
+      popupY,
+      popupPositionRight,
+      popupPositionBelow,
+      selectedNote
     } = this.state;
 
     const { inverted } = this.props;
@@ -717,39 +649,12 @@ class Reader extends Component {
           >
             <Sidebar.Pusher>
               <Container className={`underMenu ${classNameSuffix}`}>
-                {this.getDialogs()}
-                {this.getPopups()}
+                {getDialogs(modal, data, loading, loadedWork, () => this.closeModal())}
+                {getPopups(modal, data, loading, selectedWord, popupX, popupY, popupPositionRight, popupPositionBelow, selectedNote, loadedWork, () => this.closeModal(), inverted)}
                 <Grid inverted={inverted}>
                   <Grid.Row>
                     <Grid.Column width={8}>
-                      <Header inverted={inverted} floated="left" as="h3">
-                        {data.chapter.parent_division && (
-                        <>
-                          <Dropdown
-                            inline
-                            floating
-                            deburr
-                            scrolling
-                            search={workSearch}
-                            options={convertDivisionsToOptions(
-                                  data.divisions
-                                )}
-                            value={data.chapter.parent_division.descriptor}
-                            onChange={(event, info) =>
-                                  this.changeChapter(event, info)}
-                          />
-                          <div
-                            style={{
-                                  display: "inline-block",
-                                  paddingLeft: 6,
-                                }}
-                          >
-                            {data.chapter.type}
-                            {` ${data.chapter.descriptor}`}
-                          </div>
-                        </>
-                          )}
-                      </Header>
+                      <ChapterHeader inverted={inverted} data={data} onChangeChapter={(event, info) => this.changeChapter(event, info)} />
                     </Grid.Column>
                     <Grid.Column width={8}>
                       <Container textAlign="right">
@@ -772,13 +677,8 @@ class Reader extends Component {
                       />
                     ))}
                 {redirectedFrom && (
-                <Message info className={classNameSuffix}>
-                  <p>
-                    The URL you were using was old so you were redirected to
-                    the new one. You may want to update your shortcuts.
-                  </p>
-                </Message>
-                  )}
+                  <StaleURLMessage inverted={inverted} />
+                )}
                 {data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
                 <BookProgress data={data} />
                 )}

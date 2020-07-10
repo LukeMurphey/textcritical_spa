@@ -52,7 +52,11 @@ const BookProgress = ({ data, inverted }) => {
 )};
 
 BookProgress.propTypes = {
-  data: PropTypes.shape,
+  data: PropTypes.shape({
+    progress_in_book: PropTypes.number,
+    total_chapters_in_book: PropTypes.number,
+    completed_chapters_in_book: PropTypes.number,
+}),
   inverted: PropTypes.bool,
 };
 
