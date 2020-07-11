@@ -77,6 +77,7 @@ class Reader extends Component {
       division3,
       division4,
       leftovers,
+      location,
     } = this.props;
 
     const divisions = [
@@ -88,6 +89,17 @@ class Reader extends Component {
       leftovers,
     ].filter((entry) => entry);
 
+    // Determine if we are to open a parallel work
+    const params = new URLSearchParams(location.search);
+    const parallelWork = params.get('parallel');
+    if (parallelWork) {
+      this.setState({
+        secondWork: parallelWork,
+      });
+      this.loadSecondWorkChapter(parallelWork, ...divisions);
+    }
+
+    // Load the work
     if (defaultWork) {
       this.loadChapter(defaultWork, ...divisions);
     }
@@ -156,8 +168,6 @@ class Reader extends Component {
    * @param {string} verse The verse number (e.g. "4")
    * @param {string} id An ID that designates the verse in the HTML DOM
    * @param {string} href A href for the verse (e.g. "/work/new-testament/John/8/4")
-   * @param {int} x The x coordinate of the verse marker
-   * @param {int} y The y coordinate of the verse marker
    */
   onVerseClick(verseDescriptor, verse, id, href) {
     const { data } = this.state;
@@ -169,13 +179,21 @@ class Reader extends Component {
       verse,
       verseDescriptor
     );
-
+    console.log(verseDescriptor);
     this.setState({
       referenceValue: verseDescriptor,
     });
 
     const { history } = this.props;
     history.push(href);
+  }
+
+  onVerseClickSecondWork(verseDescriptor, verse, id) {
+    // Find the verse descriptor from the first work
+    const firstWorkVerse = document.getElementById(id);
+    console.log(verseDescriptor);
+    // Fire the associated handler
+    this.onVerseClick(verseDescriptor, verse, firstWorkVerse.attributes.id, firstWorkVerse.attributes.href);
   }
 
   /**
@@ -623,7 +641,7 @@ class Reader extends Component {
       secondWorkTitle,
     } = this.state;
 
-    const { inverted } = this.props;
+    const { inverted, location } = this.props;
 
     const onVerseClick = (verseDescriptor, verse, id, href, x, y) => {
       this.onVerseClick(verseDescriptor, verse, id, href, x, y);
@@ -777,7 +795,7 @@ class Reader extends Component {
                             chapter={secondWorkData.chapter}
                             content={secondWorkData.content}
                             work={secondWorkData.work}
-                            onVerseClick={onVerseClick}
+                            onVerseClick={(verseDescriptor, verse, id, href) => this.onVerseClickSecondWork(verseDescriptor, verse, id, href)}
                             onWordClick={onWordClick}
                             onNoteClick={onNoteClick}
                             onClickAway={() => this.closeModal()}
