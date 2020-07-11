@@ -654,7 +654,7 @@ class Reader extends Component {
       secondWorkTitle,
     } = this.state;
 
-    const { inverted, location } = this.props;
+    const { inverted } = this.props;
 
     const onVerseClick = (verseDescriptor, verse, id, href, x, y) => {
       this.onVerseClick(verseDescriptor, verse, id, href, x, y);
@@ -759,7 +759,7 @@ class Reader extends Component {
                             <>
                               {' / '}
                               {secondWorkTitle}
-                              <Icon title={`Close ${secondWorkTitle}`} size='mini' style={{cursor: 'pointer', fontSize: 13}} inverted={inverted} name='close' onClick={() => this.closeSecondWork()} />
+                              <Icon title={`Close ${secondWorkTitle}`} size='mini' style={{cursor: 'pointer', fontSize: 13, paddingLeft: 8}} inverted={inverted} name='close' onClick={() => this.closeSecondWork()} />
                             </>
                           )}
                         </Header>
