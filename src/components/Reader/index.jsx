@@ -170,7 +170,7 @@ class Reader extends Component {
    * @param {string} href A href for the verse (e.g. "/work/new-testament/John/8/4")
    */
   onVerseClick(verseDescriptor, verse, id, href) {
-    const { data } = this.state;
+    const { data, secondWork } = this.state;
 
     // Add the verse to the list
     this.addVerseToHistoryList(
@@ -185,7 +185,12 @@ class Reader extends Component {
     });
 
     const { history } = this.props;
-    history.push(href);
+    // Add the parallel work
+    if (secondWork) {
+      history.push(`${href}?parallel=${secondWork}`);
+    } else {
+      history.push(href);
+    }
   }
 
   onVerseClickSecondWork(verseDescriptor, verse, id) {
@@ -193,7 +198,7 @@ class Reader extends Component {
     const firstWorkVerse = document.getElementById(id);
     console.log(verseDescriptor);
     // Fire the associated handler
-    this.onVerseClick(verseDescriptor, verse, firstWorkVerse.attributes.id, firstWorkVerse.attributes.href);
+    this.onVerseClick(verseDescriptor, verse, firstWorkVerse.attributes.id, firstWorkVerse.attributes.href.value);
   }
 
   /**
@@ -340,7 +345,15 @@ class Reader extends Component {
       return false;
     }
 
-    history.push(workUrl);
+    // Add the parallel work
+    const { secondWork } = this.state;
+
+    if (secondWork) {
+      history.push(`${workUrl}?parallel=${secondWork}`);
+    } else {
+      history.push(workUrl);
+    }
+
     return true;
   }
 
