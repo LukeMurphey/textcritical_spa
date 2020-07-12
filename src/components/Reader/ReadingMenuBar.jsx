@@ -85,7 +85,7 @@ const ReadingMenuBar = ({
       .then((res) => Promise.all([res.status, res.json()]))
       .then(([status, referenceInfo]) => {
         if (status === 200) {
-          goToReference(requestedWork, requestedReferenceValue, ...referenceInfo.divisions);
+          goToReference(requestedWork, requestedReferenceValue, referenceInfo);
         }
       })
   }
