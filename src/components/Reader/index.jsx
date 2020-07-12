@@ -602,17 +602,6 @@ class Reader extends Component {
   }
 
   /**
-   * Change the work to another related work.
-   *
-   * @param {*} event React's original SyntheticEvent.
-   * @param {*} info All props.
-   */
-  changeWork(work) {
-    const { divisions } = this.state;
-    this.navigateToChapter(work, ...divisions);
-  }
-
-  /**
    * Handle the selection of the division.
    *
    * @param {*} event React's original SyntheticEvent.
