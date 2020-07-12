@@ -141,8 +141,7 @@ class Chapter extends Component {
     const { onWordClick } = this.props;
 
     const [positionRight, positionBelow] = getPositionRecommendation(event);
-
-    onWordClick(word, event.layerX, event.layerY, positionRight, positionBelow);
+    onWordClick(word, event.pageX, event.layerY, positionRight, positionBelow);
   }
 
   /**
@@ -249,7 +248,7 @@ class Chapter extends Component {
 
     // Fire off the handler
     const { onNoteClick } = this.props;
-    onNoteClick(contents, id, event.layerX, event.layerY, positionRight, positionBelow);
+    onNoteClick(contents, id, event.pageX, event.layerY, positionRight, positionBelow);
   }
 
   handleClickEmpty() {
@@ -258,6 +257,7 @@ class Chapter extends Component {
   }
 
   handleClick(event) {
+
     // Determine if we are clicking a word, verse, note, or just empty space
     if (event.target.className.includes('word')) {
       this.handleClickWord(event);
