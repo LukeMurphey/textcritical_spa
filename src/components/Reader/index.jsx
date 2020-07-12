@@ -77,7 +77,6 @@ class Reader extends Component {
       division3,
       division4,
       leftovers,
-      location,
     } = this.props;
 
     const divisions = [
@@ -90,8 +89,8 @@ class Reader extends Component {
     ].filter((entry) => entry);
 
     // Determine if we are to open a parallel work
-    const params = new URLSearchParams(location.search);
-    const parallelWork = params.get('parallel');
+    const parallelWork = this.getSecondWorkParameter();
+
     if (parallelWork) {
       this.setState({
         secondWork: parallelWork,
@@ -113,7 +112,20 @@ class Reader extends Component {
    */
   componentDidUpdate(prevProps) {
     const { location, match } = this.props;
-    const { redirectedTo, data, highlightedVerse, loadedWork } = this.state;
+    const { redirectedTo, data, highlightedVerse, loadedWork, secondWork } = this.state;
+
+    // Get the divisions from the URL
+    const divisions = [
+      match.params.division0,
+      match.params.division1,
+      match.params.division2,
+      match.params.division3,
+      match.params.division4,
+      match.params.leftovers,
+    ].filter((entry) => entry);
+
+    // See if we have loaded the same work
+    const sameSecondWork = secondWork === this.getSecondWorkParameter();
 
     // See if we know that this is a reference to this chapter
     const existingChapter = this.verseReferences[location.pathname];
@@ -121,14 +133,17 @@ class Reader extends Component {
     // Check if the chapter we have loaded already
     // This needs to check the loaded work too, since we need to recognize if we the reference is
     // the same reference but in a different work.
-    if (
-      data &&
+    const isReferenceForSameChapter = data &&
       data.chapter &&
       existingChapter &&
       existingChapter.chapter === data.chapter.full_descriptor &&
       loadedWork &&
-      loadedWork === match.params.work
-    ) {
+      loadedWork === match.params.work;
+
+    // Check if the chapter we have loaded already
+    // This needs to check the loaded work too, since we need to recognize if we the reference is
+    // the same reference but in a different work.
+    if (isReferenceForSameChapter && sameSecondWork) {
       // Get the highlighted verse
       const highlightedVerseRef = existingChapter.verse;
 
@@ -146,18 +161,25 @@ class Reader extends Component {
 
     // Determine if the page changed
     if (
-      location.pathname !== prevProps.location.pathname &&
-      redirectedTo !== location.pathname
+      (location.pathname !== prevProps.location.pathname &&
+      redirectedTo !== location.pathname)
     ) {
-      const divisions = [
-        match.params.division0,
-        match.params.division1,
-        match.params.division2,
-        match.params.division3,
-        match.params.division4,
-        match.params.leftovers,
-      ].filter((entry) => entry);
       this.loadChapter(match.params.work, ...divisions);
+      return;
+    }
+
+    // Try to get the second work
+    if (!sameSecondWork) {
+      if(this.getSecondWorkParameter()) {
+        this.loadSecondWorkChapter(this.getSecondWorkParameter(), divisions);
+      }
+      else {
+        // eslint-disable-next-line react/no-did-update-set-state
+        this.setState({
+          secondWork: null,
+          secondWorkData: null,
+        })
+      }
     }
   }
 
@@ -179,7 +201,7 @@ class Reader extends Component {
       verse,
       verseDescriptor
     );
-    console.log(verseDescriptor);
+
     this.setState({
       referenceValue: verseDescriptor,
     });
@@ -196,7 +218,7 @@ class Reader extends Component {
   onVerseClickSecondWork(verseDescriptor, verse, id) {
     // Find the verse descriptor from the first work
     const firstWorkVerse = document.getElementById(id);
-    console.log(verseDescriptor);
+
     // Fire the associated handler
     this.onVerseClick(verseDescriptor, verse, firstWorkVerse.attributes.id, firstWorkVerse.attributes.href.value);
   }
@@ -248,6 +270,7 @@ class Reader extends Component {
    */
   onSelectWork(work) {
     const { data, divisions, loadedWork } = this.state;
+    const { history, location } = this.props;
     let isRelated = false;
 
     // See if this is a related work
@@ -261,6 +284,11 @@ class Reader extends Component {
     if (isRelated && work !== loadedWork) {
       this.setState({ bookSelectionOpen: false });
       this.loadSecondWorkChapter(work, ...divisions);
+
+      history.push({
+        pathname: location.pathname,
+        search: `?parallel=${work}`
+      })
     } else {
       // Drop the second work since this one is not related
       this.setState({ secondWork: null, secondWorkData: null });
@@ -304,6 +332,15 @@ class Reader extends Component {
   }
 
   /**
+   * Get the parameter of the second work to be loaded.
+   */
+  getSecondWorkParameter() {
+    const { location } = this.props;
+    const params = new URLSearchParams(location.search);
+    return params.get('parallel');
+  }
+
+  /**
    * Opens or closes the sidebar.
    */
   toggleSidebarVisible() {
@@ -330,10 +367,13 @@ class Reader extends Component {
    * Update the history but only if it has changed.
    *
    * @param {str} work The title slug of the work
+   * @param {str} secondWork The title slug of the second work to load work
    * @param  {...any} divisions The list of division indicators
    */
-  updateHistory(work, ...divisions) {
+  updateHistory(work, secondWork, ...divisions) {
     const { history, location } = this.props;
+
+    const parallelWork = this.getSecondWorkParameter();
 
     // Get the URL
     const workUrl = READ_WORK(work, ...divisions);
@@ -341,15 +381,16 @@ class Reader extends Component {
     // Determine if the URL is already set
     // Note that we need to check redirectedFrom because the URL might not match because we were
     // redirected since a work had been renamed.
-    if (workUrl === location.pathname) {
+    if (workUrl === location.pathname && parallelWork === secondWork) {
       return false;
     }
 
     // Add the parallel work
-    const { secondWork } = this.state;
-
     if (secondWork) {
-      history.push(`${workUrl}?parallel=${secondWork}`);
+      history.push({
+        pathname: workUrl,
+        search: `?parallel=${secondWork}`
+      })
     } else {
       history.push(workUrl);
     }
@@ -364,7 +405,8 @@ class Reader extends Component {
    * @param {array} divisions The list of division indicators
    */
   navigateToChapter(work, ...divisions) {
-    this.updateHistory(work, ...divisions);
+    const { secondWork } = this.state;
+    this.updateHistory(work, secondWork, ...divisions);
   }
 
   /**
@@ -451,7 +493,7 @@ class Reader extends Component {
 
           // Update the URL if we were redirected
           if (redirectedFrom) {
-            this.updateHistory(data.work.title_slug, ...divisions);
+            this.updateHistory(data.work.title_slug, secondWork, ...divisions);
           }
         } else {
           this.setErrorState(
@@ -623,10 +665,14 @@ class Reader extends Component {
    * Close the second work
    */
   closeSecondWork() {
+    const { loadedWork, divisions } = this.state;
+
     this.setState({
       secondWork: null,
       secondWorkData: null,
     })
+
+    this.updateHistory(loadedWork, null, ...divisions);
   }
 
   render() {
@@ -716,7 +762,7 @@ class Reader extends Component {
           onSelectWork={(work) => this.onSelectWork(work)}
           setBookSelectionOpen={(b) => this.setBookSelectionOpen(b)}
           bookSelectionOpen={bookSelectionOpen}
-          goToReference={(newWork, newReferenceValue) => this.goToReference(newWork, newReferenceValue)}
+          goToReference={(newWork, newReferenceValue, referenceInfo) => this.goToReference(newWork, newReferenceValue, referenceInfo)}
           openAboutModal={() => this.openAboutModal()}
           goToPriorChapter={loading ? null : () => this.goToPriorChapter()}
           goToNextChapter={loading ? null : () => this.goToNextChapter()}
@@ -809,7 +855,9 @@ class Reader extends Component {
                             content={secondWorkData.content}
                             work={secondWorkData.work}
                             onVerseClick={(verseDescriptor, verse, id, href) => this.onVerseClickSecondWork(verseDescriptor, verse, id, href)}
-                            onWordClick={onWordClick}
+                            onWordClick={(word, x, y, positionRight, positionBelow) => {
+                              this.onWordClick(word, x, y, positionRight, positionBelow);
+                            }}
                             onNoteClick={onNoteClick}
                             onClickAway={() => this.closeModal()}
                             highlightedVerse={highlightedVerse}
