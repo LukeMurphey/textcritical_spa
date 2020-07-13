@@ -217,6 +217,13 @@ class Reader extends Component {
     }
   }
 
+  /**
+   * Handle the clicking of a verse of a second work.
+   *
+   * @param {string} verseDescriptor A descripion of the verse (e.g. "John 8:4")
+   * @param {string} verse The verse number (e.g. "4")
+   * @param {string} id An ID that designates the verse in the HTML DOM
+   */
   onVerseClickSecondWork(verseDescriptor, verse, id) {
     // Find the verse descriptor from the first work
     const firstWorkVerse = document.getElementById(id);
