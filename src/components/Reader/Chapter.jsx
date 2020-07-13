@@ -2,6 +2,7 @@ import React, { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
 import parse, { domToReact } from 'html-react-parser';
 import { getPositionRecommendation } from '../PopupDialog';
+import { getAbsolutePosition } from '../Utils';
 import './Chapter.scss';
 
 /**
@@ -87,6 +88,7 @@ class Chapter extends Component {
     // highlighted
     const options = {
       replace: ({ attribs, children }) => {
+        // Stop if this isn't a verse
         if (!attribs || !('data-verse' in attribs)) return undefined;
 
         const verseClassName = attribs && attribs['data-verse'] === highlightedVerse ? "verse-link highlighted" : "verse-link";
@@ -140,7 +142,8 @@ class Chapter extends Component {
     const { onWordClick } = this.props;
 
     const [positionRight, positionBelow] = getPositionRecommendation(event);
-    onWordClick(word, event.pageX, event.layerY, positionRight, positionBelow);
+    const {x , y} = getAbsolutePosition(event.srcElement);
+    onWordClick(word, x, y, positionRight, positionBelow);
   }
 
   /**
@@ -219,13 +222,8 @@ class Chapter extends Component {
 
     // Fire off the handler
     const { onVerseClick } = this.props;
-    onVerseClick(verseDescriptor, verse, id, href, event.x, event.y);
-
-    // Unhighlight existing verses
-    // this.unhighlistVerses();
-
-    // Highlight the verse
-    // target.parentElement.classList.toggle('highlighted');
+    const {x , y} = getAbsolutePosition(event.srcElement);
+    onVerseClick(verseDescriptor, verse, id, href, x, y);
   }
 
   /**
@@ -247,7 +245,8 @@ class Chapter extends Component {
 
     // Fire off the handler
     const { onNoteClick } = this.props;
-    onNoteClick(contents, id, event.pageX, event.layerY, positionRight, positionBelow);
+    const {x , y} = getAbsolutePosition(event.srcElement);
+    onNoteClick(contents, id, x, y, positionRight, positionBelow);
   }
 
   handleClickEmpty() {
@@ -256,7 +255,6 @@ class Chapter extends Component {
   }
 
   handleClick(event) {
-
     // Determine if we are clicking a word, verse, note, or just empty space
     if (event.target.className.includes('word')) {
       this.handleClickWord(event);

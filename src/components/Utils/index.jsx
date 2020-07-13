@@ -13,3 +13,12 @@ export function addHandler(handler, type = 'click') {
 export function removeHandler(handler, type = 'click') {
   window.removeEventListener(type, handler);
 }
+export function getAbsolutePosition(element) {
+  const r = { x: element.offsetLeft, y: element.offsetTop };
+  if (element.offsetParent) {
+    const tmp = getAbsolutePosition(element.offsetParent);
+    r.x += tmp.x;
+    r.y += tmp.y;
+  }
+  return r;
+};
