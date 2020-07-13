@@ -30,6 +30,8 @@ const MODE_ERROR = 1;
 const MODE_DONE = 2;
 const MODE_NOT_READY = 3;
 
+const PARALLEL_WORK_PREFIX = 'secondWork-';
+
 const ContainerStyle = {
   paddingTop: 60,
 };
@@ -220,7 +222,10 @@ class Reader extends Component {
     const firstWorkVerse = document.getElementById(id);
 
     // Fire the associated handler
-    this.onVerseClick(verseDescriptor, verse, firstWorkVerse.attributes.id, firstWorkVerse.attributes.href.value);
+    // This may not match for works that have more verses in the parallel work than the primary one
+    if(firstWorkVerse) {
+      this.onVerseClick(verseDescriptor, verse, firstWorkVerse.attributes.id, firstWorkVerse.attributes.href.value);
+    }
   }
 
   /**
@@ -843,7 +848,7 @@ class Reader extends Component {
                             chapter={secondWorkData.chapter}
                             content={secondWorkData.content}
                             work={secondWorkData.work}
-                            onVerseClick={(verseDescriptor, verse, id, href) => this.onVerseClickSecondWork(verseDescriptor, verse, id, href)}
+                            onVerseClick={(verseDescriptor, verse, id, href) => this.onVerseClickSecondWork(verseDescriptor, verse, id.substr(PARALLEL_WORK_PREFIX.length), href)}
                             onWordClick={(word, x, y, positionRight, positionBelow) => {
                               this.onWordClick(word, x, y, positionRight, positionBelow);
                             }}
@@ -851,6 +856,7 @@ class Reader extends Component {
                             onClickAway={() => this.closeModal()}
                             highlightedVerse={highlightedVerse}
                             inverted={inverted}
+                            verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
                           />
                         )}
                         {!secondWorkData && getPlaceholder(inverted)}

@@ -81,29 +81,28 @@ class Chapter extends Component {
    * @param {string} className The class name to put the content under
    */
   getChapterContent(className) {
-    const { content, highlightedVerse } = this.props;
+    const { content, highlightedVerse, verseIdentifierPrefix } = this.props;
 
     // These options will process the nodes such that the node gets a tag indicating that it is
     // highlighted
     const options = {
       replace: ({ attribs, children }) => {
-        if (!attribs) return undefined;
+        if (!attribs || !('data-verse' in attribs)) return undefined;
 
-        if (attribs && attribs['data-verse'] === highlightedVerse) {
-          return (
-            <a
-              className="verse-link highlighted"
-              href={attribs.href}
-              data-verse={attribs['data-verse']}
-              data-verse-descriptor={attribs['data-verse-descriptor']}
-              id={attribs.id}
-            >
-              {domToReact(children, options)}
-            </a>
-          );
-        }
+        const verseClassName = attribs && attribs['data-verse'] === highlightedVerse ? "verse-link highlighted" : "verse-link";
 
-        return undefined;
+        return (
+          <a
+            className={verseClassName}
+            href={attribs.href}
+            data-verse={attribs['data-verse']}
+            data-verse-descriptor={attribs['data-verse-descriptor']}
+            data-original-id={attribs.id}
+            id={`${verseIdentifierPrefix}${attribs.id}`}
+          >
+            {domToReact(children, options)}
+          </a>
+        );
       },
     };
 
@@ -300,6 +299,7 @@ Chapter.propTypes = {
   onClickAway: PropTypes.func,
   onNoteClick: PropTypes.func,
   inverted: PropTypes.bool,
+  verseIdentifierPrefix: PropTypes.string,
 };
 
 Chapter.defaultProps = {
@@ -309,6 +309,7 @@ Chapter.defaultProps = {
   onClickAway: () => { },
   onNoteClick: () => { },
   inverted: false,
+  verseIdentifierPrefix: '',
 };
 
 export default Chapter;
