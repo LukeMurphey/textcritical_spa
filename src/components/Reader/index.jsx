@@ -597,11 +597,23 @@ class Reader extends Component {
    */
   openSearch() {
     const { history } = this.props;
-    const { divisions, loadedWork } = this.state;
+    const { divisions, loadedWork, secondWork } = this.state;
 
-    const q = `work:${loadedWork}`;
+    let q = `work:${loadedWork}`;
+
+    // Add the second work
+    if (secondWork) {
+      q += ` OR work:${secondWork}`;
+    }
+
+    // Add in the section
+    if (divisions && divisions.length > 0) {
+      q += ` section:${divisions[0]}`;
+    }
+
     history.push(SEARCH(q), {
       work: loadedWork,
+      secondWork,
       divisions,
     });
   }
