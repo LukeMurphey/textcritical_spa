@@ -297,20 +297,20 @@ const ReadingMenuBar = ({
               <Dropdown icon="ellipsis vertical" direction="left">
                 <Dropdown.Menu>
                   <Dropdown.Item
-                    text="About TextCritical.net"
-                    onClick={() => openAboutModal()}
-                  />
-                  <Dropdown.Item
                     text="Go to Start Page"
                     onClick={() => openStartPage()}
+                  />
+                  <Dropdown.Item
+                    text="Search"
+                    onClick={() => openSearchPage()}
                   />
                   <Dropdown.Item
                     text="Look up words (and convert beta-code)"
                     onClick={() => openBetaCodePage()}
                   />
                   <Dropdown.Item
-                    text="Search"
-                    onClick={() => openSearchPage()}
+                    text="About TextCritical.net"
+                    onClick={() => openAboutModal()}
                   />
                 </Dropdown.Menu>
               </Dropdown>
