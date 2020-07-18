@@ -3,7 +3,7 @@ import { Menu, Container, Icon, Popup, Input, Button, Responsive, Dropdown } fro
 import PropTypes from 'prop-types';
 import { withRouter } from "react-router-dom";
 import AwesomeDebouncePromise from "awesome-debounce-promise";
-import { START_PAGE, BETA_CODE_CONVERT } from "../URLs";
+import { START_PAGE, BETA_CODE_CONVERT, SEARCH } from "../URLs";
 import LibraryIcon from "../Icons/Library.svg";
 import BookSelection from '../BookSelection';
 import { addHandler, removeHandler } from '../Utils';
@@ -188,6 +188,13 @@ const ReadingMenuBar = ({
     }
 
     /**
+     * Open the search page.
+     */
+    const openSearchPage = () => {
+      history.push(SEARCH());
+    }
+
+    /**
      * Clear the overriding reference value when the caller changes it.
      * This is necessary when the caller has changed to another page and we need to show the we
      * navigated.
@@ -298,8 +305,12 @@ const ReadingMenuBar = ({
                     onClick={() => openStartPage()}
                   />
                   <Dropdown.Item
-                    text="Convert beta-code to Greek"
+                    text="Look up words (and convert beta-code)"
                     onClick={() => openBetaCodePage()}
+                  />
+                  <Dropdown.Item
+                    text="Search"
+                    onClick={() => openSearchPage()}
                   />
                 </Dropdown.Menu>
               </Dropdown>
