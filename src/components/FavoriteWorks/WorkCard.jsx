@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Card, Image, Button, Loader, Icon, Dropdown } from "semantic-ui-react";
+import { Card, Image, Button, Loader, Icon, Dropdown, Responsive, Segment } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import { ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from "../Endpoints";
 import { READ_WORK } from "../URLs";
@@ -60,7 +60,7 @@ const WorkCard = ({
 
   return (
     <Card className={className}>
-      <Card.Content>
+      <Card.Content style={{cursor:'pointer'}} onClick={onLoadWork}>
         <Image floated="right" size="mini" src={ENDPOINT_WORK_IMAGE(work)} />
         {mode === MODE_DONE && (
           <>
@@ -87,9 +87,11 @@ const WorkCard = ({
           {provideDropdown && (
             <>
               <Button.Group fluid color='green'>
-                <Button color='green' onClick={onLoadWork}>
-                  Read
-                </Button>
+                <Responsive minWidth={992}>
+                  <Button color='green' onClick={onLoadWork}>
+                    Read
+                  </Button>
+                </Responsive>
                 <Dropdown
                   style={{textAlign: 'center'}}
                   className='button icon'
