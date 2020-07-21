@@ -51,7 +51,7 @@ const scrollToVerse = (verse) => {
   if(verse) {
     const elmnt = document.getElementById(`verse-link_${verse}`);
     if(elmnt) {
-      elmnt.scrollIntoView(true);
+      elmnt.scrollIntoView(false);
     }
   }
 }
