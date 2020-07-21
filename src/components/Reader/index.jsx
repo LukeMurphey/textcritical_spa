@@ -41,6 +41,21 @@ const SidebarStyle = {
   marginTop: 0,
 };
 
+/**
+ * Scroll to the given verse
+ *
+ * @param {string} verse The number of the verse to scroll to.
+ */
+const scrollToVerse = (verse) => {
+  // Scroll to the verse
+  if(verse) {
+    const elmnt = document.getElementById(`verse-link_${verse}`);
+    if(elmnt) {
+      elmnt.scrollIntoView(true);
+    }
+  }
+}
+
 class Reader extends Component {
 
   constructor(props) {
@@ -208,6 +223,9 @@ class Reader extends Component {
       referenceValue: verseDescriptor,
     });
 
+    // Scroll to the verse
+    scrollToVerse(verse);
+    
     const { history } = this.props;
     // Add the parallel work
     if (secondWork) {
@@ -468,6 +486,7 @@ class Reader extends Component {
       this.loadSecondWorkChapter(secondWork, ...divisions);
     }
 
+    // Load the work
     fetch(ENDPOINT_READ_WORK(work, ...divisions))
       .then((res) => Promise.all([res.status, res.json()]))
       .then(([status, data]) => {
@@ -502,6 +521,9 @@ class Reader extends Component {
             data.verse_to_highlight,
             data.chapter.description
           );
+
+          // Scroll to the verse
+          scrollToVerse(data.verse_to_highlight);
 
           // Update the URL if we were redirected
           if (redirectedFrom) {
