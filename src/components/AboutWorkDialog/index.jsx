@@ -67,7 +67,7 @@ class AboutWorkDialog extends Component {
           {!error && data && (
             <>
               <div style={{ display: 'inline-block', marginRight: 16 }}>
-                <Image src={ENDPOINT_WORK_IMAGE(work)} />
+                <Image style={{width: 100}} src={ENDPOINT_WORK_IMAGE(work, 400)} />
               </div>
               <div style={{ display: 'inline-block' }}>
                 <Table basic="very" celled collapsing>
