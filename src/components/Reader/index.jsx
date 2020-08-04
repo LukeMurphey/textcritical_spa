@@ -22,7 +22,7 @@ import WarningMessages from "./WarningMessages";
 
 /**
  * Below are some notes about how this works:
- *   * componentDidUpdate() will trigger the fetch of the work as necessary when the URL changes.
+ *   * useState() will trigger the fetch of the work as necessary when the URL changes.
  *   * loadChapter() will fetch the chapter and load it into the UI.
  */
 
@@ -65,10 +65,7 @@ const getSecondWorkParameter = (location) => {
 /**
  * Go to the search page.
  */
-const openSearch = () => {
-  const { history } = this.props;
-  const { divisions, loadedWork, secondWork } = this.state;
-
+const openSearch = (loadedWork, secondWork, divisions, history) => {
   let q = `work:${loadedWork}`;
 
   // Add the second work
@@ -648,7 +645,7 @@ const Reader = ({
           work={loadedWork}
           openWorkInfoModal={() => setModal("aboutWork")}
           openDownloadModal={() => setModal("downloadWork")}
-          openSearch={() => openSearch()}
+          openSearch={() => openSearch(loadedWork, secondWork, divisions, history)}
           setSidebarVisible={() => setSidebarVisible()}
         />
         <Sidebar.Pushable
