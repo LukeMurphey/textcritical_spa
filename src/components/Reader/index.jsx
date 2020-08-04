@@ -117,7 +117,7 @@ const Reader = ({
   const [selectedNote, setSelectedNote] = useState(null);
   const [secondWork, setSecondWork] = useState(null);
   const [secondWorkData, setSecondWorkData] = useState(null);
-
+  const [secondWorkChapterNotFound, setSecondWorkChapterNotFound] = useState(false);
   const [secondWorkTitle, setSecondWorkTitle] = useState(null);
 
   const verseReferences = useRef([]);
@@ -159,6 +159,12 @@ const Reader = ({
           setSecondWork(work);
           setSecondWorkData(newData);
           setSecondWorkTitle(newData.work.title);
+
+          if(status === 210) {
+            setSecondWorkChapterNotFound(true);
+          } else {
+            setSecondWorkChapterNotFound(false);
+          }
 
           // Remember that we read this work
           setWorkProgress(work, secondDivisions, newData.reference_descriptor);
@@ -715,7 +721,7 @@ const Reader = ({
                       />
                     </Grid.Column>
                     <Grid.Column>
-                      {secondWorkData && (
+                      {secondWorkData && !secondWorkChapterNotFound && (
                         <Chapter
                           chapter={secondWorkData.chapter}
                           content={secondWorkData.content}
@@ -731,7 +737,8 @@ const Reader = ({
                           verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
                         />
                       )}
-                      {!secondWorkData && getPlaceholder(inverted)}
+                      {secondWorkData && secondWorkChapterNotFound && <WarningMessages inverted={inverted} warnings={[['Chapter not found', `The given chapter does not exist in ${secondWorkTitle}`]]} />}
+                      {!secondWorkData && !secondWorkChapterNotFound && getPlaceholder(inverted)}
                     </Grid.Column>
                   </Grid.Row>
                 </Grid>
