@@ -6,6 +6,7 @@ import { ENDPOINT_READ_WORK } from "../Endpoints";
 import { setWorkProgress } from "../Settings";
 import { SEARCH, READ_WORK } from "../URLs";
 import { getPlaceholder, getDialogs, getPopups }  from "./shortcuts";
+import { scrollToTarget } from '../Utils';
 import Chapter from "./Chapter";
 import ErrorMessage from "../ErrorMessage";
 import AboutDialog from "../AboutDialog";
@@ -33,11 +34,11 @@ const MODE_NOT_READY = 3;
 const PARALLEL_WORK_PREFIX = 'secondWork-';
 
 const ContainerStyle = {
-  paddingTop: 60,
+  paddingTop: 0,
 };
 
 const SidebarStyle = {
-  height: "100vh",
+  height: "calc(100vh - 60px)",
   marginTop: 0,
 };
 
@@ -49,10 +50,7 @@ const SidebarStyle = {
 const scrollToVerse = (verse) => {
   // Scroll to the verse
   if(verse) {
-    const elmnt = document.getElementById(`verse-link_${verse}`);
-    if(elmnt) {
-      elmnt.scrollIntoView(false);
-    }
+    scrollToTarget(`verse-link_${verse}`);
   }
 }
 
@@ -219,12 +217,11 @@ class Reader extends Component {
       verseDescriptor
     );
 
+    scrollToVerse(verse);
+
     this.setState({
       referenceValue: verseDescriptor,
     });
-
-    // Scroll to the verse
-    scrollToVerse(verse);
     
     const { history } = this.props;
     // Add the parallel work
@@ -788,6 +785,13 @@ class Reader extends Component {
 
     return (
       <>
+        <div
+          className="buffer"
+          style={{
+            'height': 54,
+            'width': '100%',
+          }}
+        />
         <ReadingMenuBar
           inverted={inverted}
           relatedWorks={relatedWorks}

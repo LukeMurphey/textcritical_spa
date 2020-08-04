@@ -22,3 +22,21 @@ export function getAbsolutePosition(element) {
   }
   return r;
 };
+
+export function scrollToTargetAdjusted(id, offset=45){
+  const element = document.getElementById(id);
+  const elementPosition = element.getBoundingClientRect().top;
+  const offsetPosition = elementPosition - offset;
+
+  window.scrollTo({
+       top: offsetPosition,
+       behavior: "smooth"
+  });
+}
+
+export function scrollToTarget(id){
+  const elmnt = document.getElementById(id);
+  if(elmnt) {
+    elmnt.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
+  }
+}
