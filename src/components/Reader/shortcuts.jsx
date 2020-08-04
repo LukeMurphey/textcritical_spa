@@ -150,6 +150,8 @@ export function getDialogs(modal, data, loading, loadedWork, closeModal) {
   );
 }
 
+export const MODAL_WORD = "word";
+export const MODAL_FOOTNOTE = "note";
 
 /**
  * Get the popups.
@@ -169,7 +171,7 @@ export function getPopups(modal,
 
   return (
     <>
-      {data && !loading && modal === "word" && (
+      {data && !loading && modal === MODAL_WORD && (
         <WordInformation
           inverted={inverted}
           positionBelow={popupPositionBelow}
@@ -181,7 +183,7 @@ export function getPopups(modal,
           onClose={() => closeModal()}
         />
       )}
-      {data && !loading && modal === "note" && (
+      {data && !loading && modal === MODAL_FOOTNOTE && (
         <FootnotePopup
           inverted={inverted}
           positionBelow={popupPositionBelow}
