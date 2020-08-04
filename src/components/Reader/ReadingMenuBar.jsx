@@ -284,7 +284,7 @@ const ReadingMenuBar = ({
                 </Button>
               )}
               placeholder="Jump to reference..."
-              value={tempReferenceValue || referenceValue}
+              value={tempReferenceValue || referenceValue || ''}
               error={!referenceValid}
               onChange={(e, d) => changeReference(e, d)}
               onKeyPress={(e, d) => onKeyPressed(e, d)}

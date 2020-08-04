@@ -467,14 +467,14 @@ const Reader = ({
             newRedirectedTo = READ_WORK(updatedData.work.title_slug, ...newDivisions);
           }
 
-          setData(updatedData);
-          setLoading(false);
           setLoadedWork(updatedData.work.title_slug);
           setDivisions(newDivisions);
-          setReferenceValue(data.reference_descriptor);
+          setReferenceValue(updatedData.reference_descriptor);
           setRedirectedFrom(newRedirectedFrom);
           setRedirectedTo(newRedirectedTo);
           setHighlightedVerse(updatedData.verse_to_highlight);
+          setData(updatedData);
+          setLoading(false);
 
           // Remember that we read this work
           setWorkProgress(work, newDivisions, updatedData.reference_descriptor);
@@ -605,6 +605,8 @@ const Reader = ({
     mode = MODE_DONE;
   } else if (errorTitle) {
     mode = MODE_ERROR;
+  } else if (match.params && match.params.work && !data) {
+    mode = MODE_LOADING;
   } else if (loading && !errorTitle) {
     mode = MODE_LOADING;
   } else {
