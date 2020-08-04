@@ -164,7 +164,7 @@ function Search({ inverted, history, location }) {
    * @param {bool} relatedForms Whether related forms ought to be ignored
    */
   const updateHistory = (q, selectedPage, diacritics, relatedForms) => {
-    history.push(SEARCH(q, diacritics, relatedForms, selectedPage));
+    history.push(SEARCH(q, diacritics, relatedForms, selectedPage), location.state);
   };
 
   /**
