@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, useLocation } from 'react-router-dom';
 import {
@@ -138,6 +138,10 @@ function Search({ inverted, history, location }) {
   const [searchedKey, setSearchedKey] = useState(null);
   const [linkBackURL, setLinkBackURL] = useState(null);
 
+  // Keep an indicator of which search has run so that we don't post results from a previous search if the user
+  // clicks search twice and the results from the first search comes back after the second one.
+  const searchCount = useRef(0);
+
   let className = '';
 
   if (inverted) {
@@ -181,13 +185,17 @@ function Search({ inverted, history, location }) {
     setSearching(true);
     setError(null);
     setPage(requestedPage);
+    searchCount.current += 1;
+    const searchCountLocal = searchCount.current;
 
     fetch(ENDPOINT_SEARCH(query, requestedPage, ignoreDiacritics, searchRelatedForms))
       .then((res) => res.json())
       .then((data) => {
-        setResultSet(data);
-        setSearching(false);
-        setError(null);
+        if(searchCountLocal === searchCount.current) {
+          setResultSet(data);
+          setSearching(false);
+          setError(null);
+        }
       })
       .catch((e) => {
         setError(e.toString());
