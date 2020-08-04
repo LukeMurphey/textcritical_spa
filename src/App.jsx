@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import AboutDialog from './components/AboutDialog/index';
 import Reader from './components/Reader';
 
+const MODAL_ABOUT = 'about';
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -16,7 +18,7 @@ class App extends Component {
   }
 
   openAboutModal() {
-    this.setState({ modal: 'about' });
+    this.setState({ modal: MODAL_ABOUT });
   }
 
   render() {
@@ -54,7 +56,7 @@ class App extends Component {
             </Container>
           </Menu>
         )}
-        {modal === 'about' && (
+        {modal === MODAL_ABOUT && (
           <AboutDialog onClose={() => this.closeModal()} />
         )}
         <Reader
