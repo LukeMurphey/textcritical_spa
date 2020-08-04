@@ -220,10 +220,11 @@ const Reader = ({
    * Navigate to chapter.
    *
    * @param {string} work The title slug of the work
+   * @param {string} parallelWork The title slug of the parallel work
    * @param {array} divisions The list of division indicators
    */
-  const navigateToChapter = (work, ...newDivisions) => {
-    updateHistory(work, secondWork, ...newDivisions);
+  const navigateToChapter = (work, parallelWork, ...newDivisions) => {
+    updateHistory(work, parallelWork, ...newDivisions);
   }
 
   /**
@@ -239,7 +240,17 @@ const Reader = ({
     setDivisions(referenceInfo.divisions);
     setReferenceValue(newReferenceValue);
 
-    navigateToChapter(requestedWork, ...referenceInfo.divisions);
+    navigateToChapter(requestedWork, secondWork, ...referenceInfo.divisions);
+  }
+
+  /**
+   * Close the second work
+   */
+  const closeSecondWork = () => {
+    setSecondWork(null);
+    setSecondWorkData(null);
+
+    updateHistory(loadedWork, null, ...divisions);
   }
 
   /**
@@ -267,9 +278,8 @@ const Reader = ({
       })
     } else {
       // Drop the second work since this one is not related
-      setSecondWork(secondWork);
-      setSecondWorkData(secondWorkData);
-      navigateToChapter(work);
+      closeSecondWork();
+      navigateToChapter(work);  
     }
   }
 
@@ -338,7 +348,7 @@ const Reader = ({
    */
   const goToNextChapter = () => {
     if (data.next_chapter) {
-      navigateToChapter(loadedWork, data.next_chapter.full_descriptor);
+      navigateToChapter(loadedWork, secondWork, data.next_chapter.full_descriptor);
     }
   }
 
@@ -347,18 +357,8 @@ const Reader = ({
    */
   const goToPriorChapter = () => {
     if (data.previous_chapter) {
-      navigateToChapter(loadedWork, data.previous_chapter.full_descriptor);
+      navigateToChapter(loadedWork, secondWork, data.previous_chapter.full_descriptor);
     }
-  }
-
-  /**
-   * Close the second work
-   */
-  const closeSecondWork = () => {
-    setSecondWork(null);
-    setSecondWorkData(null);
-
-    updateHistory(loadedWork, null, ...divisions);
   }
 
   /**
@@ -368,7 +368,7 @@ const Reader = ({
    * @param {*} info All props.
    */
   const changeChapter = (event, info) => {
-    navigateToChapter(loadedWork, info.value);
+    navigateToChapter(loadedWork, secondWork, info.value);
   }
 
   /**
@@ -509,31 +509,6 @@ const Reader = ({
 
   const previousPathname = useRef();
 
-  /*
-  useEffect(() => {
-    const divisionsFiltered = [
-      division0,
-      division1,
-      division2,
-      division3,
-      division4,
-      leftovers,
-    ].filter((entry) => entry);
-
-    // Determine if we are to open a parallel work
-    const parallelWork = getSecondWorkParameter(location);
-
-    if (parallelWork) {
-      setSecondWork(parallelWork);
-      loadSecondWorkChapter(parallelWork, ...divisionsFiltered);
-    }
-
-    // Load the work
-    if (defaultWork) {
-      loadChapter(defaultWork, ...divisionsFiltered);
-    }
-  });
-  */
   useEffect(() => {
     // Get the divisions from the URL
     const divisionsFiltered = [
