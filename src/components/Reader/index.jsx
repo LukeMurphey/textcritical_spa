@@ -166,6 +166,11 @@ const Reader = ({
             setSecondWorkChapterNotFound(false);
           }
 
+          // Rescroll to keep the verse in the view
+          if(highlightedVerse) {
+            scrollToVerse(highlightedVerse);
+          }
+
           // Remember that we read this work
           setWorkProgress(work, secondDivisions, newData.reference_descriptor);
 
@@ -570,7 +575,7 @@ const Reader = ({
     // Try to get the second work
     if (!sameSecondWork) {
       if(getSecondWorkParameter(location)) {
-        loadSecondWorkChapter(getSecondWorkParameter(location), divisionsFiltered);
+        loadSecondWorkChapter(getSecondWorkParameter(location), ...divisionsFiltered);
       }
       else {
         setSecondWork(null);
