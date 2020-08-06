@@ -246,6 +246,8 @@ const Reader = ({
     }
 
     setDivisions(referenceInfo.divisions);
+    scrollToVerse(referenceInfo.verse_to_highlight);
+    setHighlightedVerse(referenceInfo.verse_to_highlight);
     setReferenceValue(newReferenceValue);
 
     navigateToChapter(requestedWork, secondWork, ...referenceInfo.divisions);
@@ -554,8 +556,13 @@ const Reader = ({
       const highlightedVerseRef = existingChapter.verse;
 
       if (highlightedVerse !== highlightedVerseRef) {
-        setHighlightedVerse(highlightedVerseRef);
-        setReferenceValue(existingChapter.referenceValue);
+        if(highlightedVerseRef) {
+          setHighlightedVerse(highlightedVerseRef);
+        }
+        
+        if(!referenceValue){
+          setReferenceValue(existingChapter.referenceValue);
+        }
       }
 
       // Don't load the new one, we already have it on the page

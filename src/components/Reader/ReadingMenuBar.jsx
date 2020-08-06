@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Menu, Container, Icon, Popup, Input, Button, Responsive, Dropdown } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withRouter } from "react-router-dom";
@@ -30,10 +30,6 @@ const resolveReferenceDebounced = AwesomeDebouncePromise(
   500
 );
 
-// This will store the last reference set so that we make sure not to replace the reference
-// we did a reference resolution check against the server for.
-let lastSetReference = null;
-
 const ReadingMenuBar = ({
   inverted,
   toggleSidebarVisible,
@@ -54,22 +50,26 @@ const ReadingMenuBar = ({
   nextChapterDescriptor,
   previousChapterDescriptor
  }) => {
-    // Create a custom className for signaling the desire to switch to inverted
-    let classNameSuffix = "";
+  // Create a custom className for signaling the desire to switch to inverted
+  let classNameSuffix = "";
 
-    if (inverted) {
-      classNameSuffix = " inverted";
-    }
+  if (inverted) {
+    classNameSuffix = " inverted";
+  }
 
-    // The temp reference value represents the local value of the reference that has not yet been
-    // sent up to the caller.
-    const [ tempReferenceValue, setTempReferenceValue ] = useState(null);
+  // The temp reference value represents the local value of the reference that has not yet been
+  // sent up to the caller.
+  const [ tempReferenceValue, setTempReferenceValue ] = useState(null);
 
-    // Indicates if the reference is valid
-    const [ referenceValid, setReferenceValid ] = useState(true);
+  // Indicates if the reference is valid
+  const [ referenceValid, setReferenceValid ] = useState(true);
 
-    // Indicates we got an error somewhere
-    const [ error, setError ] = useState(null);
+  // Indicates we got an error somewhere
+  const [ error, setError ] = useState(null);
+
+  // This will store the last reference set so that we make sure not to replace the reference
+  // we did a reference resolution check against the server for.
+  const lastSetReference = useRef(null);
   
   /**
    * Go to the reference defined in the input box but only if it is valid.
@@ -119,12 +119,12 @@ const ReadingMenuBar = ({
 
       // Store this entry so that we can avoid updating the reference if the user entered another
       // reference before the server's response came back
-      lastSetReference = info.value;
+      lastSetReference.current = info.value;
 
       resolveReferenceDebounced(loadedWork, info.value)
         .then((res)  => {
           // If the user already changed the value again, just ignore it
-          if (lastSetReference !== info.value) {
+          if (lastSetReference.current !== info.value) {
             return;
           }
 
@@ -203,7 +203,7 @@ const ReadingMenuBar = ({
       setTempReferenceValue(null);
       preloadChapters();
     }, [referenceValue]);
-
+    
     /**
      * Handle key presses
      */
