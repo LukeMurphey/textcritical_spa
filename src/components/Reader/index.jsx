@@ -321,7 +321,7 @@ const Reader = ({
       verseDescriptor
     );
 
-    scrollToVerse(verse);
+    scrollToTarget(id);
 
     setReferenceValue(verseDescriptor);
     
@@ -341,13 +341,15 @@ const Reader = ({
    * @param {string} id An ID that designates the verse in the HTML DOM
    */
   const onVerseClickSecondWork = (verseDescriptor, verse, id) => {
+    const firstWorkId = id.substr(PARALLEL_WORK_PREFIX.length);
+
     // Find the verse descriptor from the first work
-    const firstWorkVerse = document.getElementById(id);
+    const firstWorkVerse = document.getElementById(firstWorkId);
 
     // Fire the associated handler
     // This may not match for works that have more verses in the parallel work than the primary one
     if(firstWorkVerse) {
-      onVerseClick(verseDescriptor, verse, firstWorkVerse.attributes.id, firstWorkVerse.attributes.href.value);
+      onVerseClick(verseDescriptor, verse, id, firstWorkVerse.attributes.href.value);
     }
   }
 
@@ -733,7 +735,7 @@ const Reader = ({
                           chapter={secondWorkData.chapter}
                           content={secondWorkData.content}
                           work={secondWorkData.work}
-                          onVerseClick={(verseDescriptor, verse, id, href) => onVerseClickSecondWork(verseDescriptor, verse, id.substr(PARALLEL_WORK_PREFIX.length), href)}
+                          onVerseClick={(verseDescriptor, verse, id, href) => onVerseClickSecondWork(verseDescriptor, verse, id, href)}
                           onWordClick={(word, x, y, positionRight, positionBelow) => {
                             onWordClick(word, x, y, positionRight, positionBelow);
                           }}
