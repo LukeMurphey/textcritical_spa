@@ -107,10 +107,10 @@ const WorkCard = ({
                 >
                   <Dropdown.Menu>
                     {setFavoriteWork && (
-                      <Dropdown.Item icon='heart' text='Set as favorite' onClick={() => setFavoriteWork(work)} />
+                      <Dropdown.Item icon='heart' data-testid="setFav" text='Set as favorite' onClick={() => setFavoriteWork(work)} />
                     )}
                     {removeFavoriteWork && (
-                      <Dropdown.Item icon='remove' text='Remove from favorites' onClick={() => removeFavoriteWork(work)} />
+                      <Dropdown.Item icon='remove' data-testid="removeFav" text='Remove from favorites' onClick={() => removeFavoriteWork(work)} />
                     )}
                   </Dropdown.Menu>
                 </Dropdown>
