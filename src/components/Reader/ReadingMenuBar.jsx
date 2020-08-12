@@ -50,7 +50,9 @@ const ReadingMenuBar = ({
   nextChapterDescriptor,
   previousChapterDescriptor,
   increaseFontSize,
-  decreaseFontSize
+  decreaseFontSize,
+  increaseFontSizeDisabled,
+  decreaseFontSizeDisabled,
  }) => {
   // Create a custom className for signaling the desire to switch to inverted
   let classNameSuffix = "";
@@ -318,10 +320,12 @@ const ReadingMenuBar = ({
                 <Dropdown.Menu>
                   <Dropdown.Item
                     text="Increase font size"
+                    disabled={increaseFontSizeDisabled}
                     onClick={() => clickIncreaseFontSize()}
                   />
                   <Dropdown.Item
                     text="Decrease font size"
+                    disabled={decreaseFontSizeDisabled}
                     onClick={() => clickDecreaseFontSize()}
                   />
                   <Dropdown.Item
@@ -397,6 +401,8 @@ ReadingMenuBar.propTypes = {
   history: PropTypes.object.isRequired,
   nextChapterDescriptor: PropTypes.string,
   previousChapterDescriptor: PropTypes.string,
+  increaseFontSizeDisabled: PropTypes.bool,
+  decreaseFontSizeDisabled: PropTypes.bool,
 }
 
 ReadingMenuBar.defaultProps = {
@@ -413,6 +419,8 @@ ReadingMenuBar.defaultProps = {
   decreaseFontSize: null,
   nextChapterDescriptor: null,
   previousChapterDescriptor: null,
+  increaseFontSizeDisabled: true,
+  decreaseFontSizeDisabled: true,
 }
 
 export default withRouter(ReadingMenuBar);

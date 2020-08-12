@@ -682,6 +682,8 @@ const Reader = ({
         previousChapterDescriptor={data && data.next_chapter && data.next_chapter.full_descriptor}
         decreaseFontSize={() => decreaseFontSize()}
         increaseFontSize={() => increaseFontSize()}
+        increaseFontSizeDisabled={fontSizeAdjustment >= maxFontSizeAdjustment}
+        decreaseFontSizeDisabled={fontSizeAdjustment <= 0}
       />
       {mode === MODE_DONE && (
       <>
