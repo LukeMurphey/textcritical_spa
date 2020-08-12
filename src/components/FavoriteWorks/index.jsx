@@ -15,7 +15,7 @@ import WorkCard from "./WorkCard";
 const FavoriteWorks = ({ inverted }) => {
   const recentlyRead = getWorksLastRead();
   const favorites = getFavoriteWorks();
-  const [value, setValue] = useState(0); // Using an integer as a state
+  const [value, setValue] = useState(0); // Using an integer as a state marker to get the view to rerender when necessary
 
   const onFavWork = work => {
     setFavoriteWork(work);
