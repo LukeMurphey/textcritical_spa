@@ -48,7 +48,9 @@ const ReadingMenuBar = ({
   goToPriorChapter,
   goToNextChapter,
   nextChapterDescriptor,
-  previousChapterDescriptor
+  previousChapterDescriptor,
+  increaseFontSize,
+  decreaseFontSize
  }) => {
   // Create a custom className for signaling the desire to switch to inverted
   let classNameSuffix = "";
@@ -181,6 +183,24 @@ const ReadingMenuBar = ({
     }
 
     /**
+     * Increase font size.
+     */
+    const clickIncreaseFontSize = () => {
+      if(increaseFontSize){
+        increaseFontSize();
+      }
+    }
+
+    /**
+     * Decrease font size.
+     */
+    const clickDecreaseFontSize = () => {
+      if(decreaseFontSize){
+        decreaseFontSize();
+      }
+    }
+
+    /**
      * Open the beta-code conversion page.
      */
     const openBetaCodePage = () => {
@@ -297,6 +317,14 @@ const ReadingMenuBar = ({
               <Dropdown icon="ellipsis vertical" direction="left">
                 <Dropdown.Menu>
                   <Dropdown.Item
+                    text="Increase font size"
+                    onClick={() => clickIncreaseFontSize()}
+                  />
+                  <Dropdown.Item
+                    text="Decrease font size"
+                    onClick={() => clickDecreaseFontSize()}
+                  />
+                  <Dropdown.Item
                     text="Go to Start Page"
                     onClick={() => openStartPage()}
                   />
@@ -360,6 +388,8 @@ ReadingMenuBar.propTypes = {
   openAboutModal: PropTypes.func.isRequired,
   goToPriorChapter: PropTypes.func,
   goToNextChapter: PropTypes.func,
+  increaseFontSize: PropTypes.func,
+  decreaseFontSize: PropTypes.func,
   referenceValue: PropTypes.string,
   hasNextChapter: PropTypes.bool,
   hasPriorChapter: PropTypes.bool,
@@ -379,6 +409,8 @@ ReadingMenuBar.defaultProps = {
   hasPriorChapter: false,
   goToPriorChapter: null,
   goToNextChapter: null,
+  increaseFontSize: null,
+  decreaseFontSize: null,
   nextChapterDescriptor: null,
   previousChapterDescriptor: null,
 }

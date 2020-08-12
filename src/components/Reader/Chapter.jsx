@@ -82,7 +82,7 @@ class Chapter extends Component {
    * @param {string} className The class name to put the content under
    */
   getChapterContent(className) {
-    const { content, highlightedVerse, verseIdentifierPrefix } = this.props;
+    const { content, highlightedVerse, verseIdentifierPrefix, fontSizeAdjustment } = this.props;
 
     // These options will process the nodes such that the node gets a tag indicating that it is
     // highlighted
@@ -112,7 +112,7 @@ class Chapter extends Component {
 
     return (
       <div
-        className={className}
+        className={`${className} fontSize-${fontSizeAdjustment}`}
         ref={this.wrapper}
       >
         {reactElement}
@@ -298,6 +298,7 @@ Chapter.propTypes = {
   onNoteClick: PropTypes.func,
   inverted: PropTypes.bool,
   verseIdentifierPrefix: PropTypes.string,
+  fontSizeAdjustment: PropTypes.number,
 };
 
 Chapter.defaultProps = {
@@ -308,6 +309,7 @@ Chapter.defaultProps = {
   onNoteClick: () => { },
   inverted: false,
   verseIdentifierPrefix: '',
+  fontSizeAdjustment: 0,
 };
 
 export default Chapter;

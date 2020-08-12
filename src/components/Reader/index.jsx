@@ -33,6 +33,8 @@ const MODE_NOT_READY = 3;
 
 const PARALLEL_WORK_PREFIX = 'secondWork-';
 
+const maxFontSizeAdjustment = 4;
+
 const ContainerStyle = {
   paddingTop: 0,
 };
@@ -119,6 +121,7 @@ const Reader = ({
   const [secondWorkData, setSecondWorkData] = useState(null);
   const [secondWorkChapterNotFound, setSecondWorkChapterNotFound] = useState(false);
   const [secondWorkTitle, setSecondWorkTitle] = useState(null);
+  const [fontSizeAdjustment, setFontSizeAdjustment] = useState(0);
 
   const verseReferences = useRef([]);
 
@@ -133,6 +136,24 @@ const Reader = ({
     setErrorMessage(errMessage);
     setErrorDescription(errDescription);
     setErrorTitle(errTitle);
+  }
+
+  /**
+   * Increase the font size
+   */
+  const increaseFontSize = () => {
+    if(fontSizeAdjustment < maxFontSizeAdjustment) {
+      setFontSizeAdjustment(fontSizeAdjustment + 1);
+    }
+  }
+
+  /**
+   * Decrease the font size
+   */
+  const decreaseFontSize = () => {
+    if(fontSizeAdjustment > 0) {
+      setFontSizeAdjustment(fontSizeAdjustment - 1);
+    }
   }
 
   /**
@@ -659,6 +680,8 @@ const Reader = ({
         hasPriorChapter={!loading && data && data.previous_chapter !== null}
         nextChapterDescriptor={data && data.previous_chapter && data.previous_chapter.full_descriptor}
         previousChapterDescriptor={data && data.next_chapter && data.next_chapter.full_descriptor}
+        decreaseFontSize={() => decreaseFontSize()}
+        increaseFontSize={() => increaseFontSize()}
       />
       {mode === MODE_DONE && (
       <>
@@ -717,6 +740,7 @@ const Reader = ({
                   onClickAway={() => setModal(null)}
                   highlightedVerse={highlightedVerse}
                   inverted={inverted}
+                  fontSizeAdjustment={fontSizeAdjustment}
                 />
               )}
 

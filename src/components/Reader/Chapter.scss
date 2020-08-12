@@ -1,4 +1,3 @@
-
 @import "../StylingShortcuts/shortcuts.scss";
 @import "../StylingShortcuts/theme.scss";
 @import "perseus.scss";
@@ -6,108 +5,123 @@
 /**
  * The following styles the note icon.
  */
- .view_read_work .hide {
-    display: none;
+.view_read_work .hide {
+  display: none;
 }
 
 .view_read_work {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .view_read_work .icon-info-sign {
-    font-family: "Icons";
-    font-style: normal;
+  font-family: "Icons";
+  font-style: normal;
 }
 
-.view_read_work .icon-info-sign:before{
-    content: "\f129";
+.view_read_work .icon-info-sign:before {
+  content: "\f129";
 }
 
-.verse.number{
-    font-weight: bold;
+.verse.number {
+  font-weight: bold;
 }
 
 .inverted {
-    .verse.number {
-        color: white;
-    }
+  .verse.number {
+    color: white;
+  }
 }
 
-.verse-container{
-    display: inline;
-    line-height: 25px;
+.verse-container {
+  display: inline;
+  line-height: 25px;
 }
 
-.block{
-    display: block;
-    margin-top: 12px;
+.block {
+  display: block;
+  margin-top: 12px;
 }
 
 /**
  * Verse link.
  */
-.verse-link{
-    padding: 0 4px;
-    &:visited { color: #EEE; }
-    &:active { color: #EEE; }
-    &:link { color: #EEE; }
-    &:hover { color: #08C; }
+.verse-link {
+  padding: 0 4px;
+  &:visited {
+    color: #eee;
+  }
+  &:active {
+    color: #eee;
+  }
+  &:link {
+    color: #eee;
+  }
+  &:hover {
+    color: #08c;
+  }
 }
 
-.verse-link.highlighted{
-    background-color: red;
-    border-radius: 2px;
+.verse-link.highlighted {
+  background-color: red;
+  border-radius: 2px;
 
-    .verse.number {
-        color: white;
-    }
+  .verse.number {
+    color: white;
+  }
 }
 
-.inverted{
-    background-color: $backgroundColorDark;
-    color: $textColorDark;
+.inverted {
+  background-color: $backgroundColorDark;
+  color: $textColorDark;
 }
 
-.no_definition_entries{
-	font-style: italic;
+.no_definition_entries {
+  font-style: italic;
 }
 
 /**
  * Words.
  */
-.word.highlighted, .word.searched{
-    @include rounded(3px);
-    color: white;
+.word.highlighted,
+.word.searched {
+  @include rounded(3px);
+  color: white;
 }
 
-.word.highlighted{
-    background-color: #49AFCD;
+.word.highlighted {
+  background-color: #49afcd;
 }
 
-.word.searched{
-    background-color: #468847;
+.word.searched {
+  background-color: #468847;
 }
 
 @for $i from 2 through 5 {
-    .division-#{$i} { padding-left: 24px * ($i - 1); }
+  .division-#{$i} {
+    padding-left: 24px * ($i - 1);
+  }
 }
 
-.verse{
-    
-	.word{
-		cursor:pointer;
-		cursor:hand;		
-	}
-	
-	.word:hover{
-		text-decoration: underline;
-	}
+.verse {
+  .word {
+    cursor: pointer;
+    cursor: hand;
+  }
+
+  .word:hover {
+    text-decoration: underline;
+  }
 }
 
 @media print {
+  .view_read_work .note-tag {
+    display: none;
+  }
+}
 
-	.view_read_work .note-tag{
-		display: none;
-	}
-
+// Make the various instances of font-size adjustment
+@for $i from 0 through 5 {
+  .fontSize-#{$i} {
+    font-size: 15px + ($i * 2);
+  }
 }
