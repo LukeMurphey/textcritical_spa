@@ -9,7 +9,7 @@ import {
   clearFavorites,
   setFavoriteWork,
   removeFavoriteWork,
-} from "../Settings";
+} from "../Settings/worksList";
 import WorkCard from "./WorkCard";
 
 const FavoriteWorks = ({ inverted }) => {

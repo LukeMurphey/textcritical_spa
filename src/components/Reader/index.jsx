@@ -3,7 +3,8 @@ import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-rea
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { ENDPOINT_READ_WORK } from "../Endpoints";
-import { setWorkProgress } from "../Settings";
+import { setWorkProgress } from "../Settings/worksList";
+import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
 import { getPlaceholder, getDialogs, getPopups, MODAL_WORD, MODAL_FOOTNOTE }  from "./shortcuts";
 import { scrollToTarget } from '../Utils';
@@ -32,8 +33,6 @@ const MODE_DONE = 2;
 const MODE_NOT_READY = 3;
 
 const PARALLEL_WORK_PREFIX = 'secondWork-';
-
-const maxFontSizeAdjustment = 4;
 
 const ContainerStyle = {
   paddingTop: 0,
@@ -121,7 +120,7 @@ const Reader = ({
   const [secondWorkData, setSecondWorkData] = useState(null);
   const [secondWorkChapterNotFound, setSecondWorkChapterNotFound] = useState(false);
   const [secondWorkTitle, setSecondWorkTitle] = useState(null);
-  const [fontSizeAdjustment, setFontSizeAdjustment] = useState(0);
+  const [fontSizeAdjustment, setFontSizeAdjustment] = useState(getFontAdjustment());
 
   const verseReferences = useRef([]);
 
@@ -142,7 +141,8 @@ const Reader = ({
    * Increase the font size
    */
   const increaseFontSize = () => {
-    if(fontSizeAdjustment < maxFontSizeAdjustment) {
+    if(fontSizeAdjustment < MAX_FONT_SIZE_ADJUSTMENT) {
+      setFontAdjustment(fontSizeAdjustment + 1);
       setFontSizeAdjustment(fontSizeAdjustment + 1);
     }
   }
@@ -152,6 +152,7 @@ const Reader = ({
    */
   const decreaseFontSize = () => {
     if(fontSizeAdjustment > 0) {
+      setFontAdjustment(fontSizeAdjustment - 1);
       setFontSizeAdjustment(fontSizeAdjustment - 1);
     }
   }
@@ -682,7 +683,7 @@ const Reader = ({
         previousChapterDescriptor={data && data.next_chapter && data.next_chapter.full_descriptor}
         decreaseFontSize={() => decreaseFontSize()}
         increaseFontSize={() => increaseFontSize()}
-        increaseFontSizeDisabled={fontSizeAdjustment >= maxFontSizeAdjustment}
+        increaseFontSizeDisabled={fontSizeAdjustment >= MAX_FONT_SIZE_ADJUSTMENT}
         decreaseFontSizeDisabled={fontSizeAdjustment <= 0}
       />
       {mode === MODE_DONE && (
