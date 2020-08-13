@@ -1,5 +1,4 @@
-const LAST_READ_HISTORY = "lastReadHistory";
-const FAVORITE_WORKS = "favoriteWorks";
+import {LAST_READ_HISTORY, FAVORITE_WORKS} from ".";
 
 export function maxHistoryCount() {
   return 6;

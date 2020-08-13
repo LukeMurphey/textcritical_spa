@@ -1,4 +1,5 @@
-const FONT_ADJUSTMENT = "fontAdjustment";
+import {FONT_ADJUSTMENT} from ".";
+
 export const MAX_FONT_SIZE_ADJUSTMENT = 4;
 
 export function setFontAdjustment(adjustment, storageOverride = null) {

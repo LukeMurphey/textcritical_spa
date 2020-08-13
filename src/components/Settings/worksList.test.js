@@ -1,4 +1,4 @@
-import { setWorkProgress, getWorksLastRead, maxHistoryCount, setFavoriteWork, getFavoriteWorks } from "./index";
+import { setWorkProgress, getWorksLastRead, maxHistoryCount, setFavoriteWork, getFavoriteWorks } from "./worksList";
 
 // Setup a local storage mock
 class LocalStorageMock {

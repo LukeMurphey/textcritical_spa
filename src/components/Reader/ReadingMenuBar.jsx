@@ -74,6 +74,8 @@ const ReadingMenuBar = ({
   // This will store the last reference set so that we make sure not to replace the reference
   // we did a reference resolution check against the server for.
   const lastSetReference = useRef(null);
+
+  const [ menuOpen, setMenuOpen ] = useState(false);
   
   /**
    * Go to the reference defined in the input box but only if it is valid.
@@ -182,6 +184,7 @@ const ReadingMenuBar = ({
      */
     const openStartPage = () => {
       history.push(START_PAGE());
+      setMenuOpen(false);
     }
 
     /**
@@ -207,6 +210,7 @@ const ReadingMenuBar = ({
      */
     const openBetaCodePage = () => {
       history.push(BETA_CODE_CONVERT());
+      setMenuOpen(false);
     }
 
     /**
@@ -214,6 +218,7 @@ const ReadingMenuBar = ({
      */
     const openSearchPage = () => {
       history.push(SEARCH());
+      setMenuOpen(false);
     }
 
     /**
@@ -316,18 +321,22 @@ const ReadingMenuBar = ({
         )}
           <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
             <Responsive minWidth={768}>
-              <Dropdown icon="ellipsis vertical" direction="left">
+              <Dropdown icon="ellipsis vertical" direction="left" open={menuOpen} onClick={() => setMenuOpen(true)} onBlur={() => setMenuOpen(false)}>
                 <Dropdown.Menu>
-                  <Dropdown.Item
-                    text="Increase font size"
-                    disabled={increaseFontSizeDisabled}
-                    onClick={() => clickIncreaseFontSize()}
-                  />
-                  <Dropdown.Item
-                    text="Decrease font size"
-                    disabled={decreaseFontSizeDisabled}
-                    onClick={() => clickDecreaseFontSize()}
-                  />
+                  {(increaseFontSize || decreaseFontSize) && (
+                    <>
+                      <span style={{color: 'rgba(0, 0, 0, 0.87)', marginLeft: 18, marginRight: 12}}>Font:</span>
+                      <Button.Group>
+                        {increaseFontSize && (
+                          <Button icon="plus" disabled={increaseFontSizeDisabled} onClick={() => clickIncreaseFontSize()} />
+                        )}
+                        {decreaseFontSize && (
+                          <Button icon="minus" disabled={decreaseFontSizeDisabled} onClick={() => clickDecreaseFontSize()} />
+                        )}
+                      </Button.Group>
+                      
+                    </>
+                  )}
                   <Dropdown.Item
                     text="Go to Start Page"
                     onClick={() => openStartPage()}
@@ -342,7 +351,10 @@ const ReadingMenuBar = ({
                   />
                   <Dropdown.Item
                     text="About TextCritical.net"
-                    onClick={() => openAboutModal()}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      openAboutModal();
+                    }}
                   />
                 </Dropdown.Menu>
               </Dropdown>

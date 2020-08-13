@@ -681,8 +681,8 @@ const Reader = ({
         hasPriorChapter={!loading && data && data.previous_chapter !== null}
         nextChapterDescriptor={data && data.previous_chapter && data.previous_chapter.full_descriptor}
         previousChapterDescriptor={data && data.next_chapter && data.next_chapter.full_descriptor}
-        decreaseFontSize={() => decreaseFontSize()}
-        increaseFontSize={() => increaseFontSize()}
+        decreaseFontSize={!loading && data && (() => decreaseFontSize())}
+        increaseFontSize={!loading && data && (() => increaseFontSize())}
         increaseFontSizeDisabled={fontSizeAdjustment >= MAX_FONT_SIZE_ADJUSTMENT}
         decreaseFontSizeDisabled={fontSizeAdjustment <= 0}
       />
