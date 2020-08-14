@@ -325,7 +325,7 @@ const ReadingMenuBar = ({
                 <Dropdown.Menu>
                   {(increaseFontSize || decreaseFontSize) && (
                     <>
-                      <span style={{color: 'rgba(0, 0, 0, 0.87)', marginLeft: 18, marginRight: 12}}>Font:</span>
+                      <span style={{color: 'rgba(0, 0, 0, 0.87)', marginLeft: 18, marginRight: 12}}>Font size:</span>
                       <Button.Group>
                         {increaseFontSize && (
                           <Button icon="plus" disabled={increaseFontSizeDisabled} onClick={() => clickIncreaseFontSize()} />
