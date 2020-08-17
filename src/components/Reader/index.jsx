@@ -806,7 +806,7 @@ const Reader = ({
         <Container style={ContainerStyle} className={`${classNameSuffix}`}>
           <div style={{ paddingTop: 24 }}>
             <NoWorkSelected
-              onClick={() => setBookSelectionOpen()}
+              onClick={() => setBookSelectionOpen(true)}
               inverted={inverted}
             />
             <FavoriteWorks inverted={inverted} />

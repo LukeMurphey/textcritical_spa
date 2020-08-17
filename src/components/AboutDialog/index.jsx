@@ -44,7 +44,7 @@ class AboutDialog extends Component {
           </p>
           <Table basic="very" celled collapsing>
             <Table.Body>
-              {AboutDialog.getInfoRow('Version', '4.7')}
+              {AboutDialog.getInfoRow('Version', '4.7.1')}
               {AboutDialog.getInfoLinkRow(
                 'Sources of the works',
                 'https://lukemurphey.net/projects/ancient-text-reader/wiki/Content_Sources',
