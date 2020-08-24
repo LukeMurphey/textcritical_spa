@@ -96,7 +96,7 @@ const PopupDialog = (props) => {
   );
 
   // Determine the height of the dialog
-  const height = segmentStyle.height ? segmentStyle.height : 200;
+  const height = segmentStyle.height ? segmentStyle.height : 300;
 
   // Calculate the vertical position
   if (positionBelow) {
