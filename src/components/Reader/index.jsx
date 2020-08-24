@@ -282,7 +282,12 @@ const Reader = ({
     setSecondWork(null);
     setSecondWorkData(null);
 
-    updateHistory(loadedWork, null, ...divisions);
+    if(divisions) {
+      updateHistory(loadedWork, null, ...divisions);
+    }
+    else {
+      updateHistory(loadedWork);
+    }
   }
 
   /**
