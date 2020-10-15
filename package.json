@@ -20,7 +20,8 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
     "regenerator-runtime": "^0.13.5",
-    "semantic-ui-react": "^0.88.2"
+    "semantic-ui-react": "^0.88.2",
+    "node-forge": "0.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
