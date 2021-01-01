@@ -228,8 +228,14 @@ const ReadingMenuBar = ({
      */
     useEffect(() => {
       setTempReferenceValue(null);
-      preloadChapters();
     }, [referenceValue]);
+
+    /**
+     * Preload the pages when we get new data.
+     */
+    useEffect(() => {
+      preloadChapters();
+    }, [nextChapterDescriptor, previousChapterDescriptor]);
     
     /**
      * Handle key presses
