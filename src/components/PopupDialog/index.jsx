@@ -82,7 +82,7 @@ const PopupDialog = (props) => {
     width: '100%',
   };
 
-  // Get the main content for the popuo
+  // Get the main content for the popup
   const getContent = () => (
     <Segment className="popupDialog" inverted={inverted} style={getSegmentStyle()}>
       <div style={{ padding: 15 }}>
