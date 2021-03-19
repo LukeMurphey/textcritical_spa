@@ -3,6 +3,7 @@ import {
   Button, Header, Modal, Table,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import VersionInfo from '../../Version.json'
 
 class AboutDialog extends Component {
   static getInfoRow(title, description) {
@@ -44,7 +45,7 @@ class AboutDialog extends Component {
           </p>
           <Table basic="very" celled collapsing>
             <Table.Body>
-              {AboutDialog.getInfoRow('Version', '4.6.5')}
+              {AboutDialog.getInfoRow('Version', VersionInfo.version)}
               {AboutDialog.getInfoLinkRow(
                 'Sources of the works',
                 'https://lukemurphey.net/projects/ancient-text-reader/wiki/Content_Sources',
