@@ -8,6 +8,18 @@
   .underMenu {
     margin-top: 0;
   }
+
+  /**
+   * https://lukemurphey.net/issues/2878
+   * Set the font color to black so that the printed pages look correct. 
+   */
+  span,
+  div,
+  h1,
+  h2,
+  h3 {
+    color: #000 !important;
+  }
 }
 
 @media only screen {
