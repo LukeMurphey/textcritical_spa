@@ -11,7 +11,7 @@ import './Chapter.scss';
  * render() is going to parse some HTML it gets from the server and then present it.
  * The reason is that the works are persisted in a preformatted state in order to improve
  * performance. The alternative is to parse the XML on the client-side and process it into
- * HTML. This would mean that the content could not be cached. Right now, the server preprocesses
+ * HTML. This would mean that the content could not be cached. Right now, the server pre-processes
  * the content into HTML chunks and then caches so that it can be loaded quickly.
  */
 class Chapter extends Component {
