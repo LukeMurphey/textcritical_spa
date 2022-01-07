@@ -386,7 +386,7 @@ const Reader = ({
    * Go to the next chapter.
    */
   const goToNextChapter = () => {
-    if (data.next_chapter) {
+    if (data && data.next_chapter) {
       navigateToChapter(loadedWork, secondWork, data.next_chapter.full_descriptor);
     }
   }
@@ -395,7 +395,7 @@ const Reader = ({
    * Go to the prior chapter.
    */
   const goToPriorChapter = () => {
-    if (data.previous_chapter) {
+    if (data && data.previous_chapter) {
       navigateToChapter(loadedWork, secondWork, data.previous_chapter.full_descriptor);
     }
   }
@@ -686,8 +686,8 @@ const Reader = ({
         hasPriorChapter={!loading && data && data.previous_chapter !== null}
         nextChapterDescriptor={data && data.previous_chapter && data.previous_chapter.full_descriptor}
         previousChapterDescriptor={data && data.next_chapter && data.next_chapter.full_descriptor}
-        decreaseFontSize={!loading && data && (() => decreaseFontSize())}
-        increaseFontSize={!loading && data && (() => increaseFontSize())}
+        decreaseFontSize={(!loading && data) ? (() => decreaseFontSize()) : null}
+        increaseFontSize={(!loading && data) ? (() => increaseFontSize()) : null}
         increaseFontSizeDisabled={fontSizeAdjustment >= MAX_FONT_SIZE_ADJUSTMENT}
         decreaseFontSizeDisabled={fontSizeAdjustment <= 0}
       />
