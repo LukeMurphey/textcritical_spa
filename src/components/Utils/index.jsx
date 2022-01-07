@@ -7,12 +7,13 @@ export function truncate(str, maxLength) {
 }
 
 export function addHandler(handler, type = 'click') {
-  window.addEventListener(type, (event) => handler(event));
+  window.addEventListener(type, handler);
 }
 
 export function removeHandler(handler, type = 'click') {
   window.removeEventListener(type, handler);
 }
+
 export function getAbsolutePosition(element) {
   const r = { x: element.offsetLeft, y: element.offsetTop };
   if (element.offsetParent) {
