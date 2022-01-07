@@ -766,6 +766,7 @@ const Reader = ({
                         onClickAway={() => setModal(null)}
                         highlightedVerse={highlightedVerse}
                         inverted={inverted}
+                        fontSizeAdjustment={fontSizeAdjustment}
                       />
                     </Grid.Column>
                     <Grid.Column>
@@ -783,6 +784,7 @@ const Reader = ({
                           highlightedVerse={highlightedVerse}
                           inverted={inverted}
                           verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
+                          fontSizeAdjustment={fontSizeAdjustment}
                         />
                       )}
                       {secondWorkData && secondWorkChapterNotFound && <WarningMessages inverted={inverted} warnings={[['Chapter not found', `The given chapter does not exist in ${secondWorkTitle}`]]} />}
