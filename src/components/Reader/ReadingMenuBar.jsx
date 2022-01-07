@@ -254,7 +254,7 @@ const ReadingMenuBar = ({
       }
     };
 
-    // Wire-up the handlers
+    // Wire-up the handlers for the key presses
     const handler = (event) => upHandler(event);
     useEffect(() => {
       addHandler(handler, 'keyup');
