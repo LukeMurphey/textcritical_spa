@@ -109,6 +109,7 @@ const Reader = ({
 
   const [loadedWork, setLoadedWork] = useState(null);
   const [highlightedVerse, setHighlightedVerse] = useState(null);
+  const [highlightedWords, setHighlightedWords] = useState(['καὶ']);
   const [selectedWord, setSelectedWord] = useState(null);
   const [popupX, setPopupX] = useState(null);
   const [popupY, setPopupY] = useState(null);
@@ -749,6 +750,8 @@ const Reader = ({
                   highlightedVerse={highlightedVerse}
                   inverted={inverted}
                   fontSizeAdjustment={fontSizeAdjustment}
+                  highlightedWords={highlightedWords}
+                  onWordHover={word => {setHighlightedWords([word])}}
                 />
               )}
 
@@ -767,6 +770,8 @@ const Reader = ({
                         highlightedVerse={highlightedVerse}
                         inverted={inverted}
                         fontSizeAdjustment={fontSizeAdjustment}
+                        highlightedWords={highlightedWords}
+                        onWordHover={word => {setHighlightedWords([word])}}
                       />
                     </Grid.Column>
                     <Grid.Column>
@@ -785,6 +790,8 @@ const Reader = ({
                           inverted={inverted}
                           verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
                           fontSizeAdjustment={fontSizeAdjustment}
+                          highlightedWords={highlightedWords}
+                          onWordHover={word => {setHighlightedWords([word])}}
                         />
                       )}
                       {secondWorkData && secondWorkChapterNotFound && <WarningMessages inverted={inverted} warnings={[['Chapter not found', `The given chapter does not exist in ${secondWorkTitle}`]]} />}

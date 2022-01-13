@@ -21,6 +21,7 @@ class Chapter extends Component {
     // We need to track the event listener with the bind call so that it can be removed
     // See https://dev.to/em4nl/function-identity-in-javascript-or-how-to-remove-event-listeners-properly-1ll3
     this.clickListener = null;
+    this.hoverListener = null;
 
     // We need to track when a verse was selected for highlight
     this.highlightOverridden = false;
@@ -32,6 +33,9 @@ class Chapter extends Component {
   componentDidMount() {
     this.clickListener = (event) => this.handleClick(event);
     this.addHandler(this.clickListener);
+
+    this.hoverListener = (event) => this.handleHover(event);
+    this.addHandler(this.hoverListener, 'mousemove');
   }
 
   /**
@@ -39,6 +43,7 @@ class Chapter extends Component {
    */
   componentWillUnmount() {
     this.removeHandler(this.clickListener);
+    this.removeHandler(this.hoverListener, 'mousemove');
   }
 
   /**
@@ -82,12 +87,29 @@ class Chapter extends Component {
    * @param {string} className The class name to put the content under
    */
   getChapterContent(className) {
-    const { content, highlightedVerse, verseIdentifierPrefix, fontSizeAdjustment } = this.props;
+    const { content, highlightedVerse, verseIdentifierPrefix, fontSizeAdjustment, highlightedWords } = this.props;
 
     // These options will process the nodes such that the node gets a tag indicating that it is
     // highlighted
     const options = {
       replace: ({ attribs, children }) => {
+        // Handle highlighted words
+        if (attribs && attribs.class === 'word' && highlightedWords && children.length > 0 && children[0].type === 'text') {
+          // Get the value of the word
+          const wordText = children[0].data;
+
+          // Add the highlight tag if we have a match
+          if(highlightedWords.includes(wordText)) {
+            return (
+              <span
+                className="word highlighted"
+              >
+                {domToReact(children, options)}
+              </span>
+            );
+          }
+        }
+
         // Stop if this isn't a verse
         if (!attribs || !('data-verse' in attribs)) return undefined;
 
@@ -105,6 +127,12 @@ class Chapter extends Component {
             {domToReact(children, options)}
           </a>
         );
+      },
+      condition: (node) => node.className.toLowerCase() === 'word',
+      modify: (node) => {
+        // eslint-disable-next-line no-param-reassign
+        node.className += ' highlighted';
+        return node;
       },
     };
 
@@ -268,6 +296,21 @@ class Chapter extends Component {
     }
   }
 
+  /**
+   * Handle the case where the user has hovered over a word.
+   * @param {*} event 
+   */
+  handleHover(event) {
+    const { onWordHover } = this.props;
+
+    if (event.target.className.includes('word')) {
+      onWordHover(event.target.innerText);
+    }
+    else {
+      onWordHover(null);
+    }
+  }
+
   render() {
     const { inverted } = this.props;
 
@@ -292,10 +335,12 @@ class Chapter extends Component {
 Chapter.propTypes = {
   content: PropTypes.string.isRequired,
   highlightedVerse: PropTypes.string,
+  highlightedWords: PropTypes.arrayOf(PropTypes.string),
   onVerseClick: PropTypes.func,
   onWordClick: PropTypes.func,
   onClickAway: PropTypes.func,
   onNoteClick: PropTypes.func,
+  onWordHover: PropTypes.func,
   inverted: PropTypes.bool,
   verseIdentifierPrefix: PropTypes.string,
   fontSizeAdjustment: PropTypes.number,
@@ -303,10 +348,12 @@ Chapter.propTypes = {
 
 Chapter.defaultProps = {
   highlightedVerse: null,
+  highlightedWords: null,
   onVerseClick: () => { },
   onWordClick: () => { },
   onClickAway: () => { },
   onNoteClick: () => { },
+  onWordHover: () => { },
   inverted: false,
   verseIdentifierPrefix: '',
   fontSizeAdjustment: 0,
