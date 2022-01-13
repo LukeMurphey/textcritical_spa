@@ -20,6 +20,13 @@
   h3 {
     color: #000 !important;
   }
+
+  /**
+   * This makes sure that the entire content is visible; otherwise, only the first page appears
+   */
+  div {
+    overflow: visible !important;
+  }
 }
 
 @media only screen {
