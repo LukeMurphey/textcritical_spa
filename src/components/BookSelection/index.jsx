@@ -152,6 +152,9 @@ class BookSelection extends Component {
     return works;
   }
 
+  /**
+   * Load the list of works from the server.
+   */
   loadInfo() {
     fetch(ENDPOINT_WORKS_LISTS())
       .then((res) => res.json())
