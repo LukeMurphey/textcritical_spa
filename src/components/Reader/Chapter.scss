@@ -88,8 +88,17 @@
   color: white;
 }
 
+/*
 .word.highlighted {
   background-color: #49afcd;
+}
+*/
+
+// Highlights
+@for $i from 0 through 50 {
+  .highlight#{$i} {
+    background-color: random_pastel(40, 150);
+  }
 }
 
 .word.searched {

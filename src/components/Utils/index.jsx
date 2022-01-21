@@ -41,3 +41,16 @@ export function scrollToTarget(id){
     elmnt.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
   }
 }
+
+export function indexOfNoDiacritic(array, word){
+  const comparer = str1 => {
+    if(str1) {
+      // Note: zero means they are equivalent
+      return str1.localeCompare(word, undefined, { sensitivity: 'base' }) === 0;
+    }
+    return false;
+  };
+
+  // const comparer = str1 => str1 === word;
+  return array.findIndex(comparer);
+}

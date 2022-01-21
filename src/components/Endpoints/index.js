@@ -55,6 +55,10 @@ export function ENDPOINT_WORD_PARSE(word) {
   return `${getHostConfig()}/api/word_parse/${word}`;
 }
 
+export function ENDPOINT_WORD_FORMS(word) {
+  return `${getHostConfig()}/api/word_forms/${word}`;
+}
+
 export function ENDPOINT_WORKS_LISTS() {
   return `${getHostConfig()}/api/works`;
 }

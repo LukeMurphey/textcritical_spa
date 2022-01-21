@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
-import { ENDPOINT_READ_WORK } from "../Endpoints";
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
+import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS } from "../Endpoints";
 import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
@@ -42,6 +43,12 @@ const SidebarStyle = {
   height: "calc(100vh - 60px)",
   marginTop: 0,
 };
+
+const getWordFormsDebounced = AwesomeDebouncePromise(
+  (word) =>
+  fetch(ENDPOINT_WORD_FORMS(word)),
+  500
+);
 
 /**
  * Scroll to the given verse
@@ -90,7 +97,8 @@ const Reader = ({
   inverted,
   location,
   history,
-  match
+  match,
+  highlightRelatedForms
 }) => {
 
   const [modal, setModal] = useState(null);
@@ -547,6 +555,26 @@ const Reader = ({
       });
   }
 
+  const onWordHover = word => {
+    if(highlightRelatedForms) {
+      getWordFormsDebounced(word)
+      .then((res) => res.json())
+      .then(wordData => {
+        if(wordData.forms.length > 1){
+          // Add in the word we searched for just in case
+          const wordsList = wordData.forms.slice();
+          wordsList.splice(0, 0, word);
+
+          // Light them up
+          setHighlightedWords(wordsList);
+        }
+        
+      });
+    }
+
+    setHighlightedWords([word])
+  }
+
   const previousPathname = useRef();
 
   useEffect(() => {
@@ -751,7 +779,7 @@ const Reader = ({
                   inverted={inverted}
                   fontSizeAdjustment={fontSizeAdjustment}
                   highlightedWords={highlightedWords}
-                  onWordHover={word => {setHighlightedWords([word])}}
+                  onWordHover={word => {onWordHover(word)}}
                 />
               )}
 
@@ -771,7 +799,7 @@ const Reader = ({
                         inverted={inverted}
                         fontSizeAdjustment={fontSizeAdjustment}
                         highlightedWords={highlightedWords}
-                        onWordHover={word => {setHighlightedWords([word])}}
+                        onWordHover={word => {onWordHover(word)}}
                       />
                     </Grid.Column>
                     <Grid.Column>
@@ -791,7 +819,7 @@ const Reader = ({
                           verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
                           fontSizeAdjustment={fontSizeAdjustment}
                           highlightedWords={highlightedWords}
-                          onWordHover={word => {setHighlightedWords([word])}}
+                          onWordHover={word => {onWordHover(word)}}
                         />
                       )}
                       {secondWorkData && secondWorkChapterNotFound && <WarningMessages inverted={inverted} warnings={[['Chapter not found', `The given chapter does not exist in ${secondWorkTitle}`]]} />}
@@ -841,10 +869,12 @@ Reader.propTypes = {
   history: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   match: PropTypes.object.isRequired,
+  highlightRelatedForms: PropTypes.bool,
 };
 
 Reader.defaultProps = {
   inverted: false,
+  highlightRelatedForms: true,
 };
 
 export default withRouter(Reader);
