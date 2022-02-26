@@ -7,7 +7,7 @@ const localEndpoint = {
   secure: false,
 };
 
-// Use this endpoint if you are connecting to the publicly deplyed version of TextCritical
+// Use this endpoint if you are connecting to the publicly deployed version of TextCritical
 const remoteEndpoint = {
   target: 'https://textcritical.net:443',
   secure: true,
