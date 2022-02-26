@@ -4,7 +4,9 @@ A React-based SPA (single page application that serves as the frontend for TextC
 
 # How do I run this?
 
-You can run the front-end code using `yarn start`. However, this will not run the backend endpoints necessary for the app to run.To get a running version of the app, you will need to do one of the following:
+Run `yarn install` to get the frontend ready to be executed.
+
+You can run the front-end code using `yarn start`. However, this will not run the backend endpoints necessary for the app to run. To get a running version of the app, you will need to do one of the following:
 
 ## Run TextCritical's Server locally
 
