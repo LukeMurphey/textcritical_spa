@@ -88,16 +88,39 @@
   color: white;
 }
 
-/*
-.word.highlighted {
-  background-color: #49afcd;
-}
-*/
 
-// Highlights
-@for $i from 0 through 50 {
-  .highlight#{$i} {
-    background-color: random_pastel(40, 150);
+$blue: #49afcd;
+$green: #49cd5f;
+$yellow: #cdcb49;
+$orange: #cd7e49;
+$purple: #c949cd;
+$red: #cd4949;
+
+// This will highlight the word that is hovered over
+.highlight0{
+  background-color: $blue;
+}
+
+// This highlights the related words
+@for $i from 0 through 10 {
+  .highlight#{$i * 5 + 1} {
+    background-color: $red;
+  }
+
+  .highlight#{$i * 5 + 2} {
+    background-color: $green;
+  }
+
+  .highlight#{$i * 5 + 3} {
+    background-color: $yellow;
+  }
+
+  .highlight#{$i * 5 + 4} {
+    background-color: $orange;
+  }
+
+  .highlight#{$i * 5 + 5} {
+    background-color: $purple;
   }
 }
 
