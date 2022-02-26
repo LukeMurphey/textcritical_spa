@@ -2,7 +2,7 @@ import React, { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
 import parse, { domToReact } from 'html-react-parser';
 import { getPositionRecommendation } from '../PopupDialog';
-import { getAbsolutePosition } from '../Utils';
+import { getAbsolutePosition, indexOfNoDiacritic } from '../Utils';
 import './Chapter.scss';
 
 /**
@@ -98,11 +98,14 @@ class Chapter extends Component {
           // Get the value of the word
           const wordText = children[0].data;
 
+          // Get the index of the highlighted word
+          const highlightIndex = indexOfNoDiacritic(highlightedWords, wordText);
+
           // Add the highlight tag if we have a match
-          if(highlightedWords.includes(wordText)) {
+          if(highlightIndex >= 0) {
             return (
               <span
-                className="word highlighted"
+                className={`word highlighted highlight${highlightIndex}`}
               >
                 {domToReact(children, options)}
               </span>
