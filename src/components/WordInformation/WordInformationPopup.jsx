@@ -6,7 +6,7 @@ import ExternalLookupLinks from './ExternalLookupLinks';
 
 const WordInformationDialog = (props) => {
   const {
-    word, onClose, x, y, positionBelow, positionRight, inverted, work,
+    word, onClose, x, y, positionBelow, positionRight, inverted, work, searchState,
   } = props;
 
   return (
@@ -19,7 +19,7 @@ const WordInformationDialog = (props) => {
       positionRight={positionRight}
       footer={<ExternalLookupLinks word={word} />}
     >
-      <WordInformation work={work} word={word} inverted={inverted} />
+      <WordInformation work={work} word={word} inverted={inverted} searchState={searchState} />
     </PopupDialog>
   );
 };
@@ -33,6 +33,8 @@ WordInformationDialog.propTypes = {
   positionRight: PropTypes.bool,
   inverted: PropTypes.bool,
   work: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
+  searchState: PropTypes.object,
 };
 
 WordInformationDialog.defaultProps = {
@@ -40,6 +42,7 @@ WordInformationDialog.defaultProps = {
   positionRight: true,
   inverted: true,
   work: null,
+  searchState: null,
 };
 
 export default WordInformationDialog;

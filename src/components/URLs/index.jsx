@@ -2,25 +2,28 @@
  * This page provides helper functions for creating URLs for the website.
  */
 
+import { BASE_PATH_START_PAGE, BASE_PATH_BETA_CODE_CONVERT, BASE_PATH_READ_WORK, BASE_PATH_SEARCH, BASE_PATH_GOOGLE_SEARCH, BASE_PATH_PERSEUS_WORD_LOOKUP, BASE_PATH_LOGEION_WORD_LOOKUP } from "./BasePaths";
+import { PARAMS_SEARCH, PARAMS_GOOGLE_SEARCH, PARAMS_PERSEUS_WORD_LOOKUP, PARAMS_READ_WORK } from "./Parameters";
+
 export function START_PAGE() {
-  return '/';
+  return BASE_PATH_START_PAGE;
 }
 
 export function BETA_CODE_CONVERT() {
-  return '/beta_code_converter';
+  return BASE_PATH_BETA_CODE_CONVERT;
 }
 
-export function READ_WORK(work = '', ...divisions) {
+export function READ_WORK(work = '', secondWork = null, ...divisions) {
   let divisionReference = '';
 
   const divisionsFiltered = divisions.filter((entry) => entry);
 
   if (divisions.length > 0 && work) {
     divisionReference = divisionsFiltered.join('/');
-    return `/work/${work}/${divisionReference}`;
+    return `${BASE_PATH_READ_WORK}/${work}/${divisionReference}${PARAMS_READ_WORK(secondWork)}`;
   }
 
-  return `/work/${work}`;
+  return `${BASE_PATH_READ_WORK}/${work}`;
 }
 
 export function SEARCH(
@@ -29,31 +32,17 @@ export function SEARCH(
   searchRelatedForms = false,
   page = '',
 ) {
-  let url = `/search?q=${q}`;
-
-  if (page) {
-    url += `&page=${page}`;
-  }
-
-  if (ignoreDiacritics) {
-    url += '&ignore_diacritics=1';
-  }
-
-  if (searchRelatedForms) {
-    url += '&include_related=1';
-  }
-
-  return url;
+  return `${BASE_PATH_SEARCH}${PARAMS_SEARCH(q, ignoreDiacritics, searchRelatedForms, page)}`;
 }
 
 export function GOOGLE_SEARCH(q = '') {
-  return `https://www.google.com/search?q=${q}`;
+  return `${BASE_PATH_GOOGLE_SEARCH}${PARAMS_GOOGLE_SEARCH(q)}`;
 }
 
 export function PERSEUS_WORD_LOOKUP(word = '') {
-  return `http://www.perseus.tufts.edu/hopper/morph?l=${word}&la=greek`;
+  return `${BASE_PATH_PERSEUS_WORD_LOOKUP}${PARAMS_PERSEUS_WORD_LOOKUP(word)}`;
 }
 
 export function LOGEION_WORD_LOOKUP(word = '') {
-  return `https://logeion.uchicago.edu/${word}`;
+  return `${BASE_PATH_LOGEION_WORD_LOOKUP}/${word}`;
 }

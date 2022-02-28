@@ -7,6 +7,7 @@ import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS } from "../Endpoints";
 import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
+import { PARAMS_READ_WORK } from "../URLs/Parameters";
 import { getPlaceholder, getDialogs, getPopups, MODAL_WORD, MODAL_FOOTNOTE }  from "./shortcuts";
 import { scrollToTarget } from '../Utils';
 import Chapter from "./Chapter";
@@ -234,7 +235,7 @@ const Reader = ({
     const parallelWork = getSecondWorkParameter(location);
 
     // Get the URL
-    const workUrl = READ_WORK(work, ...newDivisions);
+    const workUrl = READ_WORK(work, null, ...newDivisions);
 
     // Determine if the URL is already set
     // Note that we need to check redirectedFrom because the URL might not match because we were
@@ -247,7 +248,7 @@ const Reader = ({
     if (newSecondWork) {
       history.push({
         pathname: workUrl,
-        search: `?parallel=${newSecondWork}`
+        search: PARAMS_READ_WORK(newSecondWork)
       })
     } else {
       history.push(workUrl);
@@ -321,7 +322,7 @@ const Reader = ({
 
       history.push({
         pathname: location.pathname,
-        search: `?parallel=${work}`
+        search: PARAMS_READ_WORK(work)
       })
     } else {
       // Drop the second work since this one is not related
@@ -366,7 +367,7 @@ const Reader = ({
     
     // Add the parallel work
     if (secondWork) {
-      history.push(`${href}?parallel=${secondWork}`);
+      history.push(`${href}${PARAMS_READ_WORK(secondWork)}`);
     } else {
       history.push(href);
     }
@@ -511,8 +512,8 @@ const Reader = ({
 
           // If the work alias didn't match, then update the URL accordingly
           if (updatedData.work.title_slug !== work) {
-            newRedirectedFrom = READ_WORK(work, ...newDivisions);
-            newRedirectedTo = READ_WORK(updatedData.work.title_slug, ...newDivisions);
+            newRedirectedFrom = READ_WORK(work, null, ...newDivisions);
+            newRedirectedTo = READ_WORK(updatedData.work.title_slug, null, ...newDivisions);
           }
 
           setLoadedWork(updatedData.work.title_slug);
@@ -696,8 +697,8 @@ const Reader = ({
       <div
         className="buffer"
         style={{
-          'height': 54,
-          'width': '100%',
+          height: 54,
+          width: "100%",
         }}
       />
       <ReadingMenuBar
@@ -709,141 +710,245 @@ const Reader = ({
         onSelectWork={(work) => onSelectWork(work)}
         setBookSelectionOpen={(b) => setBookSelectionOpen(b)}
         bookSelectionOpen={bookSelectionOpen}
-        goToReference={(newWork, newReferenceValue, referenceInfo) => goToReference(newWork, newReferenceValue, referenceInfo)}
+        goToReference={(newWork, newReferenceValue, referenceInfo) =>
+          goToReference(newWork, newReferenceValue, referenceInfo)}
         openAboutModal={() => setModal("about")}
         goToPriorChapter={loading ? null : () => goToPriorChapter()}
         goToNextChapter={loading ? null : () => goToNextChapter()}
         referenceValue={referenceDescription}
         hasNextChapter={!loading && data && data.next_chapter !== null}
         hasPriorChapter={!loading && data && data.previous_chapter !== null}
-        nextChapterDescriptor={data && data.previous_chapter && data.previous_chapter.full_descriptor}
-        previousChapterDescriptor={data && data.next_chapter && data.next_chapter.full_descriptor}
-        decreaseFontSize={(!loading && data) ? (() => decreaseFontSize()) : null}
-        increaseFontSize={(!loading && data) ? (() => increaseFontSize()) : null}
-        increaseFontSizeDisabled={fontSizeAdjustment >= MAX_FONT_SIZE_ADJUSTMENT}
+        nextChapterDescriptor={
+          data && data.previous_chapter && data.previous_chapter.full_descriptor
+        }
+        previousChapterDescriptor={
+          data && data.next_chapter && data.next_chapter.full_descriptor
+        }
+        decreaseFontSize={!loading && data ? () => decreaseFontSize() : null}
+        increaseFontSize={!loading && data ? () => increaseFontSize() : null}
+        increaseFontSizeDisabled={
+          fontSizeAdjustment >= MAX_FONT_SIZE_ADJUSTMENT
+        }
         decreaseFontSizeDisabled={fontSizeAdjustment <= 0}
       />
       {mode === MODE_DONE && (
-      <>
-        <BookSidebar
-          sidebarVisible={sidebarVisible}
-          work={loadedWork}
-          openWorkInfoModal={() => setModal("aboutWork")}
-          openDownloadModal={() => setModal("downloadWork")}
-          openSearch={() => openSearch(loadedWork, secondWork, divisions, history)}
-          setSidebarVisible={() => setSidebarVisible()}
-        />
-        <Sidebar.Pushable
-          as={Segment}
-          basic
-          style={SidebarStyle}
-          className={`${classNameSuffix}`}
-        >
-          <Sidebar.Pusher>
-            <Container className={`underMenu ${classNameSuffix}`}>
-              {getDialogs(modal, data, loading, loadedWork, () => setModal(null))}
-              {getPopups(modal, data, loading, selectedWord, popupX, popupY, popupPositionRight, popupPositionBelow, selectedNote, popupWork, () => setModal(null), inverted)}
-              <Grid inverted={inverted}>
-                <Grid.Row>
-                  <Grid.Column width={8}>
-                    <ChapterHeader inverted={inverted} data={data} onChangeChapter={(event, info) => changeChapter(event, info)} />
-                  </Grid.Column>
-                  <Grid.Column width={8}>
-                    <Container textAlign="right">
-                      <Header inverted={inverted} floated="right" as="h3">
-                        {data.work.title}
-                        {secondWork && secondWorkTitle && (
-                          <>
-                            {' / '}
-                            {secondWorkTitle}
-                            <Icon title={`Close ${secondWorkTitle}`} size='mini' style={{cursor: 'pointer', fontSize: 13, paddingLeft: 8}} inverted={inverted} name='close' onClick={() => closeSecondWork()} />
-                          </>
-                        )}
-                      </Header>
-                    </Container>
-                  </Grid.Column>
-                </Grid.Row>
-              </Grid>
-              <div style={{ marginTop: 6 }} />
-              {data && <WarningMessages warnings={data.warnings} />}
-              {redirectedFrom && <StaleURLMessage inverted={inverted} />}
-              <BookProgress data={data} />
-
-              {!secondWork && (
-                <Chapter
-                  chapter={data.chapter}
-                  content={data.content}
-                  work={data.work}
-                  onVerseClick={onVerseClick}
-                  onWordClick={(word, x, y, positionRight, positionBelow) => {
-                    onWordClick(word, x, y, positionRight, positionBelow, loadedWork);
-                  }}
-                  onNoteClick={onNoteClick}
-                  onClickAway={() => setModal(null)}
-                  highlightedVerse={highlightedVerse}
-                  inverted={inverted}
-                  fontSizeAdjustment={fontSizeAdjustment}
-                  highlightedWords={highlightedWords}
-                  onWordHover={word => {onWordHover(word)}}
-                />
-              )}
-
-              {secondWork && (
-                <Grid divided='vertically'>
-                  <Grid.Row columns={2}>
-                    <Grid.Column>
-                      <Chapter
-                        chapter={data.chapter}
-                        content={data.content}
-                        work={data.work}
-                        onVerseClick={onVerseClick}
-                        onWordClick={(word, x, y, positionRight, positionBelow) => {
-                          onWordClick(word, x, y, positionRight, positionBelow, loadedWork);
-                        }}
-                        onNoteClick={onNoteClick}
-                        onClickAway={() => setModal(null)}
-                        highlightedVerse={highlightedVerse}
+        <>
+          <BookSidebar
+            sidebarVisible={sidebarVisible}
+            work={loadedWork}
+            openWorkInfoModal={() => setModal("aboutWork")}
+            openDownloadModal={() => setModal("downloadWork")}
+            openSearch={() =>
+              openSearch(loadedWork, secondWork, divisions, history)}
+            setSidebarVisible={() => setSidebarVisible()}
+          />
+          <Sidebar.Pushable
+            as={Segment}
+            basic
+            style={SidebarStyle}
+            className={`${classNameSuffix}`}
+          >
+            <Sidebar.Pusher>
+              <Container className={`underMenu ${classNameSuffix}`}>
+                {getDialogs(modal, data, loading, loadedWork, () =>
+                  setModal(null)
+                )}
+                {getPopups(
+                  modal,
+                  data,
+                  loading,
+                  selectedWord,
+                  popupX,
+                  popupY,
+                  popupPositionRight,
+                  popupPositionBelow,
+                  selectedNote,
+                  popupWork,
+                  () => setModal(null),
+                  {
+                    work: loadedWork,
+                    secondWork,
+                    divisions,
+                  },
+                  inverted
+                )}
+                <Grid inverted={inverted}>
+                  <Grid.Row>
+                    <Grid.Column width={8}>
+                      <ChapterHeader
                         inverted={inverted}
-                        fontSizeAdjustment={fontSizeAdjustment}
-                        highlightedWords={highlightedWords}
-                        onWordHover={word => {onWordHover(word)}}
+                        data={data}
+                        onChangeChapter={(event, info) => changeChapter(event, info)}
                       />
                     </Grid.Column>
-                    <Grid.Column>
-                      {secondWorkData && !secondWorkChapterNotFound && (
+                    <Grid.Column width={8}>
+                      <Container textAlign="right">
+                        <Header inverted={inverted} floated="right" as="h3">
+                          {data.work.title}
+                          {secondWork && secondWorkTitle && (
+                            <>
+                              {" / "}
+                              {secondWorkTitle}
+                              <Icon
+                                title={`Close ${secondWorkTitle}`}
+                                size="mini"
+                                style={{
+                                  cursor: "pointer",
+                                  fontSize: 13,
+                                  paddingLeft: 8,
+                                }}
+                                inverted={inverted}
+                                name="close"
+                                onClick={() => closeSecondWork()}
+                              />
+                            </>
+                          )}
+                        </Header>
+                      </Container>
+                    </Grid.Column>
+                  </Grid.Row>
+                </Grid>
+                <div style={{ marginTop: 6 }} />
+                {data && <WarningMessages warnings={data.warnings} />}
+                {redirectedFrom && <StaleURLMessage inverted={inverted} />}
+                <BookProgress data={data} />
+
+                {!secondWork && (
+                  <Chapter
+                    chapter={data.chapter}
+                    content={data.content}
+                    work={data.work}
+                    onVerseClick={onVerseClick}
+                    onWordClick={(word, x, y, positionRight, positionBelow) => {
+                      onWordClick(
+                        word,
+                        x,
+                        y,
+                        positionRight,
+                        positionBelow,
+                        loadedWork
+                      );
+                    }}
+                    onNoteClick={onNoteClick}
+                    onClickAway={() => setModal(null)}
+                    highlightedVerse={highlightedVerse}
+                    inverted={inverted}
+                    fontSizeAdjustment={fontSizeAdjustment}
+                    highlightedWords={highlightedWords}
+                    onWordHover={(word) => {
+                      onWordHover(word);
+                    }}
+                  />
+                )}
+
+                {secondWork && (
+                  <Grid divided="vertically">
+                    <Grid.Row columns={2}>
+                      <Grid.Column>
                         <Chapter
-                          chapter={secondWorkData.chapter}
-                          content={secondWorkData.content}
-                          work={secondWorkData.work}
-                          onVerseClick={(verseDescriptor, verse, id, href) => onVerseClickSecondWork(verseDescriptor, verse, id, href)}
-                          onWordClick={(word, x, y, positionRight, positionBelow) => {
-                            onWordClick(word, x, y, positionRight, positionBelow, secondWork);
+                          chapter={data.chapter}
+                          content={data.content}
+                          work={data.work}
+                          onVerseClick={onVerseClick}
+                          onWordClick={(
+                            word,
+                            x,
+                            y,
+                            positionRight,
+                            positionBelow
+                          ) => {
+                            onWordClick(
+                              word,
+                              x,
+                              y,
+                              positionRight,
+                              positionBelow,
+                              loadedWork
+                            );
                           }}
                           onNoteClick={onNoteClick}
                           onClickAway={() => setModal(null)}
                           highlightedVerse={highlightedVerse}
                           inverted={inverted}
-                          verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
                           fontSizeAdjustment={fontSizeAdjustment}
                           highlightedWords={highlightedWords}
-                          onWordHover={word => {onWordHover(word)}}
+                          onWordHover={(word) => {
+                            onWordHover(word);
+                          }}
                         />
-                      )}
-                      {secondWorkData && secondWorkChapterNotFound && <WarningMessages inverted={inverted} warnings={[['Chapter not found', `The given chapter does not exist in ${secondWorkTitle}`]]} />}
-                      {!secondWorkData && !secondWorkChapterNotFound && getPlaceholder(inverted)}
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-
-              )}
-            </Container>
-          </Sidebar.Pusher>
-        </Sidebar.Pushable>
-      </>
+                      </Grid.Column>
+                      <Grid.Column>
+                        {secondWorkData && !secondWorkChapterNotFound && (
+                          <Chapter
+                            chapter={secondWorkData.chapter}
+                            content={secondWorkData.content}
+                            work={secondWorkData.work}
+                            onVerseClick={(verseDescriptor, verse, id, href) =>
+                              onVerseClickSecondWork(
+                                verseDescriptor,
+                                verse,
+                                id,
+                                href
+                              )}
+                            onWordClick={(
+                              word,
+                              x,
+                              y,
+                              positionRight,
+                              positionBelow
+                            ) => {
+                              onWordClick(
+                                word,
+                                x,
+                                y,
+                                positionRight,
+                                positionBelow,
+                                secondWork
+                              );
+                            }}
+                            onNoteClick={onNoteClick}
+                            onClickAway={() => setModal(null)}
+                            highlightedVerse={highlightedVerse}
+                            inverted={inverted}
+                            verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
+                            fontSizeAdjustment={fontSizeAdjustment}
+                            highlightedWords={highlightedWords}
+                            onWordHover={(word) => {
+                              onWordHover(word);
+                            }}
+                          />
+                        )}
+                        {secondWorkData && secondWorkChapterNotFound && (
+                          <WarningMessages
+                            inverted={inverted}
+                            warnings={[
+                              [
+                                "Chapter not found",
+                                `The given chapter does not exist in ${secondWorkTitle}`,
+                              ],
+                            ]}
+                          />
+                        )}
+                        {!secondWorkData &&
+                          !secondWorkChapterNotFound &&
+                          getPlaceholder(inverted)}
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
+                )}
+              </Container>
+            </Sidebar.Pusher>
+          </Sidebar.Pushable>
+        </>
       )}
       {mode === MODE_ERROR && (
         <Container style={ContainerStyle} className={`${classNameSuffix}`}>
-          <ErrorMessage inverted={inverted} title={errorTitle} description={errorDescription} message={errorMessage} />
+          <ErrorMessage
+            inverted={inverted}
+            title={errorTitle}
+            description={errorDescription}
+            message={errorMessage}
+          />
         </Container>
       )}
       {mode === MODE_LOADING && (

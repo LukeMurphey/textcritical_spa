@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { ENDPOINT_WORD_PARSE } from '../Endpoints';
 import { SEARCH } from '../URLs';
+import { PARAMS_SEARCH } from '../URLs/Parameters';
 import ErrorMessage from '../ErrorMessage';
 import WordLemma from './WordLemma';
 
@@ -22,7 +23,7 @@ class WordInformation extends Component {
     };
   }
 
-  static getSearchLinks(word, work) {
+  static getSearchLinks(word, work, state = null) {
     if (work) {
       return (
         <>
@@ -32,7 +33,14 @@ class WordInformation extends Component {
           {' '}
           in
           {' '}
-          <Link to={SEARCH(`work:${work} ${word}`)}>this work</Link>
+          <Link to={{
+            pathname: SEARCH(),
+            search: PARAMS_SEARCH(`work:${work} ${word}`),
+            state,
+            }}
+          >
+            this work
+          </Link>
           {' '}
           or
           {' '}
@@ -96,7 +104,7 @@ class WordInformation extends Component {
   }
 
   render() {
-    const { word, inverted, work } = this.props;
+    const { word, inverted, work, searchState } = this.props;
     const {
       wordInfo, loading, error, activeIndex,
     } = this.state;
@@ -162,7 +170,7 @@ class WordInformation extends Component {
               ))}
             </Accordion>
             <div style={{ marginTop: 12 }}>
-              {WordInformation.getSearchLinks(word, work)}
+              {WordInformation.getSearchLinks(word, work, searchState)}
             </div>
           </div>
         )}
@@ -195,11 +203,14 @@ WordInformation.propTypes = {
   word: PropTypes.string.isRequired,
   work: PropTypes.string,
   inverted: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  searchState: PropTypes.object,
 };
 
 WordInformation.defaultProps = {
   inverted: false,
   work: null,
+  searchState: null,
 };
 
 export default WordInformation;

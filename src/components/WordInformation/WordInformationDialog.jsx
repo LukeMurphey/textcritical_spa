@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import WordInformation from '.';
 
 const WordInformationDialog = (props) => {
-  const { word, onClose } = props;
+  const { word, onClose, searchState } = props;
   return (
     <Modal defaultOpen onClose={onClose}>
       <Modal.Header>{word}</Modal.Header>
@@ -14,7 +14,7 @@ const WordInformationDialog = (props) => {
             Information on
             {word}
           </Header>
-          <WordInformation word={word} />
+          <WordInformation word={word} searchState={searchState} />
         </Modal.Description>
       </Modal.Content>
       <Modal.Actions>
@@ -27,6 +27,12 @@ const WordInformationDialog = (props) => {
 WordInformationDialog.propTypes = {
   word: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  searchState: PropTypes.object,
+};
+
+WordInformationDialog.defaultProps = {
+  searchState: null,
 };
 
 export default WordInformationDialog;

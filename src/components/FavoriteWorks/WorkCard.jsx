@@ -39,7 +39,7 @@ const WorkCard = ({
 
   const onLoadWork = () => {
     // Get the URL
-    const workUrl = READ_WORK(work, ...divisions);
+    const workUrl = READ_WORK(work, null, ...divisions);
     history.push(workUrl);
   };
 

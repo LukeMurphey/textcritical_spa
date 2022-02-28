@@ -10,7 +10,7 @@ import FullscreenDialog from '../FullscreenDialog';
 const About = ({ inverted, history }) => {
   const onClickBack = () => {
     history.push(READ_WORK());
-  };
+  };  
 
   return (
     <FullscreenDialog inverted={inverted} onClickBack={onClickBack} backTitle="Back to the Library">

@@ -213,7 +213,7 @@ function Search({ inverted, history, location }) {
 
     // Remember what the history state was so that we can link back to the reading page
     if (!linkBackURL && location.state && location.state.work) {
-      setLinkBackURL(READ_WORK(location.state.work, ...location.state.divisions));
+      setLinkBackURL(READ_WORK(location.state.work, null, ...location.state.divisions));
     }
   });
 

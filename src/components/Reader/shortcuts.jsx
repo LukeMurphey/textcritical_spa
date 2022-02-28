@@ -167,7 +167,8 @@ export function getPopups(modal,
   selectedNote,
   loadedWork,
   closeModal,
-  inverted) {
+  searchState,
+  inverted,) {
 
   return (
     <>
@@ -181,6 +182,7 @@ export function getPopups(modal,
           word={selectedWord}
           work={loadedWork}
           onClose={() => closeModal()}
+          searchState={searchState}
         />
       )}
       {data && !loading && modal === MODAL_FOOTNOTE && (
