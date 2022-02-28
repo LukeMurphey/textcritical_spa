@@ -124,6 +124,7 @@ const Reader = ({
 
   const [popupPositionRight, setPopupPositionRight] = useState(null);
   const [popupPositionBelow, setPopupPositionBelow] = useState(null);
+  const [popupWork, setPopupWork] = useState(null);
   const [selectedNote, setSelectedNote] = useState(null);
   const [secondWork, setSecondWork] = useState(null);
   const [secondWorkData, setSecondWorkData] = useState(null);
@@ -427,13 +428,15 @@ const Reader = ({
    * @param {int} y The y coordinate designating where to show the popup
    * @param {bool} positionRight Indicates it is best to show the popup to the right of the offset
    * @param {bool} positionBelow Indicates it is best to show the popup below the offset
+   * @param {string} work Indicates the work clicked
    */
-  const onWordClick = (word, x, y, positionRight, positionBelow) => {
+  const onWordClick = (word, x, y, positionRight, positionBelow, work) => {
     setSelectedWord(word);
     setPopupX(x);
     setPopupY(y);
     setPopupPositionRight(positionRight);
     setPopupPositionBelow(positionBelow);
+    setPopupWork(work);
     setModal(MODAL_WORD);
   }
 
@@ -739,7 +742,7 @@ const Reader = ({
           <Sidebar.Pusher>
             <Container className={`underMenu ${classNameSuffix}`}>
               {getDialogs(modal, data, loading, loadedWork, () => setModal(null))}
-              {getPopups(modal, data, loading, selectedWord, popupX, popupY, popupPositionRight, popupPositionBelow, selectedNote, loadedWork, () => setModal(null), inverted)}
+              {getPopups(modal, data, loading, selectedWord, popupX, popupY, popupPositionRight, popupPositionBelow, selectedNote, popupWork, () => setModal(null), inverted)}
               <Grid inverted={inverted}>
                 <Grid.Row>
                   <Grid.Column width={8}>
@@ -772,7 +775,9 @@ const Reader = ({
                   content={data.content}
                   work={data.work}
                   onVerseClick={onVerseClick}
-                  onWordClick={onWordClick}
+                  onWordClick={(word, x, y, positionRight, positionBelow) => {
+                    onWordClick(word, x, y, positionRight, positionBelow, loadedWork);
+                  }}
                   onNoteClick={onNoteClick}
                   onClickAway={() => setModal(null)}
                   highlightedVerse={highlightedVerse}
@@ -792,7 +797,9 @@ const Reader = ({
                         content={data.content}
                         work={data.work}
                         onVerseClick={onVerseClick}
-                        onWordClick={onWordClick}
+                        onWordClick={(word, x, y, positionRight, positionBelow) => {
+                          onWordClick(word, x, y, positionRight, positionBelow, loadedWork);
+                        }}
                         onNoteClick={onNoteClick}
                         onClickAway={() => setModal(null)}
                         highlightedVerse={highlightedVerse}
@@ -810,7 +817,7 @@ const Reader = ({
                           work={secondWorkData.work}
                           onVerseClick={(verseDescriptor, verse, id, href) => onVerseClickSecondWork(verseDescriptor, verse, id, href)}
                           onWordClick={(word, x, y, positionRight, positionBelow) => {
-                            onWordClick(word, x, y, positionRight, positionBelow);
+                            onWordClick(word, x, y, positionRight, positionBelow, secondWork);
                           }}
                           onNoteClick={onNoteClick}
                           onClickAway={() => setModal(null)}
