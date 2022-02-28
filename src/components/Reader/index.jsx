@@ -346,7 +346,7 @@ const Reader = ({
   /**
    * Handle the clicking of a verse.
    *
-   * @param {string} verseDescriptor A descripion of the verse (e.g. "John 8:4")
+   * @param {string} verseDescriptor A description of the verse (e.g. "John 8:4")
    * @param {string} verse The verse number (e.g. "4")
    * @param {string} id An ID that designates the verse in the HTML DOM
    * @param {string} href A href for the verse (e.g. "/work/new-testament/John/8/4")
@@ -375,7 +375,7 @@ const Reader = ({
   /**
    * Handle the clicking of a verse of a second work.
    *
-   * @param {string} verseDescriptor A descripion of the verse (e.g. "John 8:4")
+   * @param {string} verseDescriptor A description of the verse (e.g. "John 8:4")
    * @param {string} verse The verse number (e.g. "4")
    * @param {string} id An ID that designates the verse in the HTML DOM
    */
