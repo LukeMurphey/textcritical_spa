@@ -3,12 +3,9 @@ import PropTypes from "prop-types";
 import { Card, Image, Button, Loader, Icon, Dropdown, Responsive } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import { ENDPOINT_RESOLVE_REFERENCE, ENDPOINT_WORK_IMAGE } from "../Endpoints";
+import { MODE_LOADING, MODE_ERROR, MODE_DONE } from "../Constants";
 import { READ_WORK } from "../URLs";
 import { truncate } from "../Utils";
-
-const MODE_LOADING = 0;
-const MODE_ERROR = 1;
-const MODE_DONE = 2;
 
 const WorkCard = ({
   inverted,

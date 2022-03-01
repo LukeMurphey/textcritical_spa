@@ -22,18 +22,13 @@ import ReadingMenuBar from "./ReadingMenuBar";
 import ChapterHeader from "./ChapterHeader";
 import StaleURLMessage from "./StaleURLMessage";
 import WarningMessages from "./WarningMessages";
+import { MODE_LOADING, MODE_ERROR, MODE_DONE, MODE_NOT_READY } from "../Constants";
 
 /**
  * Below are some notes about how this works:
  *   * useState() will trigger the fetch of the work as necessary when the URL changes.
  *   * loadChapter() will fetch the chapter and load it into the UI.
  */
-
-const MODE_LOADING = 0;
-const MODE_ERROR = 1;
-const MODE_DONE = 2;
-const MODE_NOT_READY = 3;
-
 const PARALLEL_WORK_PREFIX = 'secondWork-';
 
 const ContainerStyle = {
