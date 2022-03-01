@@ -1,38 +1,21 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Visibility, Image, Loader } from 'semantic-ui-react';
 
-class LazyImage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      show: false,
-    };
-  }
+const LazyImage = ({size, children, src, style}) => {
+  const [show, setShow] = useState(false);
 
-  showImage() {
-    this.setState({
-      show: true,
-    });
+  if (!show) {
+    return (
+      <Visibility as="span" onOnScreen={() => setShow(true)}>
+        {children && children}
+        {!children && <Loader data-testid="loader" active inline="centered" size={size} />}
+      </Visibility>
+    );
   }
-
-  render() {
-    const { show } = this.state;
-    const {
-      size, children, src, style,
-    } = this.props;
-
-    if (!show) {
-      return (
-        <Visibility as="span" onOnScreen={() => this.showImage()}>
-          {children && children}
-          {!children && <Loader data-testid="loader" active inline="centered" size={size} />}
-        </Visibility>
-      );
-    }
-    return <Image style={style} src={src} />;
-  }
-}
+  
+  return <Image style={style} src={src} />;
+};
 
 LazyImage.propTypes = {
   src: PropTypes.string.isRequired,
