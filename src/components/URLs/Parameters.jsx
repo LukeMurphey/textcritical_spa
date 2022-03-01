@@ -2,6 +2,24 @@
  * This contains the functions for making the URL parameters (that part past the ? in the URL).
  */
 
+/**
+ * Append a leading question mark if necessary.
+ * @param {string} url 
+ * @returns 
+ */
+export function appendLeadingQuestionMark(url) {
+  return url.length === 0 ? url : `?${url}`;
+}
+
+/**
+ * Append an ampersand if necessary if the URL already has at least one argument.
+ * @param {*} url The URL that is going to be appended to.
+ * @param {*} params The parameters that you want to append.
+ * @returns The parameter with an ampersand if necessary.
+ */
+export function appendAmpersand(url, params) {
+  return url.length > 0 ? `&${params}` : params;
+}
 
 export function PARAMS_SEARCH(
   q = "",
@@ -12,27 +30,23 @@ export function PARAMS_SEARCH(
   let url = "";
 
   if (q) {
-    url += `&q=${q}`;
+    url += appendAmpersand(url, `q=${q}`);
   }
 
   if (page) {
-    url += `&page=${page}`;
+    url += appendAmpersand(url, `page=${page}`);
   }
 
   if (ignoreDiacritics) {
-    url += "&ignore_diacritics=1";
+    url += appendAmpersand(url, "ignore_diacritics=1");
   }
 
   if (searchRelatedForms) {
-    url += "&include_related=1";
+    url += appendAmpersand(url, "include_related=1");
   }
 
-  // Append the leading question mark if there are query parameters
-  if (url.length > 0) {
-    url = `?${url}`;
-  }
 
-  return url;
+  return appendLeadingQuestionMark(url)
 }
 
 export function PARAMS_READ_WORK(
@@ -41,15 +55,10 @@ export function PARAMS_READ_WORK(
   let url = "";
 
   if (parallelWork) {
-    url += `&parallel=${parallelWork}`;
+    url += appendAmpersand(url, `parallel=${parallelWork}`);
   }
 
-  // Append the leading question mark if there are query parameters
-  if (url.length > 0) {
-    url = `?${url}`;
-  }
-
-  return url;
+  return appendLeadingQuestionMark(url)
 }
 
 export function PARAMS_PERSEUS_WORD_LOOKUP(word = '') {
@@ -59,24 +68,15 @@ export function PARAMS_PERSEUS_WORD_LOOKUP(word = '') {
     url += `l=${word}&la=greek`;
   }
 
-  // Append the leading question mark if there are query parameters
-  if (url.length > 0) {
-    url = `?${url}`;
-  }
-
-  return url;
+  return appendLeadingQuestionMark(url)
 }
 
 export function PARAMS_GOOGLE_SEARCH(q = '') {
   let url = "";
 
   if (q) {
-    url += `&q=${q}`;
+    url = `q=${q}`;
   }
 
-  // Append the leading question mark if there are query parameters
-  if (url.length > 0) {
-    url = `?${url}`;
-  }
-  
+  return appendLeadingQuestionMark(url)
 }
