@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Table, Placeholder, Image, Input, Label,
 } from 'semantic-ui-react';
@@ -15,40 +15,96 @@ const ClickStyle = {
   cursor: 'pointer',
 };
 
-class BookSelection extends Component {
-  static workMatchesSearch(work, search) {
-    return work.title.toLowerCase().includes(search)
-    || work.title_slug.toLowerCase().includes(search)
-    || work.author.toLowerCase().includes(search)
-    || work.editor.toLowerCase().includes(search)
-    || work.language.toLowerCase().includes(search);
+const workMatchesSearch = (work, search) => {
+  return work.title.toLowerCase().includes(search)
+  || work.title_slug.toLowerCase().includes(search)
+  || work.author.toLowerCase().includes(search)
+  || work.editor.toLowerCase().includes(search)
+  || work.language.toLowerCase().includes(search);
+}
+
+const BookSelection = ({ relatedWorks, onSelectWork, loadedWork, authors }) => {
+
+  const [works, setWorks] = useState(null);
+  const [error, setError] = useState(null);
+  const [search, setSearch] = useState('');
+  const searchInput = useRef(null);
+
+  const onSearchChange = (data) => {
+    setSearch(data.value);
   }
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      works: null,
-      error: null,
-      search: '',
-    };
-    this.searchInput = null;
+  /**
+   * Determine if the work is a related work.
+   *
+   * @param {object} work The work to see if it is a related work
+   */
+   const isRelatedWork = (work) => {
+    const found = relatedWorks.find((relatedWork) => relatedWork.title_slug === work.title_slug);
+    if (found) {
+      return true;
+    }
+
+    return false;
   }
 
-  componentDidMount() {
-    this.loadInfo();
-  }
-
-  onSearchChange(data) {
-    this.setState({
-      search: data.value,
+  /**
+   * Sort the list of works.
+   *
+   * @param {array} works The works to sort
+   */
+  const sortWorks = (worksToSort) => {
+    worksToSort.sort((a, b) => {
+      if (isRelatedWork(a) && !isRelatedWork(b)) {
+        return -1;
+      }
+      if (isRelatedWork(b) && !isRelatedWork(a)) {
+        return 1;
+      }
+      return a.title > b.title;
     });
+
+    return worksToSort;
   }
 
-  getWorkRow(work, lazyLoad = true, onLargeScreen = true) {
-    const { onSelectWork, loadedWork } = this.props;
+  /**
+   * Load the list of works from the server.
+   */
+  const loadInfo = () => {
+    fetch(ENDPOINT_WORKS_LISTS())
+      .then((res) => res.json())
+      .then((worksData) => {
+        setWorks(sortWorks(worksData));
+        searchInput.current.focus();
+      })
+      .catch((e) => {
+        setError(e.toString());
+      });
+  }
+
+  /**
+   * Determine if the work is by the same author
+   *
+   * @param {object} work The work to see if it is a related work
+   */
+   const isSameAuthor = (work) => {
+    if (!authors || !work.author) {
+      return false;
+    }
+
+    const found = authors.find((author) => author.name === work.author);
+
+    if (found) {
+      return true;
+    }
+
+    return false;
+  }
+
+  const getWorkRow = (work, lazyLoad = true, onLargeScreen = true) => {
     const handler = () => { onSelectWork(work.title_slug); };
-    const isRelated = this.isRelatedWork(work);
-    const isSameAuthor = this.isSameAuthor(work);
+    const isRelated = isRelatedWork(work);
+    const thisIsSameAuthor = isSameAuthor(work);
     const isLoadedWork = (loadedWork && loadedWork === work.title_slug);
 
     return (
@@ -72,7 +128,7 @@ class BookSelection extends Component {
               {isRelated && onLargeScreen && (
                 <Label as="a" color="red">Related Work</Label>
               )}
-              {isSameAuthor && !isLoadedWork && onLargeScreen && (
+              {thisIsSameAuthor && !isLoadedWork && onLargeScreen && (
                 <Label as="a" color="blue">Same Author</Label>
               )}
               {isLoadedWork && onLargeScreen && (
@@ -81,7 +137,7 @@ class BookSelection extends Component {
               {isRelated && !onLargeScreen && (
                 <Label as="a" color="red" circular empty />
               )}
-              {isSameAuthor && !isLoadedWork && !onLargeScreen && (
+              {thisIsSameAuthor && !isLoadedWork && !onLargeScreen && (
                 <Label as="a" color="blue" circular empty />
               )}
             </div>
@@ -96,139 +152,65 @@ class BookSelection extends Component {
     );
   }
 
-  /**
-   * Determine if the work is a related work.
-   *
-   * @param {object} work The work to see if it is a related work
-   */
-  isRelatedWork(work) {
-    const { relatedWorks } = this.props;
+  const searchLowerCase = search.toLowerCase();
 
-    const found = relatedWorks.find((relatedWork) => relatedWork.title_slug === work.title_slug);
-    if (found) {
-      return true;
-    }
+  const onChange = (event, data) => { onSearchChange(data); };
+  const onChangeDebounced = AwesomeDebouncePromise(onChange, 500);
 
-    return false;
-  }
+  const onLargeScreen = window.innerWidth > 767;
 
-  /**
-   * Determine if the work is by the same author
-   *
-   * @param {object} work The work to see if it is a related work
-   */
-  isSameAuthor(work) {
-    const { authors } = this.props;
+  // Change the width on small screens
+  const width = onLargeScreen ? 500 : 250;
 
-    if (!authors || !work.author) {
-      return false;
-    }
+  useEffect(() => {
+    loadInfo();
+  }, []);
 
-    const found = authors.find((author) => author.name === work.author);
-
-    if (found) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Sort the list of works.
-   *
-   * @param {array} works The works to sort
-   */
-  sortWorks(works) {
-    works.sort((a, b) => {
-      if (this.isRelatedWork(a) && !this.isRelatedWork(b)) {
-        return -1;
-      }
-      if (this.isRelatedWork(b) && !this.isRelatedWork(a)) {
-        return 1;
-      }
-      return a.title > b.title;
-    });
-
-    return works;
-  }
-
-  /**
-   * Load the list of works from the server.
-   */
-  loadInfo() {
-    fetch(ENDPOINT_WORKS_LISTS())
-      .then((res) => res.json())
-      .then((works) => {
-        this.setState({ works: this.sortWorks(works) });
-        this.searchInput.focus();
-      })
-      .catch((e) => {
-        this.setState({
-          error: e.toString(),
-        });
-      });
-  }
-
-  render() {
-    const { works, error, search } = this.state;
-    const searchLowerCase = search.toLowerCase();
-
-    const onChange = (event, data) => { this.onSearchChange(data); };
-    const onChangeDebounced = AwesomeDebouncePromise(onChange, 500);
-
-    const onLargeScreen = window.innerWidth > 767;
-
-    // Change the width on small screens
-    const width = onLargeScreen ? 500 : 250;
-
-    return (
-      <>
-        {!error && works && (
-          <div>
-            <Input
-              ref={(input) => {
-                this.searchInput = input;
-              }}
-              onChange={onChangeDebounced}
-              style={{ width: "100%" }}
-              placeholder="Search..."
-            />
-          </div>
-        )}
-        <div style={{ maxHeight: 400, width, overflowY: "auto" }}>
-          {error && (
-            <ErrorMessage
-              title="Unable to load the list of works"
-              description="Unable to get the list of works from the server"
-              message={error}
-            />
-          )}
-          {!error && works && (
-            <Table basic="very" celled collapsing>
-              <Table.Body>
-                {works
-                  .filter((work) =>
-                    BookSelection.workMatchesSearch(work, searchLowerCase)
-                  )
-                  .map((work, index) =>
-                    this.getWorkRow(work, index > 15, onLargeScreen)
-                  )}
-              </Table.Body>
-            </Table>
-          )}
-          {!error && !works && (
-            <Placeholder>
-              <Placeholder.Paragraph>
-                <Placeholder.Line />
-                <Placeholder.Line />
-                <Placeholder.Line />
-              </Placeholder.Paragraph>
-            </Placeholder>
-          )}
+  return (
+    <>
+      {!error && works && (
+        <div>
+          <Input
+            ref={searchInput}
+            onChange={onChangeDebounced}
+            style={{ width: "100%" }}
+            placeholder="Search..."
+          />
         </div>
-      </>
-    );
-  }
+      )}
+      <div style={{ maxHeight: 400, width, overflowY: "auto" }}>
+        {error && (
+          <ErrorMessage
+            title="Unable to load the list of works"
+            description="Unable to get the list of works from the server"
+            message={error}
+          />
+        )}
+        {!error && works && (
+          <Table basic="very" celled collapsing>
+            <Table.Body>
+              {works
+                .filter((work) =>
+                  workMatchesSearch(work, searchLowerCase)
+                )
+                .map((work, index) =>
+                  getWorkRow(work, index > 15, onLargeScreen)
+                )}
+            </Table.Body>
+          </Table>
+        )}
+        {!error && !works && (
+          <Placeholder>
+            <Placeholder.Paragraph>
+              <Placeholder.Line />
+              <Placeholder.Line />
+              <Placeholder.Line />
+            </Placeholder.Paragraph>
+          </Placeholder>
+        )}
+      </div>
+    </>
+  );
 }
 
 BookSelection.propTypes = {
