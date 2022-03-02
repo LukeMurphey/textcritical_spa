@@ -199,3 +199,39 @@ export function getPopups(modal,
     </>
   );
 }
+
+/**
+* Get the text for the node separated into lines.
+*
+* @param {object} element The element to get the text from
+*/
+export function getText(element) {
+ try {
+   const children = [];
+
+   // If the node is text, then add the line
+   if (element.nodeType === 3) {
+     if (element.textContent && element.textContent.length > 0) {
+       children.push(element.textContent);
+     }
+   }
+
+   // Accumulate the children entries
+   const childEntries = Array.from(element.childNodes).reduce(
+     (accum, child) => accum.concat(...this.getText(child)),
+     [],
+   );
+
+   children.push(...childEntries);
+
+   // Return the content
+   if (children) {
+     return children;
+   }
+ } catch (err) {
+   // If an exception happens, then just use the text content
+   return [element.textContent];
+ }
+
+ return [element.textContent];
+}

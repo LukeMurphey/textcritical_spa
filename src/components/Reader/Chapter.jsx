@@ -1,8 +1,9 @@
-import React, { createRef, Component } from 'react';
+import React, { createRef, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import parse, { domToReact } from 'html-react-parser';
+import parse from 'html-react-parser';
+import getDomReplaceFunction from './ChapterDomReplacer';
 import { getPositionRecommendation } from '../PopupDialog';
-import { getAbsolutePosition, indexOfNoDiacritic } from '../Utils';
+import { getAbsolutePosition } from '../Utils';
 import './Chapter.scss';
 
 /**
@@ -14,123 +15,31 @@ import './Chapter.scss';
  * HTML. This would mean that the content could not be cached. Right now, the server pre-processes
  * the content into HTML chunks and then caches so that it can be loaded quickly.
  */
-class Chapter extends Component {
-  constructor(props) {
-    super(props);
+const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordClick, onWordHover, onClickAway, highlightedWords, fontSizeAdjustment, verseIdentifierPrefix, inverted} ) => {
 
     // We need to track the event listener with the bind call so that it can be removed
     // See https://dev.to/em4nl/function-identity-in-javascript-or-how-to-remove-event-listeners-properly-1ll3
-    this.clickListener = null;
-    this.hoverListener = null;
+  const clickListener = useRef(null);
+  const hoverListener = useRef(null);
 
-    // We need to track when a verse was selected for highlight
-    this.highlightOverridden = false;
-  }
+  // We need to track when a verse was selected for highlight
+  const highlightOverridden = useRef(false);
 
-  /**
-   * Wire up handlers for the clicking of the words and verses.
-   */
-  componentDidMount() {
-    this.clickListener = (event) => this.handleClick(event);
-    this.addHandler(this.clickListener);
-
-    this.hoverListener = (event) => this.handleHover(event);
-    this.addHandler(this.hoverListener, 'mousemove');
-  }
-
-  /**
-   * Un wire the handlers to save memory.
-   */
-  componentWillUnmount() {
-    this.removeHandler(this.clickListener);
-    this.removeHandler(this.hoverListener, 'mousemove');
-  }
-
-  /**
-   * Get the text for the node separated into lines.
-   *
-   * @param {object} element The element to get the text from
-   */
-  getText(element) {
-    try {
-      const children = [];
-
-      // If the node is text, then add the line
-      if (element.nodeType === 3) {
-        if (element.textContent && element.textContent.length > 0) {
-          children.push(element.textContent);
-        }
-      }
-
-      // Accumulate the children entries
-      const childEntries = Array.from(element.childNodes).reduce(
-        (accum, child) => accum.concat(...this.getText(child)),
-        [],
-      );
-
-      children.push(...childEntries);
-
-      // Return the content
-      if (children) {
-        return children;
-      }
-    } catch (err) {
-      // If an exception happens, then just use the text content
-      return [element.textContent];
-    }
-
-    return [element.textContent];
-  }
+  // We are keeping a reference to the wrapper so that math can be done regarding client rectangle
+  // See https://medium.com/trabe/getting-rid-of-finddomnode-method-in-your-react-application-a0d7093b2660
+  const wrapper = createRef();
 
   /**
    * Get the chapter content
    * @param {string} className The class name to put the content under
    */
-  getChapterContent(className) {
-    const { content, highlightedVerse, verseIdentifierPrefix, fontSizeAdjustment, highlightedWords } = this.props;
+   const getChapterContent = (className) =>{
 
     // These options will process the nodes such that the node gets a tag indicating that it is
     // highlighted
     const options = {
-      replace: ({ attribs, children }) => {
-        // Handle highlighted words
-        if (attribs && attribs.class === 'word' && highlightedWords && children.length > 0 && children[0].type === 'text') {
-          // Get the value of the word
-          const wordText = children[0].data;
-
-          // Get the index of the highlighted word
-          const highlightIndex = indexOfNoDiacritic(highlightedWords, wordText);
-
-          // Add the highlight tag if we have a match
-          if(highlightIndex >= 0) {
-            return (
-              <span
-                className={`word highlighted highlight${highlightIndex}`}
-              >
-                {domToReact(children, options)}
-              </span>
-            );
-          }
-        }
-
-        // Stop if this isn't a verse
-        if (!attribs || !('data-verse' in attribs)) return undefined;
-
-        const verseClassName = attribs && attribs['data-verse'] === highlightedVerse ? "verse-link highlighted" : "verse-link";
-
-        return (
-          <a
-            className={verseClassName}
-            href={attribs.href}
-            data-verse={attribs['data-verse']}
-            data-verse-descriptor={attribs['data-verse-descriptor']}
-            data-original-id={attribs.id}
-            id={`${verseIdentifierPrefix}${attribs.id}`}
-          >
-            {domToReact(children, options)}
-          </a>
-        );
-      },
+      // eslint-disable-next-line react/prop-types
+      replace: getDomReplaceFunction(highlightedWords, verseIdentifierPrefix, highlightedVerse),
       condition: (node) => node.className.toLowerCase() === 'word',
       modify: (node) => {
         // eslint-disable-next-line no-param-reassign
@@ -144,22 +53,22 @@ class Chapter extends Component {
     return (
       <div
         className={`${className} fontSize-${fontSizeAdjustment}`}
-        ref={this.wrapper}
+        ref={wrapper}
       >
         {reactElement}
       </div>
     );
   }
 
-  addHandler(handler, type = 'click') {
-    if (this.wrapper.current) {
-      this.wrapper.current.addEventListener(type, (event) => handler(event));
+  const addHandler = (handler, type = 'click') =>{
+    if (wrapper.current) {
+      wrapper.current.addEventListener(type, (event) => handler(event));
     }
   }
 
-  removeHandler(handler, type = 'click') {
-    if (this.wrapper.current) {
-      this.wrapper.current.removeEventListener(type, (event) => handler(event));
+  const removeHandler = (handler, type = 'click') =>{
+    if (wrapper.current) {
+      wrapper.current.removeEventListener(type, (event) => handler(event));
     }
   }
 
@@ -168,9 +77,8 @@ class Chapter extends Component {
    *
    * @param {*} event The event object
    */
-  handleClickWord(event) {
+  const handleClickWord = (event) => {
     const word = event.target.textContent;
-    const { onWordClick } = this.props;
 
     const [positionRight, positionBelow] = getPositionRecommendation(event);
     const {x , y} = getAbsolutePosition(event.srcElement);
@@ -178,46 +86,11 @@ class Chapter extends Component {
   }
 
   /**
-   * Unhighlight existing verses.
-   */
-  unhighlistVerses() {
-    if (this.wrapper && this.wrapper.current) {
-      const highlights = Array.from(this.wrapper.current.getElementsByClassName('highlighted'));
-      highlights.map((highlight) => highlight.classList.remove('highlighted'));
-    }
-  }
-
-  /**
-   * Highlight the verse.
-   * @param {string} verse The ID of the verse.
-   */
-  highlightVerse(verse) {
-    if (this.wrapper && this.wrapper.current) {
-      const verses = Array.from(this.wrapper.current.getElementsByClassName('verse-link'));
-
-      // Find the element with the verse
-      const target = verses.find((element) => {
-        if (element.attributes['data-verse'] && element.attributes['data-verse'].nodeValue === verse) {
-          return true;
-        }
-        return false;
-      });
-
-      // Mark it if we found it
-      if (target) {
-        target.parentElement.classList.toggle('highlighted');
-      }
-    } else {
-      setTimeout(() => this.highlightVerse(verse), 100);
-    }
-  }
-
-  /**
    * Handle the clicking of a verse.
    *
    * @param {*} event The event object
    */
-  handleClickVerse(event) {
+  const handleClickVerse = (event) => {
     // Don't follow the link
     event.preventDefault();
 
@@ -249,10 +122,9 @@ class Chapter extends Component {
       return;
     }
 
-    this.highlightOverridden = true;
+    highlightOverridden.current = true;
 
     // Fire off the handler
-    const { onVerseClick } = this.props;
     const {x , y} = getAbsolutePosition(event.srcElement);
     onVerseClick(verseDescriptor, verse, id, href, x, y);
   }
@@ -260,7 +132,7 @@ class Chapter extends Component {
   /**
    * handle the clicking of a note.
    */
-  handleClickNote(event) {
+  const handleClickNote = (event) => {
     // Get the ID
     const { id } = event.target;
 
@@ -275,27 +147,25 @@ class Chapter extends Component {
     const [positionRight, positionBelow] = getPositionRecommendation(event);
 
     // Fire off the handler
-    const { onNoteClick } = this.props;
     const {x , y} = getAbsolutePosition(event.srcElement);
     onNoteClick(contents, id, x, y, positionRight, positionBelow);
   }
 
-  handleClickEmpty() {
-    const { onClickAway } = this.props;
+  const handleClickEmpty = () =>{
     onClickAway();
   }
 
-  handleClick(event) {
+  const handleClick = (event) => {
     // Determine if we are clicking a word, verse, note, or just empty space
     if (event.target.className.includes('word')) {
-      this.handleClickWord(event);
+      handleClickWord(event);
     } else if (event.target.className.includes('verse')) {
-      this.handleClickVerse(event);
-      this.handleClickEmpty();
+      handleClickVerse(event);
+      handleClickEmpty();
     } else if (event.target.className.includes('note-tag')) {
-      this.handleClickNote(event);
+      handleClickNote(event);
     } else {
-      this.handleClickEmpty();
+      handleClickEmpty();
     }
   }
 
@@ -303,9 +173,7 @@ class Chapter extends Component {
    * Handle the case where the user has hovered over a word.
    * @param {*} event 
    */
-  handleHover(event) {
-    const { onWordHover } = this.props;
-
+  const handleHover = (event) => {
     if (event.target.className.includes('word')) {
       onWordHover(event.target.innerText);
     }
@@ -314,26 +182,39 @@ class Chapter extends Component {
     }
   }
 
-  render() {
-    const { inverted } = this.props;
+  useEffect(() => {
+    /**
+    * Wire up handlers for the clicking of the words and verses.
+    */
+    clickListener.current = (event) => handleClick(event);
+    addHandler(clickListener.current);
 
-    // Determine the class name
-    let className = 'view_read_work';
+    hoverListener.current = (event) => handleHover(event);
+    addHandler(hoverListener.current, 'mousemove');
 
-    if (inverted) {
-      className = 'view_read_work inverted';
-    }
+    /**
+     * Un wire the handlers to save memory.
+     */
+    return function cleanup() {
+      removeHandler(clickListener.current);
+      removeHandler(hoverListener.current, 'mousemove');
+    };
+  }, []);
 
-    // We are keeping a reference to the wrapper so that math can be done regarding client rectangle
-    // See https://medium.com/trabe/getting-rid-of-finddomnode-method-in-your-react-application-a0d7093b2660
-    this.wrapper = createRef();
-    return (
-      <>
-        {this.getChapterContent(className)}
-      </>
-    );
+
+  // Determine the class name
+  let className = 'view_read_work';
+
+  if (inverted) {
+    className = 'view_read_work inverted';
   }
-}
+
+  return (
+    <>
+      {getChapterContent(className)}
+    </>
+  );
+};
 
 Chapter.propTypes = {
   content: PropTypes.string.isRequired,
