@@ -26,7 +26,7 @@ const ContextDialog = ({
   }
 
   const copyChapterToClipboard = () => {
-    navigator.clipboard.writeText(convertToPlain(data.content));
+    navigator.clipboard.writeText(convertToPlain(data.content).replaceAll(/[\n]+/ig, '').replaceAll(/[ ]+/ig, ' '));
   }
 
   return (
@@ -46,21 +46,13 @@ const ContextDialog = ({
             name='chapter_clipboard'
             onClick={copyChapterToClipboard}
           >
-            Copy 
-            {' '}
-            {data.chapter.full_descriptor}
-            {' '}
-            to Clipboard
+            Copy chapter to clipboard
           </Menu.Item>
           <Menu.Item
             name='verse_clipboard'
             onClick={copyVerseToClipboard}
           >
-            Copy 
-            {' '}
-            {contextType}
-            {' '}
-            to Clipboard
+            Copy verse to clipboard
           </Menu.Item>
 
         </Menu>
