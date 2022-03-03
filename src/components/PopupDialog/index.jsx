@@ -15,10 +15,7 @@ export const getPositionRecommendation = (event) => {
   return [positionRight, positionBelow];
 };
 
-const PopupDialog = (props) => {
-  const {
-    children, onClose, x, y, positionBelow, positionRight, footer, inverted,
-  } = props;
+const PopupDialog = ({ children, onClose, x, y, positionBelow, positionRight, footer, width, maxHeight, inverted}) => {
 
   /**
    * This is done to get rid of the outline around the close button and get it to show up at the
@@ -33,8 +30,8 @@ const PopupDialog = (props) => {
   // Correct for the cases where the dialog is off of the bottom of the screen.
   const segmentStyle = {
     position: 'absolute',
-    width: 500,
-    maxHeight: 300,
+    width,
+    maxHeight,
     overflowY: 'auto',
     padding: 0,
     zIndex: 103,
@@ -96,7 +93,7 @@ const PopupDialog = (props) => {
   );
 
   // Determine the height of the dialog
-  const height = segmentStyle.height ? segmentStyle.height : 300;
+  const height = segmentStyle.height ? segmentStyle.height : maxHeight;
 
   // Calculate the vertical position
   if (positionBelow) {
@@ -131,6 +128,8 @@ PopupDialog.propTypes = {
   y: PropTypes.number.isRequired,
   positionBelow: PropTypes.bool,
   positionRight: PropTypes.bool,
+  width: PropTypes.number,
+  maxHeight: PropTypes.number,
   children: PropTypes.element.isRequired,
   footer: PropTypes.element,
   inverted: PropTypes.bool,
@@ -139,6 +138,8 @@ PopupDialog.propTypes = {
 PopupDialog.defaultProps = {
   positionBelow: true,
   positionRight: true,
+  width: 500,
+  maxHeight: 300,
   footer: null,
   inverted: false,
 };

@@ -4,6 +4,7 @@ import parse from 'html-react-parser';
 import getDomReplaceFunction from './ChapterDomReplacer';
 import { getPositionRecommendation } from '../PopupDialog';
 import { getAbsolutePosition } from '../Utils';
+import { getEventInfo, getVerseInfoFromEvent, getWordFromEvent, getNoteFromEvent, determineEventTargetType, CONTEXT_WORD, CONTEXT_VERSE, CONTEXT_NOTE } from './ChapterEventHandlers';
 import './Chapter.scss';
 
 /**
@@ -15,12 +16,12 @@ import './Chapter.scss';
  * HTML. This would mean that the content could not be cached. Right now, the server pre-processes
  * the content into HTML chunks and then caches so that it can be loaded quickly.
  */
-const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordClick, onWordHover, onClickAway, highlightedWords, fontSizeAdjustment, verseIdentifierPrefix, inverted} ) => {
-
-    // We need to track the event listener with the bind call so that it can be removed
-    // See https://dev.to/em4nl/function-identity-in-javascript-or-how-to-remove-event-listeners-properly-1ll3
+const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordClick, onWordHover, onClickAway, onContextClick, highlightedWords, fontSizeAdjustment, verseIdentifierPrefix, inverted} ) => {
+  // We need to track the event listener with the bind call so that it can be removed
+  // See https://dev.to/em4nl/function-identity-in-javascript-or-how-to-remove-event-listeners-properly-1ll3
   const clickListener = useRef(null);
   const hoverListener = useRef(null);
+  const contextListener = useRef(null);
 
   // We need to track when a verse was selected for highlight
   const highlightOverridden = useRef(false);
@@ -33,17 +34,19 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
    * Get the chapter content
    * @param {string} className The class name to put the content under
    */
-   const getChapterContent = (className) =>{
-
+  const getChapterContent = (className) => {
     // These options will process the nodes such that the node gets a tag indicating that it is
     // highlighted
     const options = {
-      // eslint-disable-next-line react/prop-types
-      replace: getDomReplaceFunction(highlightedWords, verseIdentifierPrefix, highlightedVerse),
-      condition: (node) => node.className.toLowerCase() === 'word',
+      replace: getDomReplaceFunction(
+        highlightedWords,
+        verseIdentifierPrefix,
+        highlightedVerse
+      ),
+      condition: (node) => node.className.toLowerCase() === "word",
       modify: (node) => {
         // eslint-disable-next-line no-param-reassign
-        node.className += ' highlighted';
+        node.className += " highlighted";
         return node;
       },
     };
@@ -58,19 +61,19 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
         {reactElement}
       </div>
     );
-  }
+  };
 
-  const addHandler = (handler, type = 'click') =>{
+  const addHandler = (handler, type = "click") => {
     if (wrapper.current) {
       wrapper.current.addEventListener(type, (event) => handler(event));
     }
-  }
+  };
 
-  const removeHandler = (handler, type = 'click') =>{
+  const removeHandler = (handler, type = "click") => {
     if (wrapper.current) {
       wrapper.current.removeEventListener(type, (event) => handler(event));
     }
-  }
+  };
 
   /**
    * Handle the clicking of a word.
@@ -81,9 +84,9 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
     const word = event.target.textContent;
 
     const [positionRight, positionBelow] = getPositionRecommendation(event);
-    const {x , y} = getAbsolutePosition(event.srcElement);
+    const { x, y } = getAbsolutePosition(event.srcElement);
     onWordClick(word, x, y, positionRight, positionBelow);
-  }
+  };
 
   /**
    * Handle the clicking of a verse.
@@ -94,29 +97,8 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
     // Don't follow the link
     event.preventDefault();
 
-    // Get the target containing the verse info
-    const target = event.target.parentElement;
-
-    // Get the descriptor of the verse
-    const verseDescriptorElem = Array.from(target.attributes).find((element) => element.name === 'data-verse-descriptor');
-    const verseDescriptor = verseDescriptorElem ? verseDescriptorElem.nodeValue : null;
-
-    // Get the ID
-    const { id } = target;
-
-    // Get the the href
-    let href;
-
-    if (target.attributes.href) {
-      href = target.attributes.href.nodeValue;
-    } else {
-      href = null;
-    }
-
-    // Get the verse number
-    const verseElem = Array.from(target.attributes).find((element) => element.name === 'data-verse');
-    const verse = verseElem ? verseElem.nodeValue : null;
-
+    const {verseDescriptor, verse, id, href} = getVerseInfoFromEvent(event);
+    
     // Stop if we didn't get what we needed to continue
     if (!verseDescriptor) {
       return;
@@ -125,95 +107,104 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
     highlightOverridden.current = true;
 
     // Fire off the handler
-    const {x , y} = getAbsolutePosition(event.srcElement);
+    const { x, y } = getAbsolutePosition(event.srcElement);
+
     onVerseClick(verseDescriptor, verse, id, href, x, y);
-  }
+  };
 
   /**
    * handle the clicking of a note.
    */
   const handleClickNote = (event) => {
-    // Get the ID
-    const { id } = event.target;
-
-    // Get the contents for the given ID
-    const contentsElem = document.getElementById(`content_for_${id}`);
-    let contents = ['Note content could not be found'];
-
-    if (contentsElem) {
-      contents = [contentsElem.textContent];
-    }
+    // Get the contents and ID
+    const { contents, id } = getNoteFromEvent(event);
 
     const [positionRight, positionBelow] = getPositionRecommendation(event);
 
     // Fire off the handler
-    const {x , y} = getAbsolutePosition(event.srcElement);
+    const { x, y } = getAbsolutePosition(event.srcElement);
     onNoteClick(contents, id, x, y, positionRight, positionBelow);
-  }
+  };
 
-  const handleClickEmpty = () =>{
+  /**
+   * handle the content menu clicking.
+   */
+  const handleClickContext = (event) => {
+    // Don't follow the link
+    event.preventDefault();
+
+    const [positionRight, positionBelow] = getPositionRecommendation(event);
+
+    // Fire off the handler
+    const { x, y } = getAbsolutePosition(event.srcElement);
+
+    const [contextType, contextData] = getEventInfo(event);
+    onContextClick(x, y, positionRight, positionBelow, content, contextType, contextData, event);
+  };
+
+  const handleClickEmpty = () => {
     onClickAway();
-  }
+  };
 
   const handleClick = (event) => {
+    const contextType = determineEventTargetType(event);
+
     // Determine if we are clicking a word, verse, note, or just empty space
-    if (event.target.className.includes('word')) {
+    if (contextType === CONTEXT_WORD) {
       handleClickWord(event);
-    } else if (event.target.className.includes('verse')) {
+    } else if (contextType === CONTEXT_VERSE) {
       handleClickVerse(event);
       handleClickEmpty();
-    } else if (event.target.className.includes('note-tag')) {
+    } else if (contextType === CONTEXT_NOTE) {
       handleClickNote(event);
     } else {
       handleClickEmpty();
     }
-  }
+  };
 
   /**
    * Handle the case where the user has hovered over a word.
-   * @param {*} event 
+   * @param {*} event
    */
   const handleHover = (event) => {
-    if (event.target.className.includes('word')) {
-      onWordHover(event.target.innerText);
-    }
-    else {
+    if (event.target.className.includes("word")) {
+      onWordHover(getWordFromEvent(event));
+    } else {
       onWordHover(null);
     }
-  }
+  };
 
   useEffect(() => {
     /**
-    * Wire up handlers for the clicking of the words and verses.
-    */
+     * Wire up handlers for the clicking of the words and verses.
+     */
     clickListener.current = (event) => handleClick(event);
     addHandler(clickListener.current);
 
     hoverListener.current = (event) => handleHover(event);
-    addHandler(hoverListener.current, 'mousemove');
+    addHandler(hoverListener.current, "mousemove");
+
+    contextListener.current = (event) => handleClickContext(event);
+    addHandler(contextListener.current, "contextmenu");
 
     /**
      * Un wire the handlers to save memory.
      */
     return function cleanup() {
       removeHandler(clickListener.current);
-      removeHandler(hoverListener.current, 'mousemove');
+      removeHandler(hoverListener.current, "mousemove");
+      removeHandler(contextListener.current, "contextmenu");
     };
   }, []);
 
-
   // Determine the class name
-  let className = 'view_read_work';
+  let className = "view_read_work";
 
   if (inverted) {
-    className = 'view_read_work inverted';
+    className = "view_read_work inverted";
   }
 
-  return (
-    <>
-      {getChapterContent(className)}
-    </>
-  );
+  return <>{getChapterContent(className)}</>;
 };
 
 Chapter.propTypes = {
@@ -225,6 +216,7 @@ Chapter.propTypes = {
   onClickAway: PropTypes.func,
   onNoteClick: PropTypes.func,
   onWordHover: PropTypes.func,
+  onContextClick: PropTypes.func,
   inverted: PropTypes.bool,
   verseIdentifierPrefix: PropTypes.string,
   fontSizeAdjustment: PropTypes.number,
@@ -238,6 +230,7 @@ Chapter.defaultProps = {
   onClickAway: () => { },
   onNoteClick: () => { },
   onWordHover: () => { },
+  onContextClick: () => { },
   inverted: false,
   verseIdentifierPrefix: '',
   fontSizeAdjustment: 0,

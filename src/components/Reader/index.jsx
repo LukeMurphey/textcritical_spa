@@ -8,7 +8,7 @@ import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
 import { PARAMS_READ_WORK } from "../URLs/Parameters";
-import { getPlaceholder, getDialogs, getPopups, MODAL_WORD, MODAL_FOOTNOTE }  from "./shortcuts";
+import { getPlaceholder, getDialogs, getPopups, MODAL_WORD, MODAL_FOOTNOTE, MODAL_CONTEXT }  from "./shortcuts";
 import { scrollToTarget } from '../Utils';
 import Chapter from "./Chapter";
 import ErrorMessage from "../ErrorMessage";
@@ -113,7 +113,7 @@ const Reader = ({
 
   const [loadedWork, setLoadedWork] = useState(null);
   const [highlightedVerse, setHighlightedVerse] = useState(null);
-  const [highlightedWords, setHighlightedWords] = useState(['καὶ']);
+  const [highlightedWords, setHighlightedWords] = useState([]);
   const [selectedWord, setSelectedWord] = useState(null);
   const [popupX, setPopupX] = useState(null);
   const [popupY, setPopupY] = useState(null);
@@ -129,6 +129,7 @@ const Reader = ({
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState(getFontAdjustment());
 
   const verseReferences = useRef([]);
+  const popupContextData = useRef(null);
 
   /**
    * Set an error state.
@@ -434,6 +435,26 @@ const Reader = ({
     setPopupPositionBelow(positionBelow);
     setPopupWork(work);
     setModal(MODAL_WORD);
+  }
+
+  /**
+   * Handle the context menu.
+   *
+   * @param {int} x The x coordinate designating where to show the popup
+   * @param {int} y The y coordinate designating where to show the popup
+   * @param {bool} positionRight Indicates it is best to show the popup to the right of the offset
+   * @param {bool} positionBelow Indicates it is best to show the popup below the offset
+   * @param {string} work Indicates the work clicked
+   */
+   const onContextClick = (x, y, positionRight, positionBelow, work, content, contextType, contextData, event) => {
+    setSelectedWord(null);
+    setPopupX(x);
+    setPopupY(y);
+    setPopupPositionRight(positionRight);
+    setPopupPositionBelow(positionBelow);
+    setPopupWork(work);
+    popupContextData.current = { content, contextType, contextData, event }
+    setModal(MODAL_CONTEXT);
   }
 
   /**
@@ -765,7 +786,8 @@ const Reader = ({
                     secondWork,
                     divisions,
                   },
-                  inverted
+                  inverted,
+                  popupContextData.current,
                 )}
                 <Grid inverted={inverted}>
                   <Grid.Row>
@@ -825,6 +847,9 @@ const Reader = ({
                       );
                     }}
                     onNoteClick={onNoteClick}
+                    onContextClick={(x, y, positionRight, positionBelow, content, contextType, contextData, event) => {
+                      onContextClick(x, y, positionRight, positionBelow, data.work, content, contextType, contextData, event);
+                    }}
                     onClickAway={() => setModal(null)}
                     highlightedVerse={highlightedVerse}
                     inverted={inverted}
@@ -862,6 +887,15 @@ const Reader = ({
                             );
                           }}
                           onNoteClick={onNoteClick}
+                          onContextClick={(x, y, positionRight, positionBelow) => {
+                            onContextClick(
+                              data,
+                              x,
+                              y,
+                              positionRight,
+                              positionBelow,
+                            );
+                          }}
                           onClickAway={() => setModal(null)}
                           highlightedVerse={highlightedVerse}
                           inverted={inverted}
@@ -902,6 +936,15 @@ const Reader = ({
                               );
                             }}
                             onNoteClick={onNoteClick}
+                            onContextClick={(x, y, positionRight, positionBelow) => {
+                              onContextClick(
+                                data,
+                                x,
+                                y,
+                                positionRight,
+                                positionBelow,
+                              );
+                            }}
                             onClickAway={() => setModal(null)}
                             highlightedVerse={highlightedVerse}
                             inverted={inverted}
