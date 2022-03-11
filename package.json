@@ -1,6 +1,6 @@
 {
   "name": "textcritical_spa",
-  "version": "4.7.1",
+  "version": "4.7.2",
   "description": "A React-based SPA (single page application that serves as the frontend for TextCritical.net)",
   "main": "index.js",
   "dependencies": {
