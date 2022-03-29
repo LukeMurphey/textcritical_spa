@@ -113,7 +113,7 @@ const Reader = ({
 
   const [loadedWork, setLoadedWork] = useState(null);
   const [highlightedVerse, setHighlightedVerse] = useState(null);
-  const [highlightedWords, setHighlightedWords] = useState(['καὶ']);
+  const [highlightedWords, setHighlightedWords] = useState([]);
   const [selectedWord, setSelectedWord] = useState(null);
   const [popupX, setPopupX] = useState(null);
   const [popupY, setPopupY] = useState(null);
