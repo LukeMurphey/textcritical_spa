@@ -352,7 +352,7 @@ const ReadingMenuBar = ({
                     onClick={() => openSearchPage()}
                   />
                   <Dropdown.Item
-                    text="Look up words (and convert beta-code)"
+                    text="Look up Greek words (and convert beta-code)"
                     onClick={() => openBetaCodePage()}
                   />
                   <Dropdown.Item

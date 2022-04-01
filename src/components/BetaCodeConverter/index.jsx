@@ -123,11 +123,11 @@ const BetaCodeConverter = ({ inverted, history }) => {
         />
         )}
         <Segment inverted={inverted}>
-          <Header as="h1">Beta-code Conversion</Header>
+          <Header as="h1">Greek text analysis</Header>
           <Form>
-            Enter beta-code below and it will be converted to Greek Unicode automatically
+            Enter beta-code below and it will be converted to Greek Unicode automatically with the ability to look up individual words
             <TextArea
-              placeholder='Enter beta-code here'
+              placeholder='Enter Greek text or beta-code here'
               value={originalText}
               onChange={(event, data) => {
                 setOriginalText(data.value);
