@@ -28,13 +28,17 @@ const CheckboxStyle = {
   marginBottom: 12,
 };
 
+const DownloadLinkStyle = {
+  marginTop: 12,
+};
+
 // A custom hook that builds on useLocation to parse
 // the query string for you.
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, error, inverted) {
+function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, error, inverted, downloadUrl = null) {
   let className = '';
 
   if (inverted) {
@@ -69,16 +73,21 @@ function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, er
         </Message>
       )}
       {mode === MODE_RESULTS && (
-        <SearchResults
-          results={resultSet.results}
-          matchCount={resultSet.match_count}
-          resultCount={resultSet.result_count}
-          page={page}
-          lastPage={lastPage}
-          goBack={() => goBack()}
-          goNext={() => goNext()}
-          inverted={inverted}
-        />
+        <>
+          <SearchResults
+            results={resultSet.results}
+            matchCount={resultSet.match_count}
+            resultCount={resultSet.result_count}
+            page={page}
+            lastPage={lastPage}
+            goBack={() => goBack()}
+            goNext={() => goNext()}
+            inverted={inverted}
+          />
+          {downloadUrl && (<div style={DownloadLinkStyle}>
+            <a href={downloadUrl}>Download results as CSV</a>
+          </div>)}
+        </>
       )}
       {mode === MODE_NOT_STARTED && (
         <Message className={className}>
@@ -268,7 +277,7 @@ function Search({ inverted, history, location }) {
     {
       menuItem: 'Results',
       render: () => searchResultsByMode(
-        mode, resultSet, page, lastPage, goBack, goNext, error, inverted,
+        mode, resultSet, page, lastPage, goBack, goNext, error, inverted, ENDPOINT_SEARCH(query, 1, searchRelatedForms, ignoreDiacritics, true, 1000)
       ),
     },
     {

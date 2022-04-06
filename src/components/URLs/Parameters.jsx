@@ -2,24 +2,7 @@
  * This contains the functions for making the URL parameters (that part past the ? in the URL).
  */
 
-/**
- * Append a leading question mark if necessary.
- * @param {string} url 
- * @returns 
- */
-export function appendLeadingQuestionMark(url) {
-  return url.length === 0 ? url : `?${url}`;
-}
-
-/**
- * Append an ampersand if necessary if the URL already has at least one argument.
- * @param {*} url The URL that is going to be appended to.
- * @param {*} params The parameters that you want to append.
- * @returns The parameter with an ampersand if necessary.
- */
-export function appendAmpersand(url, params) {
-  return url.length > 0 ? `&${params}` : params;
-}
+ import { appendAmpersand, appendLeadingQuestionMark } from '../Utils';
 
 export function PARAMS_SEARCH(
   q = "",
