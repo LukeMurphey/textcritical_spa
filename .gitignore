@@ -5,3 +5,4 @@ dist
 
 # misc
 .DS_Store
+webpack.config.json
