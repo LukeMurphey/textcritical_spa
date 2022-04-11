@@ -80,7 +80,7 @@ export function ENDPOINT_SEARCH(query, page = 1, relatedForms = false, ignoreDia
     ignoreDiacriticsConverted = 1;
   }
 
-  let url = `${getHostConfig()}/api/search/${encodeURIComponent(query)}?`;
+  let url = '';
 
   if (page) {
     url += appendAmpersand(url, `page=${page}`);
@@ -97,7 +97,7 @@ export function ENDPOINT_SEARCH(query, page = 1, relatedForms = false, ignoreDia
     url += appendAmpersand(url, `download=`);
   }
 
-  return url;
+  return `${getHostConfig()}/api/search/${encodeURIComponent(query)}?${url}`;
 }
 
 export function ENDPOINT_CONVERT_BETA_CODE_QUERY(query) {

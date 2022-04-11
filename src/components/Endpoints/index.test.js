@@ -21,5 +21,5 @@ test('Endpoints', () => {
   expect(ENDPOINT_WORD_PARSE('λογος')).toBe('/api/word_parse/λογος');
   expect(ENDPOINT_WORKS_LISTS()).toBe('/api/works');
   expect(ENDPOINT_VERSION_INFO()).toBe('/api/version_info');
-  expect(ENDPOINT_SEARCH('λογος')).toBe('/api/search/%CE%BB%CE%BF%CE%B3%CE%BF%CF%82?page=1&related_forms=0&ignore_diacritics=0');
+  expect(ENDPOINT_SEARCH('λογος')).toBe('/api/search/%CE%BB%CE%BF%CE%B3%CE%BF%CF%82?page=1&ignore_diacritics=0&related_forms=0');
 });
