@@ -34,7 +34,7 @@ const DownloadLinkStyle = {
 
 const downloadOptions = [
   { text: 'as CSV', value: 'csv'},
-  { text: 'as XSLX (Excel)', value: 'xslx'},
+  { text: 'as XLSX (Excel)', value: 'xlsx'},
 ]
 
 // A custom hook that builds on useLocation to parse
