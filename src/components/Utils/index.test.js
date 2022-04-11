@@ -5,8 +5,6 @@ test('toTitleCase', () => {
   expect(toTitleCase('1 john')).toBe('1 John');
 });
 
-
-
 test('indexOfNoDiacritic', () => {
   const law = ["ΝΌΜΟΥ", "Νόμε", "Νόμον", "νόμος"];
 
