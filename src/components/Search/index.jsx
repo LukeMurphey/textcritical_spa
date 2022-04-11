@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, useLocation } from 'react-router-dom';
 import {
-  Input, Container, Button, Checkbox, Icon, Message, Tab,
+  Input, Container, Button, Checkbox, Icon, Message, Tab,Dropdown,
 } from 'semantic-ui-react';
 import BarChart from '../Charts/BarChart';
 import SearchResults from './SearchResults';
@@ -32,6 +32,11 @@ const DownloadLinkStyle = {
   marginTop: 12,
 };
 
+const downloadOptions = [
+  { text: 'as CSV', value: 'csv'},
+  { text: 'as XSLX (Excel)', value: 'xslx'},
+]
+
 // A custom hook that builds on useLocation to parse
 // the query string for you.
 function useQuery() {
@@ -43,6 +48,10 @@ function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, er
 
   if (inverted) {
     className = 'inverted';
+  }
+
+  function downloadResults(filetype='csv') {
+    window.open(`${downloadUrl}${filetype}`, '_blank');
   }
 
   return (
@@ -84,9 +93,17 @@ function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, er
             goNext={() => goNext()}
             inverted={inverted}
           />
-          {downloadUrl && (<div style={DownloadLinkStyle}>
-            <a href={downloadUrl}>Download results as CSV</a>
-          </div>)}
+          {downloadUrl && (
+            <div style={DownloadLinkStyle}>
+              <Dropdown button text='Download Results'>
+                <Dropdown.Menu>
+                  {downloadOptions.map((downloadOption) => (
+                    <Dropdown.Item key={downloadOption.value} onClick={() => downloadResults(downloadOption.value)}>{downloadOption.text}</Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+          )}
         </>
       )}
       {mode === MODE_NOT_STARTED && (

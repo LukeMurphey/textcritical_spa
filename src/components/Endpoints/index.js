@@ -69,7 +69,7 @@ export function ENDPOINT_VERSION_INFO() {
   return `${getHostConfig()}/api/version_info`;
 }
 
-export function ENDPOINT_SEARCH(query, page = 1, relatedForms = false, ignoreDiacritics = false, download = false, pagelen = null) {
+export function ENDPOINT_SEARCH(query, page = 1, relatedForms = false, ignoreDiacritics = false, download = null, pagelen = null) {
   let relatedFormsConverted = 0;
   if (relatedForms) {
     relatedFormsConverted = 1;
