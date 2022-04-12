@@ -555,7 +555,7 @@ const Reader = ({
   }
 
   const onWordHover = word => {
-    if(highlightRelatedForms) {
+    if(highlightRelatedForms && word !== null) {
       getWordFormsDebounced(word)
       .then((res) => res.json())
       .then(wordData => {
