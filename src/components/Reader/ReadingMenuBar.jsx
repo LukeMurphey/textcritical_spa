@@ -42,7 +42,6 @@ const ReadingMenuBar = ({
   bookSelectionOpen,
   goToReference,
   openAboutModal,
-  openLoginModal,
   referenceValue,
   history,
   hasPriorChapter,
@@ -372,7 +371,7 @@ const ReadingMenuBar = ({
                     text="Search"
                     onClick={() => openSearchPage()}
                   />
-                  {openLoginModal && authInfo && authInfo.authenticated && (
+                  {authInfo && authInfo.authenticated && (
                     <Dropdown.Item
                       text="Logout"
                       onClick={() => {
@@ -380,10 +379,12 @@ const ReadingMenuBar = ({
                       }}
                     /> 
                   )}
-                  {openLoginModal && authInfo && !authInfo.authenticated && (
+                  {authInfo && !authInfo.authenticated && (
                     <Dropdown.Item
                       text="Login"
-                      onClick={() => openLoginModal()}
+                      onClick={() => {
+                        window.location = authInfo.login_google;
+                      }}
                     /> 
                   )}
                   <Dropdown.Item
@@ -443,7 +444,6 @@ ReadingMenuBar.propTypes = {
   bookSelectionOpen: PropTypes.bool,
   goToReference: PropTypes.func.isRequired,
   openAboutModal: PropTypes.func.isRequired,
-  openLoginModal: PropTypes.func,
   goToPriorChapter: PropTypes.func,
   goToNextChapter: PropTypes.func,
   increaseFontSize: PropTypes.func,
@@ -475,7 +475,6 @@ ReadingMenuBar.defaultProps = {
   previousChapterDescriptor: null,
   increaseFontSizeDisabled: true,
   decreaseFontSizeDisabled: true,
-  openLoginModal: null,
 }
 
 export default withRouter(ReadingMenuBar);

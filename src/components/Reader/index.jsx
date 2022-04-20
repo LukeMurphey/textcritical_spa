@@ -13,7 +13,6 @@ import { scrollToTarget } from '../Utils';
 import Chapter from "./Chapter";
 import ErrorMessage from "../ErrorMessage";
 import AboutDialog from "../AboutDialog";
-import LoginDialog from "../LoginDialog";
 import NoWorkSelected from "./NoWorkSelected";
 import "./index.scss";
 import FavoriteWorks from "../FavoriteWorks";
@@ -965,7 +964,6 @@ const Reader = ({
         </Container>
       )}
       {modal === "about" && <AboutDialog onClose={() => setModal(null)} />}
-      {modal === "login" && <LoginDialog onClose={() => setModal(null)} />}
     </>
   );
 
