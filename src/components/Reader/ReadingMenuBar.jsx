@@ -9,7 +9,8 @@ import BookSelection from '../BookSelection';
 import { addHandler, removeHandler } from '../Utils';
 import {
   ENDPOINT_RESOLVE_REFERENCE,
-  ENDPOINT_READ_WORK
+  ENDPOINT_READ_WORK,
+  ENDPOINT_SOCIAL_LOGIN,
 } from "../Endpoints";
 
 const NextPageStyle = {
@@ -41,6 +42,7 @@ const ReadingMenuBar = ({
   bookSelectionOpen,
   goToReference,
   openAboutModal,
+  openLoginModal,
   referenceValue,
   history,
   hasPriorChapter,
@@ -75,6 +77,9 @@ const ReadingMenuBar = ({
   // we did a reference resolution check against the server for.
   const lastSetReference = useRef(null);
 
+  // This will store information about whether the user is logged in or not.
+  const [authInfo, setAuthInfo] = useState(null);
+
   const [ menuOpen, setMenuOpen ] = useState(false);
   
   /**
@@ -97,7 +102,7 @@ const ReadingMenuBar = ({
   }
 
     /**
-     * Accept the enter key as a jumop to execute the reference jump.
+     * Accept the enter key as a jump to execute the reference jump.
      * @param {object} event The event from the key press.
      */
     const onKeyPressed = (event) => {
@@ -261,6 +266,22 @@ const ReadingMenuBar = ({
       return () => removeHandler(handler, 'keyup');
     });
 
+    // Get information about the logged in user
+    const getAuthInfo = () => {
+      fetch(ENDPOINT_SOCIAL_LOGIN())
+        .then((res) => res.json())
+        .then((newData) => {
+          setAuthInfo(newData);
+        })
+        .catch((e) => {
+          setError(e.toString());
+        });
+    };
+  
+    useEffect(() => {
+      getAuthInfo();
+    }, []);
+
     return (
       <Menu
         inverted={inverted}
@@ -351,6 +372,20 @@ const ReadingMenuBar = ({
                     text="Search"
                     onClick={() => openSearchPage()}
                   />
+                  {openLoginModal && authInfo && authInfo.authenticated && (
+                    <Dropdown.Item
+                      text="Logout"
+                      onClick={() => {
+                        window.location = authInfo.logout;
+                      }}
+                    /> 
+                  )}
+                  {openLoginModal && authInfo && !authInfo.authenticated && (
+                    <Dropdown.Item
+                      text="Login"
+                      onClick={() => openLoginModal()}
+                    /> 
+                  )}
                   <Dropdown.Item
                     text="Look up Greek words (and convert beta-code)"
                     onClick={() => openBetaCodePage()}
@@ -408,6 +443,7 @@ ReadingMenuBar.propTypes = {
   bookSelectionOpen: PropTypes.bool,
   goToReference: PropTypes.func.isRequired,
   openAboutModal: PropTypes.func.isRequired,
+  openLoginModal: PropTypes.func,
   goToPriorChapter: PropTypes.func,
   goToNextChapter: PropTypes.func,
   increaseFontSize: PropTypes.func,
@@ -439,6 +475,7 @@ ReadingMenuBar.defaultProps = {
   previousChapterDescriptor: null,
   increaseFontSizeDisabled: true,
   decreaseFontSizeDisabled: true,
+  openLoginModal: null,
 }
 
 export default withRouter(ReadingMenuBar);
