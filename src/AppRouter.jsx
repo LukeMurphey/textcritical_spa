@@ -12,6 +12,7 @@ const About = React.lazy(() => import('./components/About'));
 const Search = React.lazy(() => import('./components/Search'));
 const BetaCodeConverter = React.lazy(() => import('./components/BetaCodeConverter'));
 const App = React.lazy(() => import('./App'));
+const AuthSuccess = React.lazy(() => import('./components/AuthSuccess'));
 
 const AppRouter = ({ inverted }) => (
   <Suspense fallback={<BasicLoader inverted={inverted} />}>
@@ -37,6 +38,9 @@ const AppRouter = ({ inverted }) => (
         </Route>
         <Route exact path="/beta_code_converter">
           <BetaCodeConverter inverted={inverted} />
+        </Route>
+        <Route exact path="/auth_success">
+          <AuthSuccess />
         </Route>
         <Route>
           <NotFound inverted={inverted} />
