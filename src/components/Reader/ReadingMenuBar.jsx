@@ -283,14 +283,14 @@ const ReadingMenuBar = ({
 
     const checkAuthWindowURL = (loginWindow) => {
       if(loginWindow && loginWindow.document) {
-        console.log(`Checking path: ${loginWindow.document.location.pathname}`);
         if(loginWindow.document.location.pathname == '/auth_success') {
-          console.log('Closing the window');
+          // Close the authentication window now that it is done
           loginWindow.close();
-          location.reload();
+
+          // Refresh the authentication info
+          getAuthInfo();
         }
         else {
-          console.log('Setting up for the next try');
           setTimeout(() => checkAuthWindowURL(loginWindow), 500);
         }
       }
@@ -362,6 +362,9 @@ const ReadingMenuBar = ({
         )}
           <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
             <Responsive minWidth={768}>
+              {authInfo && authInfo.authenticated && (
+                <span style={{marginRight: 18}}>Hello {authInfo.first_name}</span>
+              )}
               <Dropdown icon="ellipsis vertical" direction="left" open={menuOpen} onClick={() => setMenuOpen(true)} onBlur={() => setMenuOpen(false)}>
                 <Dropdown.Menu>
                   {(increaseFontSize || decreaseFontSize) && (
