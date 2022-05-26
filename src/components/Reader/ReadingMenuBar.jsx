@@ -281,6 +281,21 @@ const ReadingMenuBar = ({
       getAuthInfo();
     }, []);
 
+    const checkAuthWindowURL = (loginWindow) => {
+      if(loginWindow && loginWindow.document) {
+        console.log(`Checking path: ${loginWindow.document.location.pathname}`);
+        if(loginWindow.document.location.pathname == '/auth_success') {
+          console.log('Closing the window');
+          loginWindow.close();
+          location.reload();
+        }
+        else {
+          console.log('Setting up for the next try');
+          setTimeout(() => checkAuthWindowURL(loginWindow), 500);
+        }
+      }
+    };
+
     return (
       <Menu
         inverted={inverted}
@@ -383,7 +398,8 @@ const ReadingMenuBar = ({
                     <Dropdown.Item
                       text="Login"
                       onClick={() => {
-                        window.location = authInfo.login_google;
+                        const loginWindow = window.open(authInfo.login_google, 'login_google', 'height=500,width=700,left=500,top=500');
+                        checkAuthWindowURL(loginWindow);
                       }}
                     /> 
                   )}

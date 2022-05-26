@@ -40,7 +40,7 @@ const AppRouter = ({ inverted }) => (
           <BetaCodeConverter inverted={inverted} />
         </Route>
         <Route exact path="/auth_success">
-          <AuthSuccess />
+          <AuthSuccess inverted={inverted} />
         </Route>
         <Route>
           <NotFound inverted={inverted} />
