@@ -708,6 +708,7 @@ const Reader = ({
         goToReference={(newWork, newReferenceValue, referenceInfo) =>
           goToReference(newWork, newReferenceValue, referenceInfo)}
         openAboutModal={() => setModal("about")}
+        openLoginModal={() => setModal("login")}
         goToPriorChapter={loading ? null : () => goToPriorChapter()}
         goToNextChapter={loading ? null : () => goToNextChapter()}
         referenceValue={referenceDescription}

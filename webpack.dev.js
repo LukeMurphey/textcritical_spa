@@ -53,6 +53,7 @@ module.exports = merge(common, {
       '/api': endpoint,
       '/work_image': endpoint,
       'download/work': endpoint,
+      '/account': endpoint,
     },
   },
 });

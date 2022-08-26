@@ -9,7 +9,8 @@ import BookSelection from '../BookSelection';
 import { addHandler, removeHandler } from '../Utils';
 import {
   ENDPOINT_RESOLVE_REFERENCE,
-  ENDPOINT_READ_WORK
+  ENDPOINT_READ_WORK,
+  ENDPOINT_SOCIAL_LOGIN,
 } from "../Endpoints";
 
 const NextPageStyle = {
@@ -75,6 +76,9 @@ const ReadingMenuBar = ({
   // we did a reference resolution check against the server for.
   const lastSetReference = useRef(null);
 
+  // This will store information about whether the user is logged in or not.
+  const [authInfo, setAuthInfo] = useState(null);
+
   const [ menuOpen, setMenuOpen ] = useState(false);
   
   /**
@@ -97,7 +101,7 @@ const ReadingMenuBar = ({
   }
 
     /**
-     * Accept the enter key as a jumop to execute the reference jump.
+     * Accept the enter key as a jump to execute the reference jump.
      * @param {object} event The event from the key press.
      */
     const onKeyPressed = (event) => {
@@ -261,6 +265,37 @@ const ReadingMenuBar = ({
       return () => removeHandler(handler, 'keyup');
     });
 
+    // Get information about the logged in user
+    const getAuthInfo = () => {
+      fetch(ENDPOINT_SOCIAL_LOGIN())
+        .then((res) => res.json())
+        .then((newData) => {
+          setAuthInfo(newData);
+        })
+        .catch((e) => {
+          setError(e.toString());
+        });
+    };
+  
+    useEffect(() => {
+      getAuthInfo();
+    }, []);
+
+    const checkAuthWindowURL = (loginWindow) => {
+      if(loginWindow && loginWindow.document) {
+        if(loginWindow.document.location.pathname == '/auth_success') {
+          // Close the authentication window now that it is done
+          loginWindow.close();
+
+          // Refresh the authentication info
+          getAuthInfo();
+        }
+        else {
+          setTimeout(() => checkAuthWindowURL(loginWindow), 500);
+        }
+      }
+    };
+
     return (
       <Menu
         inverted={inverted}
@@ -327,6 +362,9 @@ const ReadingMenuBar = ({
         )}
           <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
             <Responsive minWidth={768}>
+              {authInfo && authInfo.authenticated && (
+                <span style={{marginRight: 18}}>Hello {authInfo.first_name}</span>
+              )}
               <Dropdown icon="ellipsis vertical" direction="left" open={menuOpen} onClick={() => setMenuOpen(true)} onBlur={() => setMenuOpen(false)}>
                 <Dropdown.Menu>
                   {(increaseFontSize || decreaseFontSize) && (
@@ -351,6 +389,23 @@ const ReadingMenuBar = ({
                     text="Search"
                     onClick={() => openSearchPage()}
                   />
+                  {authInfo && authInfo.authenticated && (
+                    <Dropdown.Item
+                      text="Logout"
+                      onClick={() => {
+                        window.location = authInfo.logout;
+                      }}
+                    /> 
+                  )}
+                  {authInfo && !authInfo.authenticated && (
+                    <Dropdown.Item
+                      text="Login"
+                      onClick={() => {
+                        const loginWindow = window.open(authInfo.login_google, 'login_google', 'height=500,width=700,left=500,top=500');
+                        checkAuthWindowURL(loginWindow);
+                      }}
+                    /> 
+                  )}
                   <Dropdown.Item
                     text="Look up Greek words (and convert beta-code)"
                     onClick={() => openBetaCodePage()}
