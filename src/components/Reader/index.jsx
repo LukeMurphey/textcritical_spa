@@ -3,7 +3,8 @@ import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-rea
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS } from "../Endpoints";
+import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS, ENDPOINT_USER_PREFERENCE, ENDPOINT_SOCIAL_LOGIN } from "../Endpoints";
+import RemoteStorage from "../Settings/RemoteStorage";
 import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
@@ -128,6 +129,12 @@ const Reader = ({
   const [secondWorkTitle, setSecondWorkTitle] = useState(null);
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState(getFontAdjustment());
 
+  // This will store information about whether the user is logged in or not.
+  const [authInfo, setAuthInfo] = useState(null);
+
+  // This stores the storage provider that will store preferences
+  const [storageProvider, setStorageProvider] = useState(null);
+
   const verseReferences = useRef([]);
 
   /**
@@ -200,7 +207,7 @@ const Reader = ({
           }
 
           // Remember that we read this work
-          setWorkProgress(work, secondDivisions, newData.reference_descriptor);
+          setWorkProgress(work, secondDivisions, newData.reference_descriptor, storageProvider);
 
         } else {
           setErrorState(
@@ -521,7 +528,7 @@ const Reader = ({
           setLoading(false);
 
           // Remember that we read this work
-          setWorkProgress(work, newDivisions, updatedData.reference_descriptor);
+          setWorkProgress(work, newDivisions, updatedData.reference_descriptor, storageProvider);
 
           // Add the verse to the list
           addVerseToHistoryList(
@@ -648,6 +655,35 @@ const Reader = ({
     }
   });
 
+  // Get the user preferences
+  const getPreferences = (csrfToken) => {
+    fetch(ENDPOINT_USER_PREFERENCE())
+      .then((res) => res.json())
+      .then((prefs) => {
+        // eslint-disable-next-line no-console
+        console.info("Successfully loaded the user's preferences");
+        setStorageProvider(new RemoteStorage(prefs, csrfToken));
+      })
+  };
+
+  // Get information about the logged in user
+  const getAuthInfo = () => {
+    fetch(ENDPOINT_SOCIAL_LOGIN())
+      .then((res) => res.json())
+      .then((newData) => {
+        setAuthInfo(newData);
+        getPreferences(newData.csrf_token);
+      })
+      .catch((e) => {
+        // setError(e.toString());
+      });
+  };
+
+  // Get the authentication information
+  useEffect(() => {
+    getAuthInfo();
+  }, []);
+
   // Figure out a description for the chapter
   let description = "";
   let referenceDescription = referenceValue;
@@ -726,6 +762,7 @@ const Reader = ({
           fontSizeAdjustment >= MAX_FONT_SIZE_ADJUSTMENT
         }
         decreaseFontSizeDisabled={fontSizeAdjustment <= 0}
+        storageProvider={storageProvider}
       />
       {mode === MODE_DONE && (
         <>
@@ -959,7 +996,7 @@ const Reader = ({
               onClick={() => setBookSelectionOpen(true)}
               inverted={inverted}
             />
-            <FavoriteWorks inverted={inverted} />
+            <FavoriteWorks inverted={inverted} storageProvider={storageProvider}/>
           </div>
         </Container>
       )}

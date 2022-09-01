@@ -1,34 +1,8 @@
 import {LAST_READ_HISTORY, FAVORITE_WORKS} from ".";
+import { storageAvailable } from "./LocalStorage";
 
 export function maxHistoryCount() {
   return 6;
-}
-
-export function storageAvailable(type) {
-  let storage;
-  try {
-    storage = window[type];
-    const x = "__storage_test__";
-    storage.setItem(x, x);
-    storage.removeItem(x);
-    return true;
-  } catch (e) {
-    return (
-      e instanceof DOMException &&
-      // everything except Firefox
-      (e.code === 22 ||
-        // Firefox
-        e.code === 1014 ||
-        // test name field too, because code might not be present
-        // everything except Firefox
-        e.name === "QuotaExceededError" ||
-        // Firefox
-        e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-      // acknowledge QuotaExceededError only if there's something already stored
-      storage &&
-      storage.length !== 0
-    );
-  }
 }
 
 export function getWorksList(name, storageOverride = null) {
@@ -66,9 +40,14 @@ export function setFavoriteWork(
   workTitleSlug,
   storageOverride = null
 ) {
-  const storage = storageOverride || localStorage;
+  // Figure out what version of storage to use
+  const storage = storageOverride;
 
-  if (storageAvailable("localStorage")) {
+  if (storageOverride === null && storageAvailable() ){
+    storage = localStorage;
+  }
+
+  if (storage) {
     // See if the entry exists already
     let favoriteWorks = getFavoriteWorks(storage);
 
@@ -113,9 +92,15 @@ export function removeFavoriteWork(
   workTitleSlug,
   storageOverride = null
 ) {
-  const storage = storageOverride || localStorage;
 
-  if (storageAvailable("localStorage")) {
+  // Figure out what version of storage to use
+  const storage = storageOverride;
+
+  if (storageOverride === null && storageAvailable() ){
+    storage = localStorage;
+  }
+
+  if (storage) {
     // See if the entry exists already
     let favoriteWorks = getFavoriteWorks(storage);
 
@@ -142,9 +127,14 @@ export function setFavoritesProgress(
   divisionReference,
   storageOverride = null
 ) {
-  const storage = storageOverride || localStorage;
+  // Figure out what version of storage to use
+  const storage = storageOverride;
 
-  if (storageAvailable("localStorage")) {
+  if (storageOverride === null && storageAvailable() ){
+    storage = localStorage;
+  }
+
+  if (storage) {
     // See if the entry exists in the list of favorites
     let favoriteWorks = getFavoriteWorks(storage);
 
@@ -173,9 +163,16 @@ export function setWorkProgress(
   divisionReference,
   storageOverride = null
 ) {
-  const storage = storageOverride || localStorage;
 
-  if (storageAvailable("localStorage")) {
+  // Figure out what version of storage to use
+  const storage = storageOverride;
+
+  if (storageOverride === null && storageAvailable() ){
+    storage = localStorage;
+  }
+
+  if (storage) {
+
     // See if the entry exists already
     let lastReadHistory = getWorksLastRead(storage);
 
