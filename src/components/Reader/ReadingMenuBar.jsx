@@ -401,8 +401,9 @@ const ReadingMenuBar = ({
                     <Dropdown.Item
                       text="Login"
                       onClick={() => {
-                        const loginWindow = window.open(authInfo.login_google, 'login_google', 'height=500,width=700,left=500,top=500');
+                        const loginWindow = window.open(authInfo.login_google, 'login_google', 'height=500,width=800');
                         checkAuthWindowURL(loginWindow);
+                        setMenuOpen(false);
                       }}
                     /> 
                   )}
