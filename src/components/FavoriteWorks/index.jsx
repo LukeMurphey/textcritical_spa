@@ -38,7 +38,7 @@ const FavoriteWorks = ({ inverted, storageProvider }) => {
               <Button
                 floated="right"
                 onClick={() => {
-                  clearWorksLastRead();
+                  clearWorksLastRead(storageProvider);
                   setValue(value + 1);
                 }}
               >
@@ -73,7 +73,7 @@ const FavoriteWorks = ({ inverted, storageProvider }) => {
             <Button
               floated="right"
               onClick={() => {
-                clearFavorites();
+                clearFavorites(storageProvider);
                 setValue(value + 1);
               }}
             >
