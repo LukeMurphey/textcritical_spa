@@ -107,3 +107,7 @@ export function ENDPOINT_SEARCH(query, page = 1, relatedForms = false, ignoreDia
 export function ENDPOINT_CONVERT_BETA_CODE_QUERY(query) {
   return `${getHostConfig()}/api/convert_query_beta_code/?q=${query}`;
 }
+
+export function ENDPOINT_USER_PREFERENCE() {
+  return `${getHostConfig()}/api/user_preference`;
+}
