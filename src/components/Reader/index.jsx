@@ -3,7 +3,7 @@ import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-rea
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS, ENDPOINT_USER_PREFERENCE, ENDPOINT_SOCIAL_LOGIN } from "../Endpoints";
+import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS, ENDPOINT_USER_PREFERENCES, ENDPOINT_SOCIAL_LOGIN } from "../Endpoints";
 import RemoteStorage from "../Settings/RemoteStorage";
 import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
@@ -657,7 +657,7 @@ const Reader = ({
 
   // Get the user preferences
   const getPreferences = (csrfToken) => {
-    fetch(ENDPOINT_USER_PREFERENCE())
+    fetch(ENDPOINT_USER_PREFERENCES())
       .then((res) => res.json())
       .then((prefs) => {
         // eslint-disable-next-line no-console

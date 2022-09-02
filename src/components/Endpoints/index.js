@@ -108,6 +108,14 @@ export function ENDPOINT_CONVERT_BETA_CODE_QUERY(query) {
   return `${getHostConfig()}/api/convert_query_beta_code/?q=${query}`;
 }
 
-export function ENDPOINT_USER_PREFERENCE() {
-  return `${getHostConfig()}/api/user_preference`;
+export function ENDPOINT_USER_PREFERENCES() {
+  return `${getHostConfig()}/api/user_preferences`;
+}
+
+export function ENDPOINT_USER_PREFERENCE_EDIT(name) {
+  return `${getHostConfig()}/api/user_preference/edit/${name}`;
+}
+
+export function ENDPOINT_USER_PREFERENCE_DELETE(name) {
+  return `${getHostConfig()}/api/user_preference/delete/${name}`;
 }

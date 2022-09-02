@@ -77,7 +77,7 @@ const ReadingMenuBar = ({
   const lastSetReference = useRef(null);
 
   // This will store information about whether the user is logged in or not.
-  const [authInfo, setAuthInfo] = useState(null);
+  const [ authInfo, setAuthInfo ] = useState(null);
 
   const [ menuOpen, setMenuOpen ] = useState(false);
   
