@@ -100,40 +100,46 @@ const Reader = ({
 
   const [modal, setModal] = useState(null);
   const [data, setData] = useState(null);
-  const [errorDescription, setErrorDescription] = useState(null);
   const [loading, setLoading] = useState(null);
   const [divisions, setDivisions] = useState(null);
   const [referenceValue, setReferenceValue] = useState(null);
+  const [loadedWork, setLoadedWork] = useState(null);
 
   const [bookSelectionOpen, setBookSelectionOpen] = useState(null);
-  const [errorTitle, setErrorTitle] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [redirectedFrom, setRedirectedFrom] = useState(null);
-  const [redirectedTo, setRedirectedTo] = useState(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
-  const [loadedWork, setLoadedWork] = useState(null);
+  const [errorDescription, setErrorDescription] = useState(null);
+  const [errorTitle, setErrorTitle] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const [redirectedFrom, setRedirectedFrom] = useState(null);
+  const [redirectedTo, setRedirectedTo] = useState(null);
+
   const [highlightedVerse, setHighlightedVerse] = useState(null);
   const [highlightedWords, setHighlightedWords] = useState([]);
-  const [selectedWord, setSelectedWord] = useState(null);
+
   const [popupX, setPopupX] = useState(null);
   const [popupY, setPopupY] = useState(null);
-
   const [popupPositionRight, setPopupPositionRight] = useState(null);
   const [popupPositionBelow, setPopupPositionBelow] = useState(null);
   const [popupWork, setPopupWork] = useState(null);
+
   const [selectedNote, setSelectedNote] = useState(null);
+  const [selectedWord, setSelectedWord] = useState(null);
+
   const [secondWork, setSecondWork] = useState(null);
   const [secondWorkData, setSecondWorkData] = useState(null);
   const [secondWorkChapterNotFound, setSecondWorkChapterNotFound] = useState(false);
   const [secondWorkTitle, setSecondWorkTitle] = useState(null);
+
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState(getFontAdjustment());
 
   // This will store information about whether the user is logged in or not.
   const [authInfo, setAuthInfo] = useState(null);
 
-  // This stores the storage provider that will store preferences
+  // This stores the storage provider that will store user preferences
   const [storageProvider, setStorageProvider] = useState(null);
+  const [authLoadingDone, setAuthLoadingDone] = useState(false);
 
   const verseReferences = useRef([]);
 
@@ -663,6 +669,7 @@ const Reader = ({
         // eslint-disable-next-line no-console
         console.info("Successfully loaded the user's preferences");
         setStorageProvider(new RemoteStorage(prefs, csrfToken));
+        setAuthLoadingDone(true);
       })
   };
 
@@ -672,10 +679,19 @@ const Reader = ({
       .then((res) => res.json())
       .then((newData) => {
         setAuthInfo(newData);
-        getPreferences(newData.csrf_token);
+
+        // Start getting the preferences from the server if the user is authenticated
+        if(newData && newData.authenticated && newData.hasOwnProperty('csrf_token')){
+          getPreferences(newData.csrf_token);
+        }
+        else {
+          setAuthLoadingDone(true);
+        }
       })
       .catch((e) => {
         // setError(e.toString());
+        console.warn("Unable to get the authentication information");
+        setAuthLoadingDone(true);
       });
   };
 
@@ -996,7 +1012,7 @@ const Reader = ({
               onClick={() => setBookSelectionOpen(true)}
               inverted={inverted}
             />
-            <FavoriteWorks inverted={inverted} storageProvider={storageProvider}/>
+            {authLoadingDone && <FavoriteWorks inverted={inverted} storageProvider={storageProvider}/> }
           </div>
         </Container>
       )}

@@ -5,23 +5,38 @@ export function maxHistoryCount() {
   return 6;
 }
 
+function chooseStorage(storageOverride = null) {
+  // Figure out what version of storage to use
+  if (storageOverride !== null){
+    return storageOverride;
+  }
+
+  if (storageAvailable()){
+    return localStorage;
+  }
+  console.warn('Local storage is not available!!');
+  return null;
+}
+
 export function getWorksList(name, storageOverride = null) {
-  const storage = storageOverride || localStorage;
+  const storage = chooseStorage(storageOverride);
 
-  const worksList = storage.getItem(name);
+  if(storage) {
+    const worksList = storage.getItem(name);
 
-  if (worksList) {
-    try {
-      const worksListParsed = JSON.parse(worksList);
+    if (worksList) {
+      try {
+        const worksListParsed = JSON.parse(worksList);
 
-      // Make sure that the list is an array and has the necesary properties.
-      return worksListParsed.filter((entry) => {
-        return entry.workTitleSlug;
-      });
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.warn("The list of works could not be loaded");
-      return null; // The list could not be loaded
+        // Make sure that the list is an array and has the necesary properties.
+        return worksListParsed.filter((entry) => {
+          return entry.workTitleSlug;
+        });
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn("The list of works could not be loaded");
+        return null; // The list could not be loaded
+      }
     }
   }
 
@@ -40,12 +55,7 @@ export function setFavoriteWork(
   workTitleSlug,
   storageOverride = null
 ) {
-  // Figure out what version of storage to use
-  const storage = storageOverride;
-
-  if (storageOverride === null && storageAvailable() ){
-    storage = localStorage;
-  }
+  const storage = chooseStorage(storageOverride);
 
   if (storage) {
     // See if the entry exists already
@@ -92,13 +102,7 @@ export function removeFavoriteWork(
   workTitleSlug,
   storageOverride = null
 ) {
-
-  // Figure out what version of storage to use
-  const storage = storageOverride;
-
-  if (storageOverride === null && storageAvailable() ){
-    storage = localStorage;
-  }
+  const storage = chooseStorage(storageOverride);
 
   if (storage) {
     // See if the entry exists already
@@ -127,12 +131,7 @@ export function setFavoritesProgress(
   divisionReference,
   storageOverride = null
 ) {
-  // Figure out what version of storage to use
-  const storage = storageOverride;
-
-  if (storageOverride === null && storageAvailable() ){
-    storage = localStorage;
-  }
+  const storage = chooseStorage(storageOverride);
 
   if (storage) {
     // See if the entry exists in the list of favorites
@@ -163,13 +162,7 @@ export function setWorkProgress(
   divisionReference,
   storageOverride = null
 ) {
-
-  // Figure out what version of storage to use
-  const storage = storageOverride;
-
-  if (storageOverride === null && storageAvailable() ){
-    storage = localStorage;
-  }
+  const storage = chooseStorage(storageOverride);
 
   if (storage) {
 
@@ -218,11 +211,11 @@ export function setWorkProgress(
 }
 
 export function clearWorksLastRead(storageOverride = null) {
-  const storage = storageOverride || localStorage;
+  const storage = chooseStorage(storageOverride);
   storage.removeItem(LAST_READ_HISTORY);
 }
 
 export function clearFavorites(storageOverride = null) {
-  const storage = storageOverride || localStorage;
+  const storage = chooseStorage(storageOverride);
   storage.removeItem(FAVORITE_WORKS);
 }
