@@ -689,10 +689,14 @@ const Reader = ({
         }
       })
       .catch((e) => {
-        // setError(e.toString());
         console.warn("Unable to get the authentication information");
         setAuthLoadingDone(true);
       });
+  };
+
+  // Handle the case where the ReadingMenuBar tells us that authentication was completed; reload our state accordingly
+  const authenticationCompleted = () => {
+    getAuthInfo();
   };
 
   // Get the authentication information
@@ -779,6 +783,8 @@ const Reader = ({
         }
         decreaseFontSizeDisabled={fontSizeAdjustment <= 0}
         storageProvider={storageProvider}
+        authenticationCompleted={() => authenticationCompleted()}
+        authInfo={authInfo}
       />
       {mode === MODE_DONE && (
         <>

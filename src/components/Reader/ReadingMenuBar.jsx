@@ -54,6 +54,8 @@ const ReadingMenuBar = ({
   decreaseFontSize,
   increaseFontSizeDisabled,
   decreaseFontSizeDisabled,
+  authenticationCompleted,
+  authInfo
  }) => {
   // Create a custom className for signaling the desire to switch to inverted
   let classNameSuffix = "";
@@ -75,9 +77,6 @@ const ReadingMenuBar = ({
   // This will store the last reference set so that we make sure not to replace the reference
   // we did a reference resolution check against the server for.
   const lastSetReference = useRef(null);
-
-  // This will store information about whether the user is logged in or not.
-  const [ authInfo, setAuthInfo ] = useState(null);
 
   const [ menuOpen, setMenuOpen ] = useState(false);
   
@@ -265,22 +264,6 @@ const ReadingMenuBar = ({
       return () => removeHandler(handler, 'keyup');
     });
 
-    // Get information about the logged in user
-    const getAuthInfo = () => {
-      fetch(ENDPOINT_SOCIAL_LOGIN())
-        .then((res) => res.json())
-        .then((newData) => {
-          setAuthInfo(newData);
-        })
-        .catch((e) => {
-          setError(e.toString());
-        });
-    };
-  
-    useEffect(() => {
-      getAuthInfo();
-    }, []);
-
     const checkAuthWindowURL = (loginWindow) => {
       if(loginWindow && loginWindow.document) {
         if(loginWindow.document.location.pathname == '/auth_success') {
@@ -288,7 +271,10 @@ const ReadingMenuBar = ({
           loginWindow.close();
 
           // Refresh the authentication info
-          getAuthInfo();
+          authenticationCompleted();
+
+          // Close the menu
+          setMenuOpen(false);
         }
         else {
           setTimeout(() => checkAuthWindowURL(loginWindow), 500);
@@ -468,6 +454,7 @@ ReadingMenuBar.propTypes = {
   goToNextChapter: PropTypes.func,
   increaseFontSize: PropTypes.func,
   decreaseFontSize: PropTypes.func,
+  authenticationCompleted: PropTypes.func,
   referenceValue: PropTypes.string,
   hasNextChapter: PropTypes.bool,
   hasPriorChapter: PropTypes.bool,
@@ -477,6 +464,7 @@ ReadingMenuBar.propTypes = {
   previousChapterDescriptor: PropTypes.string,
   increaseFontSizeDisabled: PropTypes.bool,
   decreaseFontSizeDisabled: PropTypes.bool,
+  authInfo: PropTypes.object,
 }
 
 ReadingMenuBar.defaultProps = {
@@ -495,6 +483,8 @@ ReadingMenuBar.defaultProps = {
   previousChapterDescriptor: null,
   increaseFontSizeDisabled: true,
   decreaseFontSizeDisabled: true,
+  authenticationCompleted: null,
+  authInfo: null
 }
 
 export default withRouter(ReadingMenuBar);
