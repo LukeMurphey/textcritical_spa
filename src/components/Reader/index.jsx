@@ -266,17 +266,6 @@ const Reader = ({
   }
 
   /**
-   * Navigate to chapter.
-   *
-   * @param {string} work The title slug of the work
-   * @param {string} parallelWork The title slug of the parallel work
-   * @param {array} divisions The list of division indicators
-   */
-  const navigateToChapter = (work, parallelWork, ...newDivisions) => {
-    updateHistory(work, parallelWork, ...newDivisions);
-  }
-
-  /**
    * Go to the reference defined in the input box.
    */
   const goToReference = (requestedWork, newReferenceValue, referenceInfo) => {
@@ -290,8 +279,7 @@ const Reader = ({
     scrollToVerse(referenceInfo.verse_to_highlight);
     setHighlightedVerse(referenceInfo.verse_to_highlight);
     setReferenceValue(newReferenceValue);
-
-    navigateToChapter(requestedWork, secondWork, ...referenceInfo.divisions);
+    updateHistory(requestedWork, secondWork, ...referenceInfo.divisions);
   }
 
   /**
@@ -335,7 +323,7 @@ const Reader = ({
     } else {
       // Drop the second work since this one is not related
       closeSecondWork();
-      navigateToChapter(work);  
+      updateHistory(work);  
     }
   }
 
@@ -406,7 +394,7 @@ const Reader = ({
    */
   const goToNextChapter = () => {
     if (data && data.next_chapter) {
-      navigateToChapter(loadedWork, secondWork, data.next_chapter.full_descriptor);
+      updateHistory(loadedWork, secondWork, data.next_chapter.full_descriptor);
     }
   }
 
@@ -415,7 +403,7 @@ const Reader = ({
    */
   const goToPriorChapter = () => {
     if (data && data.previous_chapter) {
-      navigateToChapter(loadedWork, secondWork, data.previous_chapter.full_descriptor);
+      updateHistory(loadedWork, secondWork, data.previous_chapter.full_descriptor);
     }
   }
 
@@ -426,7 +414,7 @@ const Reader = ({
    * @param {*} info All props.
    */
   const changeChapter = (event, info) => {
-    navigateToChapter(loadedWork, secondWork, info.value);
+    updateHistory(loadedWork, secondWork, info.value);
   }
 
   /**
@@ -538,7 +526,7 @@ const Reader = ({
 
           // Add the verse to the list
           addVerseToHistoryList(
-            READ_WORK(work, ...newDivisions),
+            READ_WORK(work, null, ...newDivisions),
             updatedData.chapter.full_descriptor,
             updatedData.verse_to_highlight,
             updatedData.chapter.description
@@ -609,17 +597,18 @@ const Reader = ({
     // Check if the chapter we have loaded already
     // This needs to check the loaded work too, since we need to recognize if we the reference is
     // the same reference but in a different work.
-    const isReferenceForSameChapter = data &&
-      data.chapter &&
-      existingChapter &&
-      existingChapter.chapter === data.chapter.full_descriptor &&
-      loadedWork &&
-      loadedWork === match.params.work;
-
+    let isReferenceForSameChapter = false;
+    if(data && existingChapter && loadedWork) {
+      if(existingChapter.chapter === data.chapter.full_descriptor && loadedWork === match.params.work) {
+        isReferenceForSameChapter = true;
+      }
+    }
+  
     // Check if the chapter we have loaded already
     // This needs to check the loaded work too, since we need to recognize if we the reference is
     // the same reference but in a different work.
     if (isReferenceForSameChapter && sameSecondWork) {
+  
       // Get the highlighted verse
       const highlightedVerseRef = existingChapter.verse;
 
@@ -681,15 +670,14 @@ const Reader = ({
         setAuthInfo(newData);
 
         // Start getting the preferences from the server if the user is authenticated
-        if(newData && newData.authenticated && newData.hasOwnProperty('csrf_token')){
+        if(newData && newData.authenticated && Object.prototype.hasOwnProperty.call(newData, "csrf_token")){
           getPreferences(newData.csrf_token);
         }
         else {
           setAuthLoadingDone(true);
         }
       })
-      .catch((e) => {
-        console.warn("Unable to get the authentication information");
+      .catch(() => {
         setAuthLoadingDone(true);
       });
   };
@@ -1018,7 +1006,7 @@ const Reader = ({
               onClick={() => setBookSelectionOpen(true)}
               inverted={inverted}
             />
-            {authLoadingDone && <FavoriteWorks inverted={inverted} storageProvider={storageProvider}/> }
+            {authLoadingDone && <FavoriteWorks inverted={inverted} storageProvider={storageProvider} /> }
           </div>
         </Container>
       )}
