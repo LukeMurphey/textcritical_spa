@@ -10,7 +10,6 @@ import { addHandler, removeHandler } from '../Utils';
 import {
   ENDPOINT_RESOLVE_REFERENCE,
   ENDPOINT_READ_WORK,
-  ENDPOINT_SOCIAL_LOGIN,
 } from "../Endpoints";
 
 const NextPageStyle = {
@@ -54,6 +53,8 @@ const ReadingMenuBar = ({
   decreaseFontSize,
   increaseFontSizeDisabled,
   decreaseFontSizeDisabled,
+  authenticationCompleted,
+  authInfo
  }) => {
   // Create a custom className for signaling the desire to switch to inverted
   let classNameSuffix = "";
@@ -75,9 +76,6 @@ const ReadingMenuBar = ({
   // This will store the last reference set so that we make sure not to replace the reference
   // we did a reference resolution check against the server for.
   const lastSetReference = useRef(null);
-
-  // This will store information about whether the user is logged in or not.
-  const [authInfo, setAuthInfo] = useState(null);
 
   const [ menuOpen, setMenuOpen ] = useState(false);
   
@@ -244,14 +242,14 @@ const ReadingMenuBar = ({
     /**
      * Handle key presses
      */
-    const upHandler = ({ key, shiftKey }) => {
-      if (key === 'ArrowRight' && shiftKey) {
+    const upHandler = ({ key, ctrlKey }) => {
+      if (key === 'ArrowRight' && ctrlKey) {
         if(goToNextChapter) {
           goToNextChapter();
         }
       }
   
-      if (key === 'ArrowLeft' && shiftKey) {
+      if (key === 'ArrowLeft' && ctrlKey) {
         if(goToPriorChapter) {
           goToPriorChapter();
         }
@@ -265,30 +263,17 @@ const ReadingMenuBar = ({
       return () => removeHandler(handler, 'keyup');
     });
 
-    // Get information about the logged in user
-    const getAuthInfo = () => {
-      fetch(ENDPOINT_SOCIAL_LOGIN())
-        .then((res) => res.json())
-        .then((newData) => {
-          setAuthInfo(newData);
-        })
-        .catch((e) => {
-          setError(e.toString());
-        });
-    };
-  
-    useEffect(() => {
-      getAuthInfo();
-    }, []);
-
     const checkAuthWindowURL = (loginWindow) => {
       if(loginWindow && loginWindow.document) {
-        if(loginWindow.document.location.pathname == '/auth_success') {
+        if(loginWindow.document.location.pathname === '/auth_success') {
           // Close the authentication window now that it is done
           loginWindow.close();
 
           // Refresh the authentication info
-          getAuthInfo();
+          authenticationCompleted();
+
+          // Close the menu
+          setMenuOpen(false);
         }
         else {
           setTimeout(() => checkAuthWindowURL(loginWindow), 500);
@@ -363,7 +348,11 @@ const ReadingMenuBar = ({
           <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
             <Responsive minWidth={768}>
               {authInfo && authInfo.authenticated && (
-                <span style={{marginRight: 18}}>Hello {authInfo.first_name}</span>
+                <span style={{marginRight: 18}}>
+                  Hello 
+                  {' '}
+                  {authInfo.first_name}
+                </span>
               )}
               <Dropdown icon="ellipsis vertical" direction="left" open={menuOpen} onClick={() => setMenuOpen(true)} onBlur={() => setMenuOpen(false)}>
                 <Dropdown.Menu>
@@ -401,8 +390,9 @@ const ReadingMenuBar = ({
                     <Dropdown.Item
                       text="Login"
                       onClick={() => {
-                        const loginWindow = window.open(authInfo.login_google, 'login_google', 'height=500,width=700,left=500,top=500');
+                        const loginWindow = window.open(authInfo.login_google, 'login_google', 'height=500,width=800');
                         checkAuthWindowURL(loginWindow);
+                        setMenuOpen(false);
                       }}
                     /> 
                   )}
@@ -431,7 +421,7 @@ const ReadingMenuBar = ({
             className={`priorPage ${classNameSuffix}`}
             disabled={!hasPriorChapter}
             onClick={() => goToPriorChapter()}
-            title="Go to prior chapter (or use shortcut shift + left arrow)"
+            title="Go to prior chapter (or use shortcut ctrl + left arrow)"
           >
             <Icon name="left chevron" />
           </Button>
@@ -442,7 +432,7 @@ const ReadingMenuBar = ({
             className={`nextPage ${classNameSuffix}`}
             disabled={!hasNextChapter}
             onClick={() => goToNextChapter()}
-            title="Go to next chapter (or use shortcut shift + right arrow)"
+            title="Go to next chapter (or use shortcut ctrl + right arrow)"
           >
             <Icon name="right chevron" />
           </Button>
@@ -467,6 +457,7 @@ ReadingMenuBar.propTypes = {
   goToNextChapter: PropTypes.func,
   increaseFontSize: PropTypes.func,
   decreaseFontSize: PropTypes.func,
+  authenticationCompleted: PropTypes.func,
   referenceValue: PropTypes.string,
   hasNextChapter: PropTypes.bool,
   hasPriorChapter: PropTypes.bool,
@@ -476,6 +467,8 @@ ReadingMenuBar.propTypes = {
   previousChapterDescriptor: PropTypes.string,
   increaseFontSizeDisabled: PropTypes.bool,
   decreaseFontSizeDisabled: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  authInfo: PropTypes.object,
 }
 
 ReadingMenuBar.defaultProps = {
@@ -494,6 +487,8 @@ ReadingMenuBar.defaultProps = {
   previousChapterDescriptor: null,
   increaseFontSizeDisabled: true,
   decreaseFontSizeDisabled: true,
+  authenticationCompleted: null,
+  authInfo: null
 }
 
 export default withRouter(ReadingMenuBar);

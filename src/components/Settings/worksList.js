@@ -1,53 +1,42 @@
 import {LAST_READ_HISTORY, FAVORITE_WORKS} from ".";
+import { storageAvailable } from "./LocalStorage";
 
 export function maxHistoryCount() {
   return 6;
 }
 
-export function storageAvailable(type) {
-  let storage;
-  try {
-    storage = window[type];
-    const x = "__storage_test__";
-    storage.setItem(x, x);
-    storage.removeItem(x);
-    return true;
-  } catch (e) {
-    return (
-      e instanceof DOMException &&
-      // everything except Firefox
-      (e.code === 22 ||
-        // Firefox
-        e.code === 1014 ||
-        // test name field too, because code might not be present
-        // everything except Firefox
-        e.name === "QuotaExceededError" ||
-        // Firefox
-        e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-      // acknowledge QuotaExceededError only if there's something already stored
-      storage &&
-      storage.length !== 0
-    );
+function chooseStorage(storageOverride = null) {
+  // Figure out what version of storage to use
+  if (storageOverride !== null){
+    return storageOverride;
   }
+
+  if (storageAvailable()){
+    return localStorage;
+  }
+  console.warn('Local storage is not available!!');
+  return null;
 }
 
 export function getWorksList(name, storageOverride = null) {
-  const storage = storageOverride || localStorage;
+  const storage = chooseStorage(storageOverride);
 
-  const worksList = storage.getItem(name);
+  if(storage) {
+    const worksList = storage.getItem(name);
 
-  if (worksList) {
-    try {
-      const worksListParsed = JSON.parse(worksList);
+    if (worksList) {
+      try {
+        const worksListParsed = JSON.parse(worksList);
 
-      // Make sure that the list is an array and has the necesary properties.
-      return worksListParsed.filter((entry) => {
-        return entry.workTitleSlug;
-      });
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.warn("The list of works could not be loaded");
-      return null; // The list could not be loaded
+        // Make sure that the list is an array and has the necesary properties.
+        return worksListParsed.filter((entry) => {
+          return entry.workTitleSlug;
+        });
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn("The list of works could not be loaded");
+        return null; // The list could not be loaded
+      }
     }
   }
 
@@ -66,9 +55,9 @@ export function setFavoriteWork(
   workTitleSlug,
   storageOverride = null
 ) {
-  const storage = storageOverride || localStorage;
+  const storage = chooseStorage(storageOverride);
 
-  if (storageAvailable("localStorage")) {
+  if (storage) {
     // See if the entry exists already
     let favoriteWorks = getFavoriteWorks(storage);
 
@@ -113,9 +102,9 @@ export function removeFavoriteWork(
   workTitleSlug,
   storageOverride = null
 ) {
-  const storage = storageOverride || localStorage;
+  const storage = chooseStorage(storageOverride);
 
-  if (storageAvailable("localStorage")) {
+  if (storage) {
     // See if the entry exists already
     let favoriteWorks = getFavoriteWorks(storage);
 
@@ -142,9 +131,9 @@ export function setFavoritesProgress(
   divisionReference,
   storageOverride = null
 ) {
-  const storage = storageOverride || localStorage;
+  const storage = chooseStorage(storageOverride);
 
-  if (storageAvailable("localStorage")) {
+  if (storage) {
     // See if the entry exists in the list of favorites
     let favoriteWorks = getFavoriteWorks(storage);
 
@@ -173,9 +162,10 @@ export function setWorkProgress(
   divisionReference,
   storageOverride = null
 ) {
-  const storage = storageOverride || localStorage;
+  const storage = chooseStorage(storageOverride);
 
-  if (storageAvailable("localStorage")) {
+  if (storage) {
+
     // See if the entry exists already
     let lastReadHistory = getWorksLastRead(storage);
 
@@ -221,11 +211,11 @@ export function setWorkProgress(
 }
 
 export function clearWorksLastRead(storageOverride = null) {
-  const storage = storageOverride || localStorage;
+  const storage = chooseStorage(storageOverride);
   storage.removeItem(LAST_READ_HISTORY);
 }
 
 export function clearFavorites(storageOverride = null) {
-  const storage = storageOverride || localStorage;
+  const storage = chooseStorage(storageOverride);
   storage.removeItem(FAVORITE_WORKS);
 }

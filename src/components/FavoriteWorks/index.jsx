@@ -12,18 +12,19 @@ import {
 } from "../Settings/worksList";
 import WorkCard from "./WorkCard";
 
-const FavoriteWorks = ({ inverted }) => {
-  const recentlyRead = getWorksLastRead();
-  const favorites = getFavoriteWorks();
+const FavoriteWorks = ({ inverted, storageProvider }) => {
+  let recentlyRead = getWorksLastRead(storageProvider);
+  let favorites = getFavoriteWorks(storageProvider);
+
   const [value, setValue] = useState(0); // Using an integer as a state marker to get the view to rerender when necessary
 
   const onFavWork = work => {
-    setFavoriteWork(work);
+    setFavoriteWork(work, storageProvider);
     setValue(value + 1)
   }
 
   const onUnFavWork = work => {
-    removeFavoriteWork(work);
+    removeFavoriteWork(work, storageProvider);
     setValue(value + 1)
   }
 
@@ -37,7 +38,7 @@ const FavoriteWorks = ({ inverted }) => {
               <Button
                 floated="right"
                 onClick={() => {
-                  clearWorksLastRead();
+                  clearWorksLastRead(storageProvider);
                   setValue(value + 1);
                 }}
               >
@@ -72,7 +73,7 @@ const FavoriteWorks = ({ inverted }) => {
             <Button
               floated="right"
               onClick={() => {
-                clearFavorites();
+                clearFavorites(storageProvider);
                 setValue(value + 1);
               }}
             >
@@ -104,10 +105,12 @@ const FavoriteWorks = ({ inverted }) => {
 
 FavoriteWorks.propTypes = {
   inverted: PropTypes.bool,
+  storageProvider: PropTypes.object
 };
 
 FavoriteWorks.defaultProps = {
   inverted: false,
+  storageProvider: null
 };
 
 export default FavoriteWorks;

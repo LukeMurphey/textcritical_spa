@@ -3,7 +3,8 @@ import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-rea
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS } from "../Endpoints";
+import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS, ENDPOINT_USER_PREFERENCES, ENDPOINT_SOCIAL_LOGIN } from "../Endpoints";
+import RemoteStorage from "../Settings/RemoteStorage";
 import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
@@ -99,35 +100,48 @@ const Reader = ({
 
   const [modal, setModal] = useState(null);
   const [data, setData] = useState(null);
-  const [errorDescription, setErrorDescription] = useState(null);
   const [loading, setLoading] = useState(null);
   const [divisions, setDivisions] = useState(null);
   const [referenceValue, setReferenceValue] = useState(null);
+  const [loadedWork, setLoadedWork] = useState(null);
 
   const [bookSelectionOpen, setBookSelectionOpen] = useState(null);
-  const [errorTitle, setErrorTitle] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [redirectedFrom, setRedirectedFrom] = useState(null);
-  const [redirectedTo, setRedirectedTo] = useState(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
-  const [loadedWork, setLoadedWork] = useState(null);
+  const [errorDescription, setErrorDescription] = useState(null);
+  const [errorTitle, setErrorTitle] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const [redirectedFrom, setRedirectedFrom] = useState(null);
+  const [redirectedTo, setRedirectedTo] = useState(null);
+
   const [highlightedVerse, setHighlightedVerse] = useState(null);
   const [highlightedWords, setHighlightedWords] = useState([]);
-  const [selectedWord, setSelectedWord] = useState(null);
+
   const [popupX, setPopupX] = useState(null);
   const [popupY, setPopupY] = useState(null);
-
   const [popupPositionRight, setPopupPositionRight] = useState(null);
   const [popupPositionBelow, setPopupPositionBelow] = useState(null);
   const [popupWork, setPopupWork] = useState(null);
+
   const [selectedNote, setSelectedNote] = useState(null);
+  const [selectedWord, setSelectedWord] = useState(null);
+
   const [secondWork, setSecondWork] = useState(null);
   const [secondWorkData, setSecondWorkData] = useState(null);
   const [secondWorkChapterNotFound, setSecondWorkChapterNotFound] = useState(false);
   const [secondWorkTitle, setSecondWorkTitle] = useState(null);
+
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState(getFontAdjustment());
 
+  // This will store information about whether the user is logged in or not.
+  const [authInfo, setAuthInfo] = useState(null);
+
+  // This stores the storage provider that will store user preferences
+  const [storageProvider, setStorageProvider] = useState(null);
+  const [authLoadingDone, setAuthLoadingDone] = useState(false);
+
+  // Keep a list of verse references that are known to be a reference within the current chapter
   const verseReferences = useRef([]);
 
   /**
@@ -200,7 +214,7 @@ const Reader = ({
           }
 
           // Remember that we read this work
-          setWorkProgress(work, secondDivisions, newData.reference_descriptor);
+          setWorkProgress(work, secondDivisions, newData.reference_descriptor, storageProvider);
 
         } else {
           setErrorState(
@@ -253,17 +267,6 @@ const Reader = ({
   }
 
   /**
-   * Navigate to chapter.
-   *
-   * @param {string} work The title slug of the work
-   * @param {string} parallelWork The title slug of the parallel work
-   * @param {array} divisions The list of division indicators
-   */
-  const navigateToChapter = (work, parallelWork, ...newDivisions) => {
-    updateHistory(work, parallelWork, ...newDivisions);
-  }
-
-  /**
    * Go to the reference defined in the input box.
    */
   const goToReference = (requestedWork, newReferenceValue, referenceInfo) => {
@@ -278,7 +281,8 @@ const Reader = ({
     setHighlightedVerse(referenceInfo.verse_to_highlight);
     setReferenceValue(newReferenceValue);
 
-    navigateToChapter(requestedWork, secondWork, ...referenceInfo.divisions);
+    // TODO: find a way to keep the verse to highlight 
+    updateHistory(requestedWork, secondWork, ...referenceInfo.divisions);
   }
 
   /**
@@ -322,7 +326,7 @@ const Reader = ({
     } else {
       // Drop the second work since this one is not related
       closeSecondWork();
-      navigateToChapter(work);  
+      updateHistory(work);  
     }
   }
 
@@ -393,7 +397,7 @@ const Reader = ({
    */
   const goToNextChapter = () => {
     if (data && data.next_chapter) {
-      navigateToChapter(loadedWork, secondWork, data.next_chapter.full_descriptor);
+      updateHistory(loadedWork, secondWork, data.next_chapter.full_descriptor);
     }
   }
 
@@ -402,7 +406,7 @@ const Reader = ({
    */
   const goToPriorChapter = () => {
     if (data && data.previous_chapter) {
-      navigateToChapter(loadedWork, secondWork, data.previous_chapter.full_descriptor);
+      updateHistory(loadedWork, secondWork, data.previous_chapter.full_descriptor);
     }
   }
 
@@ -413,7 +417,7 @@ const Reader = ({
    * @param {*} info All props.
    */
   const changeChapter = (event, info) => {
-    navigateToChapter(loadedWork, secondWork, info.value);
+    updateHistory(loadedWork, secondWork, info.value);
   }
 
   /**
@@ -521,11 +525,11 @@ const Reader = ({
           setLoading(false);
 
           // Remember that we read this work
-          setWorkProgress(work, newDivisions, updatedData.reference_descriptor);
+          setWorkProgress(work, newDivisions, updatedData.reference_descriptor, storageProvider);
 
           // Add the verse to the list
           addVerseToHistoryList(
-            READ_WORK(work, ...newDivisions),
+            READ_WORK(work, null, ...newDivisions),
             updatedData.chapter.full_descriptor,
             updatedData.verse_to_highlight,
             updatedData.chapter.description
@@ -596,17 +600,18 @@ const Reader = ({
     // Check if the chapter we have loaded already
     // This needs to check the loaded work too, since we need to recognize if we the reference is
     // the same reference but in a different work.
-    const isReferenceForSameChapter = data &&
-      data.chapter &&
-      existingChapter &&
-      existingChapter.chapter === data.chapter.full_descriptor &&
-      loadedWork &&
-      loadedWork === match.params.work;
-
+    let isReferenceForSameChapter = false;
+    if(data && existingChapter && loadedWork) {
+      if(existingChapter.chapter === data.chapter.full_descriptor && loadedWork === match.params.work) {
+        isReferenceForSameChapter = true;
+      }
+    }
+  
     // Check if the chapter we have loaded already
     // This needs to check the loaded work too, since we need to recognize if we the reference is
     // the same reference but in a different work.
     if (isReferenceForSameChapter && sameSecondWork) {
+  
       // Get the highlighted verse
       const highlightedVerseRef = existingChapter.verse;
 
@@ -647,6 +652,48 @@ const Reader = ({
       }
     }
   });
+
+  // Get the user preferences
+  const getPreferences = (csrfToken) => {
+    fetch(ENDPOINT_USER_PREFERENCES())
+      .then((res) => res.json())
+      .then((prefs) => {
+        // eslint-disable-next-line no-console
+        console.info("Successfully loaded the user's preferences");
+        setStorageProvider(new RemoteStorage(prefs, csrfToken));
+        setAuthLoadingDone(true);
+      })
+  };
+
+  // Get information about the logged in user
+  const getAuthInfo = () => {
+    fetch(ENDPOINT_SOCIAL_LOGIN())
+      .then((res) => res.json())
+      .then((newData) => {
+        setAuthInfo(newData);
+
+        // Start getting the preferences from the server if the user is authenticated
+        if(newData && newData.authenticated && Object.prototype.hasOwnProperty.call(newData, "csrf_token")){
+          getPreferences(newData.csrf_token);
+        }
+        else {
+          setAuthLoadingDone(true);
+        }
+      })
+      .catch(() => {
+        setAuthLoadingDone(true);
+      });
+  };
+
+  // Handle the case where the ReadingMenuBar tells us that authentication was completed; reload our state accordingly
+  const authenticationCompleted = () => {
+    getAuthInfo();
+  };
+
+  // Get the authentication information
+  useEffect(() => {
+    getAuthInfo();
+  }, []);
 
   // Figure out a description for the chapter
   let description = "";
@@ -726,6 +773,9 @@ const Reader = ({
           fontSizeAdjustment >= MAX_FONT_SIZE_ADJUSTMENT
         }
         decreaseFontSizeDisabled={fontSizeAdjustment <= 0}
+        storageProvider={storageProvider}
+        authenticationCompleted={() => authenticationCompleted()}
+        authInfo={authInfo}
       />
       {mode === MODE_DONE && (
         <>
@@ -959,7 +1009,7 @@ const Reader = ({
               onClick={() => setBookSelectionOpen(true)}
               inverted={inverted}
             />
-            <FavoriteWorks inverted={inverted} />
+            {authLoadingDone && <FavoriteWorks inverted={inverted} storageProvider={storageProvider} /> }
           </div>
         </Container>
       )}
