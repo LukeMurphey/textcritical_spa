@@ -10,7 +10,6 @@ import { addHandler, removeHandler } from '../Utils';
 import {
   ENDPOINT_RESOLVE_REFERENCE,
   ENDPOINT_READ_WORK,
-  ENDPOINT_SOCIAL_LOGIN,
 } from "../Endpoints";
 
 const NextPageStyle = {
@@ -243,14 +242,14 @@ const ReadingMenuBar = ({
     /**
      * Handle key presses
      */
-    const upHandler = ({ key, shiftKey }) => {
-      if (key === 'ArrowRight' && shiftKey) {
+    const upHandler = ({ key, ctrlKey }) => {
+      if (key === 'ArrowRight' && ctrlKey) {
         if(goToNextChapter) {
           goToNextChapter();
         }
       }
   
-      if (key === 'ArrowLeft' && shiftKey) {
+      if (key === 'ArrowLeft' && ctrlKey) {
         if(goToPriorChapter) {
           goToPriorChapter();
         }
@@ -266,7 +265,7 @@ const ReadingMenuBar = ({
 
     const checkAuthWindowURL = (loginWindow) => {
       if(loginWindow && loginWindow.document) {
-        if(loginWindow.document.location.pathname == '/auth_success') {
+        if(loginWindow.document.location.pathname === '/auth_success') {
           // Close the authentication window now that it is done
           loginWindow.close();
 
@@ -349,7 +348,11 @@ const ReadingMenuBar = ({
           <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
             <Responsive minWidth={768}>
               {authInfo && authInfo.authenticated && (
-                <span style={{marginRight: 18}}>Hello {authInfo.first_name}</span>
+                <span style={{marginRight: 18}}>
+                  Hello 
+                  {' '}
+                  {authInfo.first_name}
+                </span>
               )}
               <Dropdown icon="ellipsis vertical" direction="left" open={menuOpen} onClick={() => setMenuOpen(true)} onBlur={() => setMenuOpen(false)}>
                 <Dropdown.Menu>
@@ -418,7 +421,7 @@ const ReadingMenuBar = ({
             className={`priorPage ${classNameSuffix}`}
             disabled={!hasPriorChapter}
             onClick={() => goToPriorChapter()}
-            title="Go to prior chapter (or use shortcut shift + left arrow)"
+            title="Go to prior chapter (or use shortcut ctrl + left arrow)"
           >
             <Icon name="left chevron" />
           </Button>
@@ -429,7 +432,7 @@ const ReadingMenuBar = ({
             className={`nextPage ${classNameSuffix}`}
             disabled={!hasNextChapter}
             onClick={() => goToNextChapter()}
-            title="Go to next chapter (or use shortcut shift + right arrow)"
+            title="Go to next chapter (or use shortcut ctrl + right arrow)"
           >
             <Icon name="right chevron" />
           </Button>
@@ -464,6 +467,7 @@ ReadingMenuBar.propTypes = {
   previousChapterDescriptor: PropTypes.string,
   increaseFontSizeDisabled: PropTypes.bool,
   decreaseFontSizeDisabled: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
   authInfo: PropTypes.object,
 }
 
