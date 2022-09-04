@@ -141,6 +141,7 @@ const Reader = ({
   const [storageProvider, setStorageProvider] = useState(null);
   const [authLoadingDone, setAuthLoadingDone] = useState(false);
 
+  // Keep a list of verse references that are known to be a reference within the current chapter
   const verseReferences = useRef([]);
 
   /**
@@ -279,6 +280,8 @@ const Reader = ({
     scrollToVerse(referenceInfo.verse_to_highlight);
     setHighlightedVerse(referenceInfo.verse_to_highlight);
     setReferenceValue(newReferenceValue);
+
+    // TODO: find a way to keep the verse to highlight 
     updateHistory(requestedWork, secondWork, ...referenceInfo.divisions);
   }
 
