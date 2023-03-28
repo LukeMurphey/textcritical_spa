@@ -4,7 +4,7 @@ import { Menu } from 'semantic-ui-react'
 import PopupDialog from '../PopupDialog';
 import { getText } from '../Utils';
 
-const ContextDialog = ({
+const ContextPopup = ({
   data, onClose, x, y, positionBelow, positionRight, inverted, contextType, contextData, event,
 }) => {
 
@@ -37,11 +37,12 @@ const ContextDialog = ({
       y={y}
       positionBelow={positionBelow}
       positionRight={positionRight}
-      width={285}
+      width={250}
       maxHeight={140}
+      frameless
     >
       <div>
-        <Menu inverted={inverted} vertical>
+        <Menu style={{ width: '100%' }} inverted={inverted} vertical>
           <Menu.Item
             name='chapter_clipboard'
             onClick={copyChapterToClipboard}
@@ -61,7 +62,7 @@ const ContextDialog = ({
   );
 };
 
-ContextDialog.propTypes = {
+ContextPopup.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   data: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
@@ -77,10 +78,10 @@ ContextDialog.propTypes = {
   event: PropTypes.object.isRequired,
 };
 
-ContextDialog.defaultProps = {
+ContextPopup.defaultProps = {
   positionBelow: true,
   positionRight: true,
   inverted: false,
 };
 
-export default ContextDialog;
+export default ContextPopup;
