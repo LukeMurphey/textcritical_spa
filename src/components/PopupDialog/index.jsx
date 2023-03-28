@@ -101,14 +101,14 @@ const PopupDialog = ({ children, onClose, x, y, positionBelow, positionRight, fo
   if (positionBelow) {
     segmentStyle.top = y;
   } else {
-    segmentStyle.top = y - height - 20;
+    segmentStyle.top = y - height;
   }
 
   // Calculate the horizontal position
   if (positionRight) {
     segmentStyle.left = x;
   } else {
-    segmentStyle.left = x - width - 10;
+    segmentStyle.left = x - width;
   }
 
   // If we are running in small mode, run it as a portal so that it can appear in a fixed location
