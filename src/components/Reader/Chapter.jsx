@@ -63,15 +63,15 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
     );
   };
 
-  const addHandler = (handler, type = "click") => {
-    if (wrapper.current) {
-      wrapper.current.addEventListener(type, (event) => handler(event));
+  const addHandler = (handler, type = "click", target = wrapper.current) => {
+    if (target) {
+      target.addEventListener(type, (event) => handler(event));
     }
   };
 
-  const removeHandler = (handler, type = "click") => {
-    if (wrapper.current) {
-      wrapper.current.removeEventListener(type, (event) => handler(event));
+  const removeHandler = (handler, type = "click", target = wrapper.current) => {
+    if (target) {
+      target.removeEventListener(type, (event) => handler(event));
     }
   };
 
@@ -179,13 +179,13 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
      * Wire up handlers for the clicking of the words and verses.
      */
     clickListener.current = (event) => handleClick(event);
-    addHandler(clickListener.current);
+    addHandler(clickListener.current, "click", document.body);
 
     hoverListener.current = (event) => handleHover(event);
     addHandler(hoverListener.current, "mousemove");
 
     contextListener.current = (event) => handleClickContext(event);
-    addHandler(contextListener.current, "contextmenu");
+    addHandler(contextListener.current, "contextmenu", document.body);
 
     /**
      * Un wire the handlers to save memory.
