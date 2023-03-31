@@ -435,6 +435,22 @@ const Reader = ({
     setPopupPositionBelow(positionBelow);
     setPopupWork(work);
     setModal(MODAL_WORD);
+
+    if(highlightRelatedForms) {
+      getWordFormsDebounced(word)
+      .then((res) => res.json())
+      .then(wordData => {
+        if(wordData.forms.length > 1){
+          // Add in the word we searched for just in case
+          const wordsList = wordData.forms.slice();
+          wordsList.splice(0, 0, word);
+
+          // Light them up
+          setHighlightedWords(wordsList);
+        }
+        
+      });
+    }
   }
 
   /**
@@ -576,23 +592,7 @@ const Reader = ({
   }
 
   const onWordHover = word => {
-    if(highlightRelatedForms) {
-      getWordFormsDebounced(word)
-      .then((res) => res.json())
-      .then(wordData => {
-        if(wordData.forms.length > 1){
-          // Add in the word we searched for just in case
-          const wordsList = wordData.forms.slice();
-          wordsList.splice(0, 0, word);
-
-          // Light them up
-          setHighlightedWords(wordsList);
-        }
-        
-      });
-    }
-
-    setHighlightedWords([word])
+    // setHighlightedWords([word])
   }
 
   const previousPathname = useRef();
@@ -1024,7 +1024,7 @@ Reader.propTypes = {
 
 Reader.defaultProps = {
   inverted: false,
-  highlightRelatedForms: true,
+  highlightRelatedForms: false,
 };
 
 export default withRouter(Reader);
