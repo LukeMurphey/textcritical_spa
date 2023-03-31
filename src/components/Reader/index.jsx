@@ -591,10 +591,6 @@ const Reader = ({
       });
   }
 
-  const onWordHover = word => {
-    // setHighlightedWords([word])
-  }
-
   const previousPathname = useRef();
 
   useEffect(() => {
@@ -855,9 +851,6 @@ const Reader = ({
                     inverted={inverted}
                     fontSizeAdjustment={fontSizeAdjustment}
                     highlightedWords={highlightedWords}
-                    onWordHover={(word) => {
-                      onWordHover(word);
-                    }}
                   />
                 )}
 
@@ -901,9 +894,6 @@ const Reader = ({
                           inverted={inverted}
                           fontSizeAdjustment={fontSizeAdjustment}
                           highlightedWords={highlightedWords}
-                          onWordHover={(word) => {
-                            onWordHover(word);
-                          }}
                         />
                       </Grid.Column>
                       <Grid.Column>
@@ -951,9 +941,6 @@ const Reader = ({
                             verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
                             fontSizeAdjustment={fontSizeAdjustment}
                             highlightedWords={highlightedWords}
-                            onWordHover={(word) => {
-                              onWordHover(word);
-                            }}
                           />
                         )}
                         {secondWorkData && secondWorkChapterNotFound && (
