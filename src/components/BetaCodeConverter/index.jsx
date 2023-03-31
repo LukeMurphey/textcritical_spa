@@ -60,8 +60,8 @@ const BetaCodeConverter = ({ inverted, history }) => {
 
       setPopupPositionRight(right);
       setPopupPositionBelow(below);
-      setPopupX(event.layerX);
-      setPopupY(event.layerY);
+      setPopupX(event.pageX);
+      setPopupY(event.pageY);
       setModal('word');
       setSelectedWord(word);
     }
