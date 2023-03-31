@@ -111,17 +111,12 @@ const PopupDialog = ({ children, onClose, x, y, positionBelow, positionRight, fo
     segmentStyle.left = x - width;
   }
 
-  // If we are running in small mode, run it as a portal so that it can appear in a fixed location
-  if (isSmallMode()) {
-    return (
-      <Portal open>
-        {getContent()}
-      </Portal>
-    );
-  }
-
-  // Otherwise, run it inline so that it is fixed in the rest of the content
-  return getContent();
+  // Use a portal so that the absolute positioning for the context menu works
+  return (
+    <Portal open>
+      {getContent()}
+    </Portal>
+  );
 };
 
 PopupDialog.propTypes = {

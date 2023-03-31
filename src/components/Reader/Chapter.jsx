@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
 import getDomReplaceFunction from './ChapterDomReplacer';
 import { getPositionRecommendation } from '../PopupDialog';
-import { getAbsolutePosition } from '../Utils';
 import { getEventInfo, getVerseInfoFromEvent, getWordFromEvent, getNoteFromEvent, determineEventTargetType, CONTEXT_WORD, CONTEXT_VERSE, CONTEXT_NOTE } from './ChapterEventHandlers';
 import './Chapter.scss';
 
@@ -63,12 +62,24 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
     );
   };
 
+  /**
+   * Add a callback handler
+   * @param {function} handler The handler to register
+   * @param {string} type The type of handler (defaults to "click")
+   * @param {*} target The target to apply the listener to (defaults to the wrapper)
+   */
   const addHandler = (handler, type = "click", target = wrapper.current) => {
     if (target) {
       target.addEventListener(type, (event) => handler(event));
     }
   };
 
+  /**
+   * Remote a callback handler
+   * @param {function} handler The handler to register
+   * @param {string} type The type of handler (defaults to "click")
+   * @param {*} target The target to apply the listener to (defaults to the wrapper)
+   */
   const removeHandler = (handler, type = "click", target = wrapper.current) => {
     if (target) {
       target.removeEventListener(type, (event) => handler(event));
@@ -84,8 +95,7 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
     const word = event.target.textContent;
 
     const [positionRight, positionBelow] = getPositionRecommendation(event);
-    const { x, y } = getAbsolutePosition(event.srcElement);
-    onWordClick(word, x, y, positionRight, positionBelow);
+    onWordClick(word, event.clientX, event.clientY, positionRight, positionBelow);
   };
 
   /**
@@ -107,9 +117,7 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
     highlightOverridden.current = true;
 
     // Fire off the handler
-    const { x, y } = getAbsolutePosition(event.srcElement);
-
-    onVerseClick(verseDescriptor, verse, id, href, x, y);
+    onVerseClick(verseDescriptor, verse, id, href, event.clientX, event.clientY);
   };
 
   /**
@@ -122,8 +130,7 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
     const [positionRight, positionBelow] = getPositionRecommendation(event);
 
     // Fire off the handler
-    const { x, y } = getAbsolutePosition(event.srcElement);
-    onNoteClick(contents, id, x, y, positionRight, positionBelow);
+    onNoteClick(contents, id, event.clientX, event.clientY, positionRight, positionBelow);
   };
 
   /**
@@ -136,10 +143,8 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
     const [positionRight, positionBelow] = getPositionRecommendation(event);
 
     // Fire off the handler
-    const { x, y } = getAbsolutePosition(event.srcElement);
-
     const [contextType, contextData] = getEventInfo(event);
-    onContextClick(x, y, positionRight, positionBelow, content, contextType, contextData, event);
+    onContextClick(event.clientX, event.clientY, positionRight, positionBelow, content, contextType, contextData, event);
   };
 
   const handleClickEmpty = () => {

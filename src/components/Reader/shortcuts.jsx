@@ -172,15 +172,6 @@ export function getPopups(modal,
   searchState,
   inverted,
   popupContextData) {
-    if(data && !loading && modal) {
-      const quadrants = {
-        "true, true": "Lower-right",
-        "false, true": "Upper-right",
-        "true, false": "Lower-left",
-        "false, false": "Upper-left",
-      };
-      console.info(popupX, popupY, quadrants[`${popupPositionBelow}, ${popupPositionRight}`]);
-    }
   return (
     <>
       {data && !loading && modal === MODAL_WORD && (
@@ -207,7 +198,7 @@ export function getPopups(modal,
           onClose={() => closeModal()}
         />
       )}
-      {data && !loading && modal === MODAL_CONTEXT && (
+      {data && !loading && modal === MODAL_CONTEXT && false && (
         <ContextPopup
           inverted={inverted}
           positionBelow={popupPositionBelow}
