@@ -184,13 +184,13 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
      * Wire up handlers for the clicking of the words and verses.
      */
     clickListener.current = (event) => handleClick(event);
-    addHandler(clickListener.current, "click", document.body);
+    addHandler(clickListener.current, "click");
 
     hoverListener.current = (event) => handleHover(event);
     addHandler(hoverListener.current, "mousemove");
 
     contextListener.current = (event) => handleClickContext(event);
-    addHandler(contextListener.current, "contextmenu", document.body);
+    addHandler(contextListener.current, "contextmenu");
 
     /**
      * Un wire the handlers to save memory.
