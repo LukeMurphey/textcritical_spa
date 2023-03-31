@@ -74,7 +74,7 @@ const WordInformation = ({ word, inverted, work, searchState }) => {
 
   useEffect(() => {
     getWordInfo();
-  }, []);
+  }, [word]);
 
   const handleClick = (e, titleProps) => {
     const { index } = titleProps;
