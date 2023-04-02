@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, useLocation } from 'react-router-dom';
 import {
-  Input, Container, Button, Checkbox, Icon, Message, Tab,
+  Input, Container, Button, Checkbox, Icon, Message, Tab,Dropdown,
 } from 'semantic-ui-react';
 import BarChart from '../Charts/BarChart';
 import SearchResults from './SearchResults';
@@ -28,17 +28,30 @@ const CheckboxStyle = {
   marginBottom: 12,
 };
 
+const DownloadLinkStyle = {
+  marginTop: 12,
+};
+
+const downloadOptions = [
+  { text: 'as CSV', value: 'csv'},
+  { text: 'as XLSX (Excel)', value: 'xlsx'},
+]
+
 // A custom hook that builds on useLocation to parse
 // the query string for you.
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, error, inverted) {
+function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, error, inverted, downloadUrl = null) {
   let className = '';
 
   if (inverted) {
     className = 'inverted';
+  }
+
+  function downloadResults(filetype='csv') {
+    window.open(`${downloadUrl}${filetype}`, '_blank');
   }
 
   return (
@@ -69,16 +82,29 @@ function searchResultsByMode(mode, resultSet, page, lastPage, goBack, goNext, er
         </Message>
       )}
       {mode === MODE_RESULTS && (
-        <SearchResults
-          results={resultSet.results}
-          matchCount={resultSet.match_count}
-          resultCount={resultSet.result_count}
-          page={page}
-          lastPage={lastPage}
-          goBack={() => goBack()}
-          goNext={() => goNext()}
-          inverted={inverted}
-        />
+        <>
+          <SearchResults
+            results={resultSet.results}
+            matchCount={resultSet.match_count}
+            resultCount={resultSet.result_count}
+            page={page}
+            lastPage={lastPage}
+            goBack={() => goBack()}
+            goNext={() => goNext()}
+            inverted={inverted}
+          />
+          {downloadUrl && (
+            <div style={DownloadLinkStyle}>
+              <Dropdown button text='Download Results'>
+                <Dropdown.Menu>
+                  {downloadOptions.map((downloadOption) => (
+                    <Dropdown.Item key={downloadOption.value} onClick={() => downloadResults(downloadOption.value)}>{downloadOption.text}</Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+          )}
+        </>
       )}
       {mode === MODE_NOT_STARTED && (
         <Message className={className}>
@@ -268,7 +294,7 @@ function Search({ inverted, history, location }) {
     {
       menuItem: 'Results',
       render: () => searchResultsByMode(
-        mode, resultSet, page, lastPage, goBack, goNext, error, inverted,
+        mode, resultSet, page, lastPage, goBack, goNext, error, inverted, ENDPOINT_SEARCH(query, 1, searchRelatedForms, ignoreDiacritics, true, 1000)
       ),
     },
     {

@@ -9,7 +9,7 @@ import BookSelection from '../BookSelection';
 import { addHandler, removeHandler } from '../Utils';
 import {
   ENDPOINT_RESOLVE_REFERENCE,
-  ENDPOINT_READ_WORK
+  ENDPOINT_READ_WORK,
 } from "../Endpoints";
 
 const NextPageStyle = {
@@ -53,6 +53,8 @@ const ReadingMenuBar = ({
   decreaseFontSize,
   increaseFontSizeDisabled,
   decreaseFontSizeDisabled,
+  authenticationCompleted,
+  authInfo
  }) => {
   // Create a custom className for signaling the desire to switch to inverted
   let classNameSuffix = "";
@@ -97,7 +99,7 @@ const ReadingMenuBar = ({
   }
 
     /**
-     * Accept the enter key as a jumop to execute the reference jump.
+     * Accept the enter key as a jump to execute the reference jump.
      * @param {object} event The event from the key press.
      */
     const onKeyPressed = (event) => {
@@ -240,14 +242,14 @@ const ReadingMenuBar = ({
     /**
      * Handle key presses
      */
-    const upHandler = ({ key, shiftKey }) => {
-      if (key === 'ArrowRight' && shiftKey) {
+    const upHandler = ({ key, ctrlKey }) => {
+      if (key === 'ArrowRight' && ctrlKey) {
         if(goToNextChapter) {
           goToNextChapter();
         }
       }
   
-      if (key === 'ArrowLeft' && shiftKey) {
+      if (key === 'ArrowLeft' && ctrlKey) {
         if(goToPriorChapter) {
           goToPriorChapter();
         }
@@ -260,6 +262,24 @@ const ReadingMenuBar = ({
       addHandler(handler, 'keyup');
       return () => removeHandler(handler, 'keyup');
     });
+
+    const checkAuthWindowURL = (loginWindow) => {
+      if(loginWindow && loginWindow.document) {
+        if(loginWindow.document.location.pathname === '/auth_success') {
+          // Close the authentication window now that it is done
+          loginWindow.close();
+
+          // Refresh the authentication info
+          authenticationCompleted();
+
+          // Close the menu
+          setMenuOpen(false);
+        }
+        else {
+          setTimeout(() => checkAuthWindowURL(loginWindow), 500);
+        }
+      }
+    };
 
     return (
       <Menu
@@ -327,6 +347,13 @@ const ReadingMenuBar = ({
         )}
           <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
             <Responsive minWidth={768}>
+              {authInfo && authInfo.authenticated && (
+                <span style={{marginRight: 18}}>
+                  Hello 
+                  {' '}
+                  {authInfo.first_name}
+                </span>
+              )}
               <Dropdown icon="ellipsis vertical" direction="left" open={menuOpen} onClick={() => setMenuOpen(true)} onBlur={() => setMenuOpen(false)}>
                 <Dropdown.Menu>
                   {(increaseFontSize || decreaseFontSize) && (
@@ -351,8 +378,26 @@ const ReadingMenuBar = ({
                     text="Search"
                     onClick={() => openSearchPage()}
                   />
+                  {authInfo && authInfo.authenticated && (
+                    <Dropdown.Item
+                      text="Logout"
+                      onClick={() => {
+                        window.location = authInfo.logout;
+                      }}
+                    /> 
+                  )}
+                  {authInfo && !authInfo.authenticated && (
+                    <Dropdown.Item
+                      text="Login"
+                      onClick={() => {
+                        const loginWindow = window.open(authInfo.login_google, 'login_google', 'height=500,width=800');
+                        checkAuthWindowURL(loginWindow);
+                        setMenuOpen(false);
+                      }}
+                    /> 
+                  )}
                   <Dropdown.Item
-                    text="Look up words (and convert beta-code)"
+                    text="Look up Greek words (and convert beta-code)"
                     onClick={() => openBetaCodePage()}
                   />
                   <Dropdown.Item
@@ -376,7 +421,7 @@ const ReadingMenuBar = ({
             className={`priorPage ${classNameSuffix}`}
             disabled={!hasPriorChapter}
             onClick={() => goToPriorChapter()}
-            title="Go to prior chapter (or use shortcut shift + left arrow)"
+            title="Go to prior chapter (or use shortcut ctrl + left arrow)"
           >
             <Icon name="left chevron" />
           </Button>
@@ -387,7 +432,7 @@ const ReadingMenuBar = ({
             className={`nextPage ${classNameSuffix}`}
             disabled={!hasNextChapter}
             onClick={() => goToNextChapter()}
-            title="Go to next chapter (or use shortcut shift + right arrow)"
+            title="Go to next chapter (or use shortcut ctrl + right arrow)"
           >
             <Icon name="right chevron" />
           </Button>
@@ -412,6 +457,7 @@ ReadingMenuBar.propTypes = {
   goToNextChapter: PropTypes.func,
   increaseFontSize: PropTypes.func,
   decreaseFontSize: PropTypes.func,
+  authenticationCompleted: PropTypes.func,
   referenceValue: PropTypes.string,
   hasNextChapter: PropTypes.bool,
   hasPriorChapter: PropTypes.bool,
@@ -421,6 +467,8 @@ ReadingMenuBar.propTypes = {
   previousChapterDescriptor: PropTypes.string,
   increaseFontSizeDisabled: PropTypes.bool,
   decreaseFontSizeDisabled: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  authInfo: PropTypes.object,
 }
 
 ReadingMenuBar.defaultProps = {
@@ -439,6 +487,8 @@ ReadingMenuBar.defaultProps = {
   previousChapterDescriptor: null,
   increaseFontSizeDisabled: true,
   decreaseFontSizeDisabled: true,
+  authenticationCompleted: null,
+  authInfo: null
 }
 
 export default withRouter(ReadingMenuBar);

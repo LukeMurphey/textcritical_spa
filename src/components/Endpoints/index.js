@@ -2,6 +2,8 @@
 /**
  * The following provides a way to map REST calls to another service (for development).
  */
+ import { appendAmpersand } from '../Utils';
+ 
 const config = {
   // localhost: 'http://localhost:8080',
 };
@@ -67,7 +69,11 @@ export function ENDPOINT_VERSION_INFO() {
   return `${getHostConfig()}/api/version_info`;
 }
 
-export function ENDPOINT_SEARCH(query, page = 1, relatedForms = false, ignoreDiacritics = false) {
+export function ENDPOINT_SOCIAL_LOGIN() {
+  return `${getHostConfig()}/api/social_auth`;
+}
+
+export function ENDPOINT_SEARCH(query, page = 1, relatedForms = false, ignoreDiacritics = false, download = null, pagelen = null) {
   let relatedFormsConverted = 0;
   if (relatedForms) {
     relatedFormsConverted = 1;
@@ -78,9 +84,38 @@ export function ENDPOINT_SEARCH(query, page = 1, relatedForms = false, ignoreDia
     ignoreDiacriticsConverted = 1;
   }
 
-  return `${getHostConfig()}/api/search/${encodeURIComponent(query)}?page=${page}&related_forms=${relatedFormsConverted}&ignore_diacritics=${ignoreDiacriticsConverted}`;
+  let url = '';
+
+  if (page) {
+    url += appendAmpersand(url, `page=${page}`);
+  }
+
+  if (pagelen) {
+    url += appendAmpersand(url, `pagelen=${pagelen}`);
+  }
+
+  url += appendAmpersand(url, `ignore_diacritics=${ignoreDiacriticsConverted}`);
+  url += appendAmpersand(url, `related_forms=${relatedFormsConverted}`);
+
+  if (download) {
+    url += appendAmpersand(url, `download=`);
+  }
+
+  return `${getHostConfig()}/api/search/${encodeURIComponent(query)}?${url}`;
 }
 
 export function ENDPOINT_CONVERT_BETA_CODE_QUERY(query) {
   return `${getHostConfig()}/api/convert_query_beta_code/?q=${query}`;
+}
+
+export function ENDPOINT_USER_PREFERENCES() {
+  return `${getHostConfig()}/api/user_preferences`;
+}
+
+export function ENDPOINT_USER_PREFERENCE_EDIT(name) {
+  return `${getHostConfig()}/api/user_preference/edit/${name}`;
+}
+
+export function ENDPOINT_USER_PREFERENCE_DELETE(name) {
+  return `${getHostConfig()}/api/user_preference/delete/${name}`;
 }

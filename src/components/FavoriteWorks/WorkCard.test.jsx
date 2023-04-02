@@ -3,8 +3,7 @@ import { render, act, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { enableFetchMocks } from 'jest-fetch-mock';
 // regeneratorRuntime is needed for AwesomeDebouncePromise
-// eslint-disable-next-line no-unused-vars
-import regeneratorRuntime from 'regenerator-runtime';
+import 'regenerator-runtime';
 import WorkCard from './WorkCard';
 
 test('WorkCard', async () => {

@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Button, Header, Modal, Table,
+  Button, Header, Modal, Table, Placeholder,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import { ENDPOINT_VERSION_INFO } from "../Endpoints";
 import VersionInfo from '../../Version.json'
 
 const AboutDialog = ({ onClose }) => {
+
+  const [serverVersionInfo, setServerVersionInfo] = useState(null);
+  const [error, setError] = useState(null);
+
+  const getServerVersionInfo = () => {
+    fetch(ENDPOINT_VERSION_INFO())
+      .then((res) => res.json())
+      .then((newData) => {
+        setServerVersionInfo(newData);
+      })
+      .catch((e) => {
+        setError(e.toString());
+      });
+  };
+
+  useEffect(() => {
+    getServerVersionInfo();
+  }, []);
 
   const getInfoRow = (title, description) => {
     return (
@@ -45,6 +64,9 @@ const AboutDialog = ({ onClose }) => {
         <Table basic="very" celled collapsing>
           <Table.Body>
             {getInfoRow('Version', VersionInfo.version)}
+            {serverVersionInfo && getInfoRow('Server Version', `${serverVersionInfo.version}, ${serverVersionInfo.build} (${serverVersionInfo.build_date})`)}
+            {!serverVersionInfo && !error && getInfoRow('Server Version', (<Placeholder><Placeholder.Line /></Placeholder>))}
+            {error && getInfoRow('Server Version', 'Unable to get server version information')}
             {getInfoLinkRow(
               'Sources of the works',
               'https://lukemurphey.net/projects/ancient-text-reader/wiki/Content_Sources',
