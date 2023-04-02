@@ -80,7 +80,7 @@ const openSearch = (loadedWork, secondWork, divisions, history) => {
 
   // Add in the section
   if (divisions && divisions.length > 0) {
-    q += ` section:${divisions[0]}`;
+    q += ` section:"${divisions[0]}"`;
   }
 
   history.push(SEARCH(q), {
