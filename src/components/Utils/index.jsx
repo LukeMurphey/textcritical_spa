@@ -92,7 +92,7 @@ export function getText(element) {
   return [element.textContent];
  }
  
-
+/**
  * Append a leading question mark if necessary.
  * @param {string} url 
  * @returns 

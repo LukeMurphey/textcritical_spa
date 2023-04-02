@@ -126,7 +126,6 @@ const Reader = ({
   const [popupWork, setPopupWork] = useState(null);
 
   const [selectedNote, setSelectedNote] = useState(null);
-  const [selectedWord, setSelectedWord] = useState(null);
 
   const [secondWork, setSecondWork] = useState(null);
   const [secondWorkData, setSecondWorkData] = useState(null);
@@ -594,26 +593,6 @@ const Reader = ({
           e.toString()
         );
       });
-  }
-
-  const onWordHover = word => {
-    if(highlightRelatedForms && word !== null) {
-      getWordFormsDebounced(word)
-      .then((res) => res.json())
-      .then(wordData => {
-        if(wordData.forms.length > 1){
-          // Add in the word we searched for just in case
-          const wordsList = wordData.forms.slice();
-          wordsList.splice(0, 0, word);
-
-          // Light them up
-          setHighlightedWords(wordsList);
-        }
-        
-      });
-    }
-
-    setHighlightedWords([word])
   }
 
   const previousPathname = useRef();
