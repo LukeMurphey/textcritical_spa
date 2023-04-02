@@ -1,3 +1,4 @@
+
 This is the main component that provides the interface for reading works.
 
 ## What is the lifecycle of resolving a new reference (when the user types in a new reference)?
@@ -10,3 +11,17 @@ This is the main component that provides the interface for reading works.
 ## How does the view avoid reloading the content when a verse reference is to a verse within the existing chapter?
 
 `updateHistory()` checks to see if the URL would be different and decides against a reload if so.
+
+## How Content menus work
+
+### Chapter: recognizes the click events
+
+The chapter component recognizes the click events and communicates up to the Reader component.
+
+### Reader: accepts the click event
+
+Reader recognizes the click event and sets state such that it can show the proper dialog when render is called.
+
+### Reader.shortcuts::getPopups(): renders the popup
+
+getPopups() renders the popups accordingly.

@@ -7,6 +7,7 @@ import AboutWorkDialog from "../AboutWorkDialog";
 import WorkDownloadDialog from "../WorkDownloadDialog";
 import WordInformation from "../WordInformation/WordInformationPopup";
 import FootnotePopup from "../FootnotePopup";
+import ContextPopup from "../ContextPopup";
 
 /**
  * Defines how long a division name can get before it is considered long.
@@ -55,7 +56,7 @@ export function getDivisionText(division, useTitles, descriptorsAreNames) {
   if (useTitles) {
     return toTitleCase(division.label);
   }
-  // Are the descriptors names (like "Matthew" insread of "1")
+  // Are the descriptors names (like "Matthew" instead of "1")
   if (descriptorsAreNames) {
     return division.descriptor;
   }
@@ -152,6 +153,7 @@ export function getDialogs(modal, data, loading, loadedWork, closeModal) {
 
 export const MODAL_WORD = "word";
 export const MODAL_FOOTNOTE = "note";
+export const MODAL_CONTEXT = "context";
 
 /**
  * Get the popups.
@@ -168,8 +170,8 @@ export function getPopups(modal,
   loadedWork,
   closeModal,
   searchState,
-  inverted,) {
-
+  inverted,
+  popupContextData) {
   return (
     <>
       {data && !loading && modal === MODAL_WORD && (
@@ -196,42 +198,20 @@ export function getPopups(modal,
           onClose={() => closeModal()}
         />
       )}
+      {data && !loading && modal === MODAL_CONTEXT && false && (
+        <ContextPopup
+          inverted={inverted}
+          positionBelow={popupPositionBelow}
+          positionRight={popupPositionRight}
+          x={popupX}
+          y={popupY}
+          data={data}
+          onClose={() => closeModal()}
+          contextType={popupContextData.contextType}
+          contextData={popupContextData.contextData}
+          event={popupContextData.event}
+        />
+      )}
     </>
   );
-}
-
-/**
-* Get the text for the node separated into lines.
-*
-* @param {object} element The element to get the text from
-*/
-export function getText(element) {
- try {
-   const children = [];
-
-   // If the node is text, then add the line
-   if (element.nodeType === 3) {
-     if (element.textContent && element.textContent.length > 0) {
-       children.push(element.textContent);
-     }
-   }
-
-   // Accumulate the children entries
-   const childEntries = Array.from(element.childNodes).reduce(
-     (accum, child) => accum.concat(...this.getText(child)),
-     [],
-   );
-
-   children.push(...childEntries);
-
-   // Return the content
-   if (children) {
-     return children;
-   }
- } catch (err) {
-   // If an exception happens, then just use the text content
-   return [element.textContent];
- }
-
- return [element.textContent];
 }

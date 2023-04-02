@@ -9,7 +9,7 @@ import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
 import { PARAMS_READ_WORK } from "../URLs/Parameters";
-import { getPlaceholder, getDialogs, getPopups, MODAL_WORD, MODAL_FOOTNOTE }  from "./shortcuts";
+import { getPlaceholder, getDialogs, getPopups, MODAL_WORD, MODAL_FOOTNOTE, MODAL_CONTEXT }  from "./shortcuts";
 import { scrollToTarget } from '../Utils';
 import Chapter from "./Chapter";
 import ErrorMessage from "../ErrorMessage";
@@ -117,6 +117,7 @@ const Reader = ({
 
   const [highlightedVerse, setHighlightedVerse] = useState(null);
   const [highlightedWords, setHighlightedWords] = useState([]);
+  const [selectedWord, setSelectedWord] = useState(null);
 
   const [popupX, setPopupX] = useState(null);
   const [popupY, setPopupY] = useState(null);
@@ -143,6 +144,7 @@ const Reader = ({
 
   // Keep a list of verse references that are known to be a reference within the current chapter
   const verseReferences = useRef([]);
+  const popupContextData = useRef(null);
 
   /**
    * Set an error state.
@@ -438,6 +440,42 @@ const Reader = ({
     setPopupPositionBelow(positionBelow);
     setPopupWork(work);
     setModal(MODAL_WORD);
+
+    if(highlightRelatedForms) {
+      getWordFormsDebounced(word)
+      .then((res) => res.json())
+      .then(wordData => {
+        if(wordData.forms.length > 1){
+          // Add in the word we searched for just in case
+          const wordsList = wordData.forms.slice();
+          wordsList.splice(0, 0, word);
+
+          // Light them up
+          setHighlightedWords(wordsList);
+        }
+        
+      });
+    }
+  }
+
+  /**
+   * Handle the context menu.
+   *
+   * @param {int} x The x coordinate designating where to show the popup
+   * @param {int} y The y coordinate designating where to show the popup
+   * @param {bool} positionRight Indicates it is best to show the popup to the right of the offset
+   * @param {bool} positionBelow Indicates it is best to show the popup below the offset
+   * @param {string} work Indicates the work clicked
+   */
+   const onContextClick = (x, y, positionRight, positionBelow, work, content, contextType, contextData, event) => {
+    setSelectedWord(null);
+    setPopupX(x);
+    setPopupY(y);
+    setPopupPositionRight(positionRight);
+    setPopupPositionBelow(positionBelow);
+    setPopupWork(work);
+    popupContextData.current = { content, contextType, contextData, event }
+    setModal(MODAL_CONTEXT);
   }
 
   /**
@@ -816,7 +854,8 @@ const Reader = ({
                     secondWork,
                     divisions,
                   },
-                  inverted
+                  inverted,
+                  popupContextData.current,
                 )}
                 <Grid inverted={inverted}>
                   <Grid.Row>
@@ -876,14 +915,14 @@ const Reader = ({
                       );
                     }}
                     onNoteClick={onNoteClick}
+                    onContextClick={(x, y, positionRight, positionBelow, content, contextType, contextData, event) => {
+                      onContextClick(x, y, positionRight, positionBelow, data.work, content, contextType, contextData, event);
+                    }}
                     onClickAway={() => setModal(null)}
                     highlightedVerse={highlightedVerse}
                     inverted={inverted}
                     fontSizeAdjustment={fontSizeAdjustment}
                     highlightedWords={highlightedWords}
-                    onWordHover={(word) => {
-                      onWordHover(word);
-                    }}
                   />
                 )}
 
@@ -913,14 +952,20 @@ const Reader = ({
                             );
                           }}
                           onNoteClick={onNoteClick}
+                          onContextClick={(x, y, positionRight, positionBelow) => {
+                            onContextClick(
+                              data,
+                              x,
+                              y,
+                              positionRight,
+                              positionBelow,
+                            );
+                          }}
                           onClickAway={() => setModal(null)}
                           highlightedVerse={highlightedVerse}
                           inverted={inverted}
                           fontSizeAdjustment={fontSizeAdjustment}
                           highlightedWords={highlightedWords}
-                          onWordHover={(word) => {
-                            onWordHover(word);
-                          }}
                         />
                       </Grid.Column>
                       <Grid.Column>
@@ -953,15 +998,21 @@ const Reader = ({
                               );
                             }}
                             onNoteClick={onNoteClick}
+                            onContextClick={(x, y, positionRight, positionBelow) => {
+                              onContextClick(
+                                data,
+                                x,
+                                y,
+                                positionRight,
+                                positionBelow,
+                              );
+                            }}
                             onClickAway={() => setModal(null)}
                             highlightedVerse={highlightedVerse}
                             inverted={inverted}
                             verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
                             fontSizeAdjustment={fontSizeAdjustment}
                             highlightedWords={highlightedWords}
-                            onWordHover={(word) => {
-                              onWordHover(word);
-                            }}
                           />
                         )}
                         {secondWorkData && secondWorkChapterNotFound && (
@@ -1032,7 +1083,7 @@ Reader.propTypes = {
 
 Reader.defaultProps = {
   inverted: false,
-  highlightRelatedForms: true,
+  highlightRelatedForms: false,
 };
 
 export default withRouter(Reader);
