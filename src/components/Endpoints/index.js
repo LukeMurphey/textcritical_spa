@@ -32,6 +32,18 @@ export function ENDPOINT_READ_WORK(work = '', ...divisions) {
   return `${getHostConfig()}/api/work/${work}`;
 }
 
+export function ENDPOINT_WORK_TEXT(work = '', ...divisions) {
+
+  let divisionReference = '';
+
+  if (divisions.length > 0 && work) {
+    divisionReference = divisions.join('/');
+    return `${getHostConfig()}/api/work_text/${work}/${divisionReference}`;
+  }
+
+  return `${getHostConfig()}/api/work_text/${work}`;
+}
+
 export function ENDPOINT_WORK_INFO(work) {
   return `${getHostConfig()}/api/work_info/${work}`;
 }

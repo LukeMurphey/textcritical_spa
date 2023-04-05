@@ -1,32 +1,68 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from "react-router-dom";
 import { Menu } from 'semantic-ui-react'
 import PopupDialog from '../PopupDialog';
-import { getText } from '../Utils';
+import { CONTEXT_WORD, CONTEXT_VERSE } from '../Reader/ChapterEventHandlers';
+import { SEARCH, READ_WORK } from '../URLs'
+import { ENDPOINT_WORK_TEXT } from '../Endpoints';
 
 const ContextPopup = ({
-  data, onClose, x, y, positionBelow, positionRight, inverted, contextType, contextData, event,
+  data, onClose, x, y, positionBelow, positionRight, inverted, contextType, contextData, event, history,
 }) => {
 
-  const convertToPlain = (html) => {
+  const getDivisionReference = (verse = null) => {
+    const divisions = [data.chapter.descriptor];
 
-    // Create a new div element
-    const tempDivElement = document.createElement("div");
+    if(Object.prototype.hasOwnProperty.call(data.chapter, 'parent_division') && data.chapter.parent_division && data.chapter.parent_division.descriptor) {
+      divisions.splice(0, 0, data.chapter.parent_division.descriptor);
+    }
 
-    // Set the HTML content with the given value
-    tempDivElement.innerHTML = html;
+    // Add in the verse
+    if(verse) {
+      divisions.push(verse);
+    }
 
-    // Retrieve the text property of the element 
-    return tempDivElement.textContent || tempDivElement.innerText || "";
-}
+    return divisions;
+  };
 
   const copyVerseToClipboard = () => {
-    const textForVerse = getText(event.target);
-    navigator.clipboard.writeText(textForVerse);
+    fetch(ENDPOINT_WORK_TEXT(data.work.title_slug, ...getDivisionReference(contextData.verse)))
+      .then((res) => res.json())
+      .then((newData) => {
+        navigator.clipboard.writeText(newData);
+        onClose();
+    })
   }
 
   const copyChapterToClipboard = () => {
-    navigator.clipboard.writeText(convertToPlain(data.content).replaceAll(/[\n]+/ig, '').replaceAll(/[ ]+/ig, ' '));
+    fetch(ENDPOINT_WORK_TEXT(data.work.title_slug, ...getDivisionReference()))
+      .then((res) => res.json())
+      .then((newData) => {
+        navigator.clipboard.writeText(newData);
+        onClose();
+    })
+  }
+
+  const copyLinkToClipboard = () => {
+    // Get the URL to the verse if for a verse
+    if(contextType === CONTEXT_VERSE) {
+      navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}${READ_WORK(data.work.title_slug, null, ...getDivisionReference(contextData.verse))}`);
+    }
+    else{
+      navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}${READ_WORK(data.work.title_slug, null, ...getDivisionReference())}`);
+    }
+    onClose();
+  }
+
+  const searchAllWorks = () => {
+    history.push(SEARCH(contextData));
+    onClose();
+  }
+
+  const searchThisWork = () => {
+    history.push(SEARCH(`work:${data.work.title_slug} ${contextData}`));
+    onClose();
   }
 
   return (
@@ -49,13 +85,42 @@ const ContextPopup = ({
           >
             Copy chapter to clipboard
           </Menu.Item>
-          <Menu.Item
-            name='verse_clipboard'
-            onClick={copyVerseToClipboard}
-          >
-            Copy verse to clipboard
-          </Menu.Item>
+          {contextType === CONTEXT_VERSE && (
+            <>
+              <Menu.Item
+                name='verse_clipboard'
+                onClick={copyVerseToClipboard}
+              >
+                Copy verse
+              </Menu.Item>
+              
+              <Menu.Item
+                name='link_clipboard'
+                onClick={copyLinkToClipboard}
+              >
+                Copy link
+              </Menu.Item>
+            </>
+          )}
+          {contextType === CONTEXT_WORD && (
+            <>
 
+              <Menu.Item
+                name='search_this_work'
+                onClick={searchThisWork}
+              >
+                Search in this work
+              </Menu.Item>
+
+              <Menu.Item
+                name='search_all_works'
+                onClick={searchAllWorks}
+              >
+                Search in all works
+              </Menu.Item>
+            
+            </>
+          )}
         </Menu>
       </div>
     </PopupDialog>
@@ -76,6 +141,8 @@ ContextPopup.propTypes = {
   contextData: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   event: PropTypes.object.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  history: PropTypes.object.isRequired,
 };
 
 ContextPopup.defaultProps = {
@@ -84,4 +151,4 @@ ContextPopup.defaultProps = {
   inverted: false,
 };
 
-export default ContextPopup;
+export default withRouter(ContextPopup);
