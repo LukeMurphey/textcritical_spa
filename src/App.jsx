@@ -2,11 +2,14 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Reader from './components/Reader';
+import { FeatureFlagsProvider } from "./components/FeatureFlags";
 
 const App = ({ inverted }) => (
-  <Reader
-    inverted={inverted}
-  />
+  <FeatureFlagsProvider>
+    <Reader
+      inverted={inverted}
+    />
+  </FeatureFlagsProvider>
 )
 
 App.propTypes = {

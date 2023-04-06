@@ -9,7 +9,7 @@ import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
 import { PARAMS_READ_WORK } from "../URLs/Parameters";
-import { getPlaceholder, getDialogs, getPopups, MODAL_WORD, MODAL_FOOTNOTE, MODAL_CONTEXT }  from "./shortcuts";
+import { getPlaceholder, getDialogs }  from "./shortcuts";
 import { scrollToTarget } from '../Utils';
 import Chapter from "./Chapter";
 import ErrorMessage from "../ErrorMessage";
@@ -23,6 +23,7 @@ import ReadingMenuBar from "./ReadingMenuBar";
 import ChapterHeader from "./ChapterHeader";
 import StaleURLMessage from "./StaleURLMessage";
 import WarningMessages from "./WarningMessages";
+import Popups, { MODAL_WORD, MODAL_FOOTNOTE, MODAL_CONTEXT } from "./Popups";
 import { MODE_LOADING, MODE_ERROR, MODE_DONE, MODE_NOT_READY } from "../Constants";
 
 /**
@@ -816,26 +817,26 @@ const Reader = ({
                 {getDialogs(modal, data, loading, loadedWork, () =>
                   setModal(null)
                 )}
-                {getPopups(
-                  modal,
-                  data,
-                  loading,
-                  selectedWord,
-                  popupX,
-                  popupY,
-                  popupPositionRight,
-                  popupPositionBelow,
-                  selectedNote,
-                  popupWork,
-                  () => setModal(null),
-                  {
+                <Popups
+                  modal={modal} 
+                  data={data}
+                  loading={loading}
+                  selectedWord={selectedWord}
+                  popupX={popupX}
+                  popupY={popupY}
+                  popupPositionRight={popupPositionRight}
+                  popupPositionBelow={popupPositionBelow}
+                  selectedNote={selectedNote}
+                  popupWork={popupWork}
+                  closeModal={() => setModal(null)}
+                  searchState={{
                     work: loadedWork,
                     secondWork,
                     divisions,
-                  },
-                  inverted,
-                  popupContextData.current,
-                )}
+                  }}
+                  inverted={inverted}
+                  popupContextData={popupContextData.current}
+                />
                 <Grid inverted={inverted}>
                   <Grid.Row>
                     <Grid.Column width={8}>
