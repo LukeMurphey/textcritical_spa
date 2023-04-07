@@ -56,12 +56,12 @@ const ContextPopup = ({
   }
 
   const searchAllWorks = () => {
-    history.push(SEARCH(contextData));
+    history.push(SEARCH(contextData.word));
     onClose();
   }
 
   const searchThisWork = () => {
-    history.push(SEARCH(`work:${data.work.title_slug} ${contextData}`));
+    history.push(SEARCH(`work:${data.work.title_slug} ${contextData.word}`));
     onClose();
   }
 
@@ -85,7 +85,7 @@ const ContextPopup = ({
           >
             Copy chapter to clipboard
           </Menu.Item>
-          {contextType === CONTEXT_VERSE && (
+          { (contextType === CONTEXT_VERSE || contextType === CONTEXT_WORD) && (
             <>
               <Menu.Item
                 name='verse_clipboard'
