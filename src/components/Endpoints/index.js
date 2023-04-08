@@ -120,6 +120,9 @@ export function ENDPOINT_CONVERT_BETA_CODE_QUERY(query) {
   return `${getHostConfig()}/api/convert_query_beta_code/?q=${query}`;
 }
 
+/*
+ * User preferences
+ */
 export function ENDPOINT_USER_PREFERENCES() {
   return `${getHostConfig()}/api/user_preferences`;
 }
@@ -130,4 +133,26 @@ export function ENDPOINT_USER_PREFERENCE_EDIT(name) {
 
 export function ENDPOINT_USER_PREFERENCE_DELETE(name) {
   return `${getHostConfig()}/api/user_preference/delete/${name}`;
+}
+
+/*
+ * Notes
+ */
+export function ENDPOINT_NOTE(noteId) {
+  return `${getHostConfig()}/api/notes/${noteId}/`;
+}
+
+export function ENDPOINT_NOTES() {
+  return `${getHostConfig()}/api/notes/`;
+}
+
+export function ENDPOINT_NOTE_EDIT(noteId = null) {
+  if(noteId === null) {
+    return `${getHostConfig()}/api/notes/edit/`;
+  }
+  return `${getHostConfig()}/api/notes/edit/${noteId}/`;
+}
+
+export function ENDPOINT_NOTE_DELETE(noteId) {
+  return `${getHostConfig()}/api/notes/delete/${noteId}/`;
 }

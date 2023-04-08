@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import WordInformation from "../WordInformation/WordInformationPopup";
 import FootnotePopup from "../FootnotePopup";
 import ContextPopup from "../ContextPopup";
+import UserNoteDialog from "../UserNoteDialog";
 import { FeatureFlags } from "../FeatureFlags";
 
 export const MODAL_WORD = "word";
-export const MODAL_FOOTNOTE = "note";
+export const MODAL_FOOTNOTE = "footnote";
+export const MODAL_USERNOTE = "note";
 export const MODAL_CONTEXT = "context";
 
 const Popups = ({
@@ -63,6 +65,12 @@ const Popups = ({
           onClose={() => closeModal()}
           contextType={popupContextData.contextType}
           contextData={popupContextData.contextData}
+        />
+        )}
+        {data && !loading && modal === MODAL_USERNOTE && features.userNotesEnabled && (
+        <UserNoteDialog
+          inverted={inverted}
+          onClose={() => closeModal()}
         />
         )}
       </>
