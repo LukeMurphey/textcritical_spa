@@ -65,6 +65,69 @@ const ContextPopup = ({
     onClose();
   }
 
+  const getMenuItems = () => {
+    const menuItems = [];
+  
+    // Add the copy to chapter option
+    menuItems.push(
+      <Menu.Item
+        name='chapter_clipboard'
+        onClick={copyChapterToClipboard}
+      >
+        Copy chapter to clipboard
+      </Menu.Item>
+    );
+
+    if(contextType === CONTEXT_VERSE || contextType === CONTEXT_WORD ){
+      menuItems.push(
+        <Menu.Item
+          name='verse_clipboard'
+          onClick={copyVerseToClipboard}
+        >
+          Copy verse
+        </Menu.Item>
+      );
+
+      menuItems.push(
+        <Menu.Item
+          name='link_clipboard'
+          onClick={copyLinkToClipboard}
+        >
+          Copy link
+        </Menu.Item>
+      );
+    }
+
+    if(contextType === CONTEXT_WORD){
+      menuItems.push(
+        <Menu.Item
+          name='search_this_work'
+          onClick={searchThisWork}
+        >
+          Search in this work
+        </Menu.Item>
+      );
+
+      menuItems.push(
+        <Menu.Item
+          name='search_all_works'
+          onClick={searchAllWorks}
+        >
+          Search in all works
+        </Menu.Item>
+      );
+    }
+
+    return menuItems;
+
+  }
+
+  // Get the list of items to render
+  const menuItems = getMenuItems();
+
+  // Determine the height
+  const height = 16 + (menuItems.length * 43);
+
   return (
     <PopupDialog
       onClose={onClose}
@@ -74,53 +137,12 @@ const ContextPopup = ({
       positionBelow={positionBelow}
       positionRight={positionRight}
       width={250}
-      maxHeight={140}
+      maxHeight={height}
       frameless
     >
       <div>
         <Menu style={{ width: '100%' }} inverted={inverted} vertical>
-          <Menu.Item
-            name='chapter_clipboard'
-            onClick={copyChapterToClipboard}
-          >
-            Copy chapter to clipboard
-          </Menu.Item>
-          { (contextType === CONTEXT_VERSE || contextType === CONTEXT_WORD) && (
-            <>
-              <Menu.Item
-                name='verse_clipboard'
-                onClick={copyVerseToClipboard}
-              >
-                Copy verse
-              </Menu.Item>
-              
-              <Menu.Item
-                name='link_clipboard'
-                onClick={copyLinkToClipboard}
-              >
-                Copy link
-              </Menu.Item>
-            </>
-          )}
-          {contextType === CONTEXT_WORD && (
-            <>
-
-              <Menu.Item
-                name='search_this_work'
-                onClick={searchThisWork}
-              >
-                Search in this work
-              </Menu.Item>
-
-              <Menu.Item
-                name='search_all_works'
-                onClick={searchAllWorks}
-              >
-                Search in all works
-              </Menu.Item>
-            
-            </>
-          )}
+          {menuItems}
         </Menu>
       </div>
     </PopupDialog>
