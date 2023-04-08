@@ -63,7 +63,6 @@ const Popups = ({
           onClose={() => closeModal()}
           contextType={popupContextData.contextType}
           contextData={popupContextData.contextData}
-          event={popupContextData.event}
         />
         )}
       </>
