@@ -8,7 +8,7 @@ import { SEARCH, READ_WORK } from '../URLs'
 import { ENDPOINT_WORK_TEXT } from '../Endpoints';
 
 const ContextPopup = ({
-  data, onClose, x, y, positionBelow, positionRight, inverted, contextType, contextData, event, history,
+  data, onClose, x, y, positionBelow, positionRight, inverted, contextType, contextData, history,
 }) => {
 
   const getDivisionReference = (verse = null) => {
@@ -161,8 +161,6 @@ ContextPopup.propTypes = {
   contextType: PropTypes.number.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   contextData: PropTypes.object.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  event: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   history: PropTypes.object.isRequired,
 };
