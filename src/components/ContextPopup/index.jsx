@@ -46,7 +46,7 @@ const ContextPopup = ({
 
   const copyLinkToClipboard = () => {
     // Get the URL to the verse if for a verse
-    if(contextType === CONTEXT_VERSE) {
+    if(contextData.verse !== undefined) {
       navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}${READ_WORK(data.work.title_slug, null, ...getDivisionReference(contextData.verse))}`);
     }
     else{
