@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from "react-router-dom";
 import { Menu } from 'semantic-ui-react'
 import PopupDialog from '../PopupDialog';
+import UserNoteDialog from "../UserNoteDialog";
 import { CONTEXT_WORD, CONTEXT_VERSE } from '../Reader/ChapterEventHandlers';
 import { SEARCH, READ_WORK } from '../URLs'
 import { ENDPOINT_WORK_TEXT } from '../Endpoints';
+import { FeatureFlags } from "../FeatureFlags";
 
 const ContextPopup = ({
   data, onClose, x, y, positionBelow, positionRight, inverted, contextType, contextData, history,
 }) => {
+
+  const { features } = React.useContext(FeatureFlags);
+
+  const [userNoteDialogOpen, setUserNoteDialogOpen] = useState(false);
 
   const getDivisionReference = (verse = null) => {
     const divisions = [data.chapter.descriptor];
@@ -55,6 +61,10 @@ const ContextPopup = ({
     onClose();
   }
 
+  const createUserNote = () => {
+    setUserNoteDialogOpen(true);
+  }
+
   const searchAllWorks = () => {
     history.push(SEARCH(contextData.word));
     onClose();
@@ -96,6 +106,17 @@ const ContextPopup = ({
           Copy link
         </Menu.Item>
       );
+
+      if(features.userNotesEnabled) {
+        menuItems.push(
+          <Menu.Item
+            name='create_user_note'
+            onClick={createUserNote}
+          >
+            Create note
+          </Menu.Item>
+        );
+      }
     }
 
     if(contextType === CONTEXT_WORD){
@@ -128,6 +149,17 @@ const ContextPopup = ({
   // Determine the height
   const height = 16 + (menuItems.length * 43);
 
+  if (userNoteDialogOpen) {
+    return (
+      <UserNoteDialog
+        onClose={onClose}
+        work={data.work.title_slug}
+        division={getDivisionReference(contextData.verse)}
+        verse={contextData.verse}
+      />
+    )
+  }
+
   return (
     <PopupDialog
       onClose={onClose}
@@ -147,6 +179,7 @@ const ContextPopup = ({
       </div>
     </PopupDialog>
   );
+
 };
 
 ContextPopup.propTypes = {
