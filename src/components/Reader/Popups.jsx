@@ -67,12 +67,6 @@ const Popups = ({
           contextData={popupContextData.contextData}
         />
         )}
-        {data && !loading && modal === MODAL_USERNOTE && features.userNotesEnabled && (
-        <UserNoteDialog
-          inverted={inverted}
-          onClose={() => closeModal()}
-        />
-        )}
       </>
     )
 };

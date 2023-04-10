@@ -4,7 +4,8 @@ import {
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import ErrorMessage from '../ErrorMessage';
-import { ENDPOINT_NOTE } from "../Endpoints";
+import { ENDPOINT_NOTE, ENDPOINT_NOTE_EDIT } from "../Endpoints";
+import Cookies from 'js-cookie';
 
 const UserNoteDialog = ({ onClose, noteId, work, division, verse }) => {
 
@@ -29,19 +30,22 @@ const UserNoteDialog = ({ onClose, noteId, work, division, verse }) => {
    */
   const onSave = () => {
 
+    const formData = new FormData();
+    formData.append("title", noteTitle);
+    formData.append("text", noteText);
+    formData.append("work", work);
+    formData.append("division", division.join("/"));
+    formData.append("verse", verse);
+
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            title: noteTitle,
-            text: noteText,
-            work,
-            division,
-            verse
-        })
+        headers: {
+          'X-CSRFToken': Cookies.get('csrftoken')
+        },
+        body: formData
     };
 
-    fetch(ENDPOINT_NOTE(noteId), requestOptions)
+    fetch(ENDPOINT_NOTE_EDIT(noteId), requestOptions)
       .then((res) => res.json())
       .then((newData) => {
         // TODO: get note ID for new notes
@@ -61,7 +65,7 @@ const UserNoteDialog = ({ onClose, noteId, work, division, verse }) => {
 
   return (
     <Modal defaultOpen onClose={onClose} closeIcon>
-      <Header icon="info" content="Note" />
+      <Header icon="info" content="New Note" />
       <Modal.Content>
         {error && (
           <ErrorMessage
@@ -73,10 +77,10 @@ const UserNoteDialog = ({ onClose, noteId, work, division, verse }) => {
         {!error && (
           <Form>
             <span>Title</span>
-            <Input fluid placeholder='Set the title...' />
+            <Input onChange={(event, data) => setNoteTitle(data.value)} fluid placeholder='Set the title...' />
 
             <span>Body</span>
-            <TextArea placeholder='Tell us more' />
+            <TextArea onChange={(event, data) => setNoteText(data.value)} placeholder='Put your note here...' />
           </Form>
         )}
       </Modal.Content>
