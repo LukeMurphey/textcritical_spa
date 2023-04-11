@@ -7,13 +7,13 @@ import UserNoteDialog from "../UserNoteDialog";
 import { CONTEXT_WORD, CONTEXT_VERSE } from '../Reader/ChapterEventHandlers';
 import { SEARCH, READ_WORK } from '../URLs'
 import { ENDPOINT_WORK_TEXT } from '../Endpoints';
-import { FeatureFlags } from "../FeatureFlags";
+import { GlobalAppContext } from "../GlobalAppContext";
 
 const ContextPopup = ({
   data, onClose, x, y, positionBelow, positionRight, inverted, contextType, contextData, history,
 }) => {
 
-  const { features } = React.useContext(FeatureFlags);
+  const { features, authentication } = React.useContext(GlobalAppContext);
 
   const [userNoteDialogOpen, setUserNoteDialogOpen] = useState(false);
 
@@ -107,7 +107,7 @@ const ContextPopup = ({
         </Menu.Item>
       );
 
-      if(features.userNotesEnabled) {
+      if(features.userNotesEnabled && authentication.authenticated) {
         menuItems.push(
           <Menu.Item
             name='create_user_note'

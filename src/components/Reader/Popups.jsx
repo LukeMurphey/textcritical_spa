@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import WordInformation from "../WordInformation/WordInformationPopup";
 import FootnotePopup from "../FootnotePopup";
 import ContextPopup from "../ContextPopup";
-import UserNoteDialog from "../UserNoteDialog";
-import { FeatureFlags } from "../FeatureFlags";
+import { GlobalAppContext } from "../GlobalAppContext";
 
 export const MODAL_WORD = "word";
 export const MODAL_FOOTNOTE = "footnote";
@@ -27,7 +26,7 @@ const Popups = ({
     inverted,
     popupContextData
 }) => {
-    const { features } = React.useContext(FeatureFlags);
+    const { features } = React.useContext(GlobalAppContext);
     return (
       <>
         {data && !loading && modal === MODAL_WORD && (

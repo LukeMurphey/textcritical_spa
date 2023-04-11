@@ -3,7 +3,7 @@ import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-rea
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS, ENDPOINT_USER_PREFERENCES, ENDPOINT_SOCIAL_LOGIN } from "../Endpoints";
+import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS, ENDPOINT_USER_PREFERENCES } from "../Endpoints";
 import RemoteStorage from "../Settings/RemoteStorage";
 import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
@@ -25,6 +25,7 @@ import StaleURLMessage from "./StaleURLMessage";
 import WarningMessages from "./WarningMessages";
 import Popups, { MODAL_WORD, MODAL_FOOTNOTE, MODAL_CONTEXT } from "./Popups";
 import { MODE_LOADING, MODE_ERROR, MODE_DONE, MODE_NOT_READY } from "../Constants";
+import { GlobalAppContext } from "../GlobalAppContext";
 
 /**
  * Below are some notes about how this works:
@@ -135,16 +136,14 @@ const Reader = ({
 
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState(getFontAdjustment());
 
-  // This will store information about whether the user is logged in or not.
-  const [authInfo, setAuthInfo] = useState(null);
-
   // This stores the storage provider that will store user preferences
   const [storageProvider, setStorageProvider] = useState(null);
-  const [authLoadingDone, setAuthLoadingDone] = useState(false);
 
   // Keep a list of verse references that are known to be a reference within the current chapter
   const verseReferences = useRef([]);
   const popupContextData = useRef(null);
+
+  const { authentication } = React.useContext(GlobalAppContext);
 
   /**
    * Set an error state.
@@ -683,35 +682,10 @@ const Reader = ({
       })
   };
 
-  // Get information about the logged in user
-  const getAuthInfo = () => {
-    fetch(ENDPOINT_SOCIAL_LOGIN())
-      .then((res) => res.json())
-      .then((newData) => {
-        setAuthInfo(newData);
-
-        // Start getting the preferences from the server if the user is authenticated
-        if(newData && newData.authenticated && Object.prototype.hasOwnProperty.call(newData, "csrf_token")){
-          getPreferences(newData.csrf_token);
-        }
-        else {
-          setAuthLoadingDone(true);
-        }
-      })
-      .catch(() => {
-        setAuthLoadingDone(true);
-      });
-  };
-
   // Handle the case where the ReadingMenuBar tells us that authentication was completed; reload our state accordingly
   const authenticationCompleted = () => {
-    getAuthInfo();
+    authentication.checkAuthenticationState();
   };
-
-  // Get the authentication information
-  useEffect(() => {
-    getAuthInfo();
-  }, []);
 
   // Figure out a description for the chapter
   let description = "";
@@ -792,8 +766,6 @@ const Reader = ({
         }
         decreaseFontSizeDisabled={fontSizeAdjustment <= 0}
         storageProvider={storageProvider}
-        authenticationCompleted={() => authenticationCompleted()}
-        authInfo={authInfo}
       />
       {mode === MODE_DONE && (
         <>
@@ -1040,7 +1012,7 @@ const Reader = ({
               onClick={() => setBookSelectionOpen(true)}
               inverted={inverted}
             />
-            {authLoadingDone && <FavoriteWorks inverted={inverted} storageProvider={storageProvider} /> }
+            {authentication.authLoadingDone && <FavoriteWorks inverted={inverted} storageProvider={storageProvider} /> }
           </div>
         </Container>
       )}
