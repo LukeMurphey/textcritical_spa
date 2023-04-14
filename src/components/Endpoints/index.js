@@ -147,7 +147,7 @@ export function ENDPOINT_NOTES() {
 }
 
 export function ENDPOINT_NOTE_EDIT(noteId = null) {
-  if(noteId === null) {
+  if(!noteId) {
     return `${getHostConfig()}/api/notes/edit/`;
   }
   return `${getHostConfig()}/api/notes/edit/${noteId}/`;

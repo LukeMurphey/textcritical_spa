@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Button } from 'semantic-ui-react';
 import ErrorMessage from '../ErrorMessage';
 import NoteEditor from './NoteEditor';
 import NotesList from './NotesList';
@@ -12,8 +13,9 @@ export const STATE_EDIT = 2;
 const UserNoteDialog = ({ onClose, work, division, verse }) => {
 
   const [error, setError] = useState(null);
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [loadedNote, setLoadedNote] = useState(null);
+  const [newNote, setNewNote] = useState(false);
   const [notes, setNotes] = useState(null);
 
   const getNotes = () => {
@@ -28,7 +30,15 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
       });
   };
 
+  const cancelEditing = () => {
+    setIsEditing(false);
+    setLoadedNote(null);
+  };
 
+  const onCreateNewNote = () => {
+    setIsEditing(true);
+    setLoadedNote(null);
+  }
 
   // Load the note when opening the form
   useEffect(() => {
@@ -40,7 +50,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
   let state = STATE_LIST;
 
   if(!error) {
-    if(loadedNote && isEditing) {
+    if(isEditing === true) {
       state = STATE_EDIT;
     }
 
@@ -48,7 +58,6 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
       state = STATE_VIEW;
     }
   }
-  console.log(state);
 
   return (
     <>
@@ -61,13 +70,23 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
       )}
 
       {state === STATE_LIST && (
-        <NotesList notes={notes} work={work} division={division} verse={verse} onClose={onClose} onSelectNote={(note) => setLoadedNote(note)} />
+        <>
+          <NotesList
+            notes={notes}
+            work={work}
+            division={division}
+            verse={verse}
+            onClose={onClose}
+            onSelectNote={(note) => setLoadedNote(note)}
+            onCreateNewNote={onCreateNewNote}
+          />
+        </>
       )}
       {state === STATE_EDIT && (
-        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} />
+        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditing} />
       )}
       {state === STATE_VIEW && (
-        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} />
+        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditing} />
       )}
     </>
   );
