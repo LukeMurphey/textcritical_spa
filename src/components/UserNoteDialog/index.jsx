@@ -1,109 +1,83 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Button, Header, Modal, Input, TextArea, Form,
-} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import ErrorMessage from '../ErrorMessage';
-import { ENDPOINT_NOTE, ENDPOINT_NOTE_EDIT } from "../Endpoints";
-import Cookies from 'js-cookie';
+import NoteEditor from './NoteEditor';
+import NotesList from './NotesList';
+import { ENDPOINT_NOTES } from "../Endpoints";
 
-const UserNoteDialog = ({ onClose, noteId, work, division, verse }) => {
+export const STATE_LIST = 0;
+export const STATE_VIEW = 1;
+export const STATE_EDIT = 2;
 
-  const [noteTitle, setNoteTitle] = useState(null);
-  const [noteText, setNoteText] = useState(null);
+const UserNoteDialog = ({ onClose, work, division, verse }) => {
+
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(true);
+  const [loadedNote, setLoadedNote] = useState(null);
+  const [notes, setNotes] = useState(null);
 
-  const getNote = () => {
-    fetch(ENDPOINT_NOTE(noteId))
+  const getNotes = () => {
+    fetch(ENDPOINT_NOTES())
       .then((res) => res.json())
       .then((newData) => {
-        setNoteTitle(newData.title);
-        setNoteText(newData.text);
+        // setLoadedNote(newData[0]);
+        setNotes(newData)
       })
       .catch((e) => {
         setError(e.toString());
       });
   };
 
-  /**
-   * Save the note.
-   */
-  const onSave = () => {
 
-    const formData = new FormData();
-    formData.append("title", noteTitle);
-    formData.append("text", noteText);
-    formData.append("work", work);
-    formData.append("division", division.join("/"));
-    formData.append("verse", verse);
-
-    const requestOptions = {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': Cookies.get('csrftoken')
-        },
-        body: formData
-    };
-
-    fetch(ENDPOINT_NOTE_EDIT(noteId), requestOptions)
-      .then((res) => res.json())
-      .then((newData) => {
-        // TODO: get note ID for new notes
-        onClose(newData.noteId);
-      })
-      .catch((e) => {
-        setError(e.toString());
-      });
-  };
 
   // Load the note when opening the form
   useEffect(() => {
-    if(noteId !== null) {
-        getNote();
-    }
+    getNotes()
   }, []);
 
-  return (
-    <Modal defaultOpen onClose={onClose} closeIcon>
-      <Header icon="info" content="New Note" />
-      <Modal.Content>
-        {error && (
-          <ErrorMessage
-            title="Unable to load the note"
-            description="Unable to get the note from the server"
-            message={error}
-          />
-        )}
-        {!error && (
-          <Form>
-            <span>Title</span>
-            <Input onChange={(event, data) => setNoteTitle(data.value)} fluid placeholder='Set the title...' />
 
-            <span>Body</span>
-            <TextArea onChange={(event, data) => setNoteText(data.value)} placeholder='Put your note here...' />
-          </Form>
-        )}
-      </Modal.Content>
-      <Modal.Actions>
-        {!error && (
-          <Button primary onClick={onSave}>Save</Button>
-        )}
-        <Button onClick={onClose}>Close</Button>
-      </Modal.Actions>
-    </Modal>
+  // Determine what state the UI ought to be in
+  let state = STATE_LIST;
+
+  if(!error) {
+    if(loadedNote && isEditing) {
+      state = STATE_EDIT;
+    }
+
+    if(loadedNote) {
+      state = STATE_VIEW;
+    }
+  }
+  console.log(state);
+
+  return (
+    <>
+      {error && (
+        <ErrorMessage
+          title="Unable to load the note"
+          description="Unable to get the note from the server"
+          message={error}
+        />
+      )}
+
+      {state === STATE_LIST && (
+        <NotesList notes={notes} work={work} division={division} verse={verse} onClose={onClose} onSelectNote={(note) => setLoadedNote(note)} />
+      )}
+      {state === STATE_EDIT && (
+        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} />
+      )}
+      {state === STATE_VIEW && (
+        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} />
+      )}
+    </>
   );
 };
 
 UserNoteDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
-  noteId: PropTypes.number,
   work: PropTypes.string.isRequired,
   division: PropTypes.string.isRequired,
   verse: PropTypes.string.isRequired,
 };
-
-UserNoteDialog.defaultProps = {
-    noteId: null,
-}
 
 export default UserNoteDialog;
