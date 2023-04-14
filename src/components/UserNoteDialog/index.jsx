@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Message } from 'semantic-ui-react'
 import ErrorMessage from '../ErrorMessage';
 import NoteEditor from './NoteEditor';
+import NoteViewer from './NoteViewer';
 import NotesList from './NotesList';
 import { ENDPOINT_NOTES } from "../Endpoints";
 
@@ -68,11 +69,12 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
   let state = STATE_LIST;
 
   if(!error) {
+
     if(isEditing === true) {
       state = STATE_EDIT;
     }
 
-    if(loadedNote) {
+    else if(loadedNote) {
       state = STATE_VIEW;
     }
   }
@@ -116,7 +118,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
         <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditing} onSave={onSave} />
       )}
       {state === STATE_VIEW && (
-        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditing} onSave={onSave} />
+        <NoteViewer note={loadedNote} onClose={onClose} onEdit={() => { setIsEditing(true); }} />
       )}
     </>
   );
