@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types'; import {
-  Button, Header, Modal, Segment,
+  Button, Header, Modal,
 } from 'semantic-ui-react';
+import MDEditor from '@uiw/react-md-editor';
 
 const UserNoteViewer = ({ note, onClose, onEdit }) => {
 
@@ -11,7 +12,9 @@ const UserNoteViewer = ({ note, onClose, onEdit }) => {
       <Modal.Content>
         <Header level={2}>{note && note.fields && note.fields.title}</Header>
 
-        <Segment>{note && note.fields && note.fields.text}</Segment>
+        <div data-color-mode="light">
+          <MDEditor.Markdown source={note && note.fields && note.fields.text} style={{ whiteSpace: 'pre-wrap' }} />
+        </div>
       </Modal.Content>
       <Modal.Actions>
         <Button primary onClick={onEdit}>Edit</Button>
