@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import features from './features.json';
-import { ENDPOINT_SOCIAL_LOGIN } from "../Endpoints";
+import { ENDPOINT_SOCIAL_LOGIN, ENDPOINT_USER_PREFERENCES } from "../Endpoints";
+import RemoteStorage from "../Settings/RemoteStorage";
 
 export const GlobalAppContext = React.createContext({});
 
@@ -10,6 +11,21 @@ export const GlobalAppContextProvider = ({ children }) => {
   // This will store information about whether the user is logged in or not.
   const [authInfo, setAuthInfo] = useState({});
   const [authLoadingDone, setAuthLoadingDone] = useState(false);
+
+  // This stores the storage provider that will store user preferences
+  const [storageProvider, setStorageProvider] = useState(null);
+
+  // Get the user preferences
+  const getPreferences = (csrfToken) => {
+    fetch(ENDPOINT_USER_PREFERENCES())
+      .then((res) => res.json())
+      .then((prefs) => {
+        // eslint-disable-next-line no-console
+        console.info("Successfully loaded the user's preferences");
+        setStorageProvider(new RemoteStorage(prefs, csrfToken));
+        setAuthLoadingDone(true);
+      })
+  };
 
   // Get information about the logged in user
   const getAuthInfo = () => {
@@ -34,6 +50,7 @@ export const GlobalAppContextProvider = ({ children }) => {
       });
   };
 
+
   // Get the authentication information
   useEffect(() => {
     getAuthInfo();
@@ -45,7 +62,7 @@ export const GlobalAppContextProvider = ({ children }) => {
   }
 
   return (
-    <GlobalAppContext.Provider value={ { features, authentication: { authLoadingDone, ...authInfo, checkAuthenticationState } }}>
+    <GlobalAppContext.Provider value={{ features, authentication: { authLoadingDone, ...authInfo, checkAuthenticationState }, storageProvider}}>
       {children}
     </GlobalAppContext.Provider>
   );
