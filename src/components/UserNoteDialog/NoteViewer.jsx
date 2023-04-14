@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'; import {
   Button, Header, Modal,
 } from 'semantic-ui-react';
 import MDEditor from '@uiw/react-md-editor';
+import NewTabLinkRewriter from './NewTabLinkRewriter';
 
 const UserNoteViewer = ({ note, onClose, onEdit, onCancel }) => {
 
@@ -13,7 +14,11 @@ const UserNoteViewer = ({ note, onClose, onEdit, onCancel }) => {
         <Header level={2}>{note && note.fields && note.fields.title}</Header>
 
         <div data-color-mode="light">
-          <MDEditor.Markdown source={note && note.fields && note.fields.text} style={{ whiteSpace: 'pre-wrap' }} />
+          <MDEditor.Markdown
+            source={note && note.fields && note.fields.text}
+            style={{ whiteSpace: 'pre-wrap' }}
+            rehypeRewrite={NewTabLinkRewriter}
+          />
         </div>
       </Modal.Content>
       <Modal.Actions>

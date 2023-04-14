@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types'; import {
+import PropTypes from 'prop-types';
+import {
   Button, Header, Modal, Input, Form, TextArea, Message
 } from 'semantic-ui-react';
 import Cookies from 'js-cookie';
 import MDEditor from '@uiw/react-md-editor';
 import ErrorMessage from '../ErrorMessage';
+import NewTabLinkRewriter from './NewTabLinkRewriter';
 import { ENDPOINT_NOTE_EDIT } from "../Endpoints";
 
 const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave, useMarkdown }) => {
@@ -122,6 +124,9 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
               <MDEditor
                 value={noteText || ""}
                 onChange={changeText}
+                previewOptions={{
+                  rehypeRewrite: NewTabLinkRewriter
+                }}
               />
             </div>
           )}
