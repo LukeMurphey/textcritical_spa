@@ -142,8 +142,19 @@ export function ENDPOINT_NOTE(noteId) {
   return `${getHostConfig()}/api/notes/${noteId}/`;
 }
 
-export function ENDPOINT_NOTES() {
-  return `${getHostConfig()}/api/notes/`;
+export function ENDPOINT_NOTES(work = null, division = null) {
+
+  let query = '';
+
+  if (work) {
+    query += appendAmpersand(query, `work=${work}`);
+  }
+
+  if (division) {
+    query += appendAmpersand(query, `division=${division}`);
+  }
+
+  return `${getHostConfig()}/api/notes/?${query}`;
 }
 
 export function ENDPOINT_NOTE_EDIT(noteId = null) {

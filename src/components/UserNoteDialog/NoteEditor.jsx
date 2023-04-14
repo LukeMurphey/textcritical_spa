@@ -31,23 +31,23 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
       body: formData
     };
 
-    let isNew = !note;
-
     fetch(ENDPOINT_NOTE_EDIT(note?.pk), requestOptions)
       .then((res) => res.json())
-      .then((note) => {
-        onSave(note, isNew);
+      .then((editedNote) => {
+        // BTW: "!note" is used to tell the function that the note didn't exist before and should
+        // therefore be considered new
+        onSave(editedNote, !note);
       })
       .catch((e) => {
         setError(e.toString());
       });
   };
 
-  let isEditing = note && note.pk;
+  const isEditing = note && note.pk;
 
   return (
     <Modal defaultOpen onClose={onClose} closeIcon>
-      <Header icon="info" content={isEditing ? "Edit Note" : "New Note" } />
+      <Header icon="info" content={isEditing ? "Edit Note" : "New Note"} />
       <Modal.Content>
         {error && (
           <ErrorMessage
@@ -58,10 +58,10 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
         )}
         <Form>
           <span>Title</span>
-          <Input onChange={(event, data) => setNoteTitle(data.value)} fluid placeholder='Set the title...' value={noteTitle ? noteTitle : ""} />
+          <Input onChange={(_, data) => setNoteTitle(data.value)} fluid placeholder='Set the title...' value={noteTitle || ""} />
 
           <span>Body</span>
-          <TextArea onChange={(event, data) => setNoteText(data.value)} placeholder='Put your note here...' value={noteText ? noteText : ""} />
+          <TextArea onChange={(_, data) => setNoteText(data.value)} placeholder='Put your note here...' value={noteText || ""} />
         </Form>
       </Modal.Content>
       <Modal.Actions>
@@ -82,6 +82,7 @@ UserNoteEditor.propTypes = {
   verse: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
 };
 
 export default UserNoteEditor;

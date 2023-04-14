@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Message } from 'semantic-ui-react'
 import ErrorMessage from '../ErrorMessage';
 import NoteEditor from './NoteEditor';
 import NotesList from './NotesList';
 import { ENDPOINT_NOTES } from "../Endpoints";
-import { Message } from 'semantic-ui-react'
 
 export const STATE_LIST = 0;
 export const STATE_VIEW = 1;
@@ -16,18 +16,21 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
   const [message, setMessage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loadedNote, setLoadedNote] = useState(null);
-  const [newNote, setNewNote] = useState(false);
   const [notes, setNotes] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getNotes = () => {
-    fetch(ENDPOINT_NOTES())
+    setIsLoading(true);
+    fetch(ENDPOINT_NOTES(work, division.join("/")))
       .then((res) => res.json())
       .then((newData) => {
         // setLoadedNote(newData[0]);
         setNotes(newData)
+        setIsLoading(false);
       })
       .catch((e) => {
         setError(e.toString());
+        setIsLoading(false);
       });
   };
 
@@ -41,7 +44,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
     setLoadedNote(null);
   }
   
-  const onSave = (note, isNew) => {
+  const onSave = (_, isNew) => {
     setIsEditing(false);
     setLoadedNote(null);
 
@@ -74,10 +77,10 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
     }
   }
 
-  let children = null;
+  let topContent = null;
 
   if (error) {
-    children = (
+    topContent = (
       <ErrorMessage
         title="Unable to load the note"
         description="Unable to get the note from the server"
@@ -87,7 +90,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
   }
 
   else if (message) {
-    children = (
+    topContent = (
       <Message positive>{message}</Message>
     )
   }
@@ -104,7 +107,8 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
             onClose={onClose}
             onSelectNote={(note) => setLoadedNote(note)}
             onCreateNewNote={onCreateNewNote}
-            children={children}
+            topContent={topContent}
+            isLoading={isLoading}
           />
         </>
       )}

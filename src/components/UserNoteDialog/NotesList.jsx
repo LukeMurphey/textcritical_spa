@@ -1,16 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table, Modal, Header, Button } from 'semantic-ui-react';
+import { Table, Modal, Header, Button, Placeholder } from 'semantic-ui-react';
 import ButtonLink from '../ButtonLink';
 
 export const STATE_LIST = 0;
 export const STATE_EMPTY = 1;
+export const STATE_LOADING = 2;
 
-const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, children }) => {
+const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topContent, isLoading }) => {
 
   let state = STATE_EMPTY;
 
-  if (notes && notes.length > 0) {
+  if (isLoading) {
+    state = STATE_LOADING;
+  }
+
+  else if (notes && notes.length > 0) {
     state = STATE_LIST;
   }
 
@@ -18,7 +23,7 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, children
     <Modal defaultOpen onClose={onClose} closeIcon>
       <Header icon="info" content="Notes" />
       <Modal.Content>
-        {children}
+        {topContent}
         <Table compact="very">
           <Table.Header>
             <Table.Row>
@@ -27,6 +32,20 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, children
           </Table.Header>
 
           <Table.Body>
+            {state === STATE_LOADING && (
+              <Table.Row>
+                <Table.Cell>
+                  <Placeholder>
+                    <Placeholder.Paragraph>
+                      <Placeholder.Line />
+                      <Placeholder.Line />
+                      <Placeholder.Line />
+                      <Placeholder.Line />
+                    </Placeholder.Paragraph>
+                  </Placeholder>
+                </Table.Cell>
+              </Table.Row>
+            )}
             {state === STATE_LIST && (
               notes.map((note) => (
                 <Table.Row>
@@ -50,7 +69,7 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, children
             </Table.Row>
           </Table.Footer>
         </Table>
-        
+
       </Modal.Content>
       <Modal.Actions>
         <Button onClick={onClose}>Close</Button>
@@ -65,11 +84,13 @@ UserNotesList.propTypes = {
   onClose: PropTypes.func.isRequired,
   onSelectNote: PropTypes.func.isRequired,
   onCreateNewNote: PropTypes.func.isRequired,
-  children: PropTypes.element,
+  topContent: PropTypes.element,
+  isLoading: PropTypes.bool,
 };
 
 UserNotesList.defaultProps = {
-  children: null,
+  topContent: null,
+  isLoading: false,
 }
 
 export default UserNotesList;
