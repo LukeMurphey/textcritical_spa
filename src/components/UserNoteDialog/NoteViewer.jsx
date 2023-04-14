@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'; import {
 } from 'semantic-ui-react';
 import MDEditor from '@uiw/react-md-editor';
 
-const UserNoteViewer = ({ note, onClose, onEdit }) => {
+const UserNoteViewer = ({ note, onClose, onEdit, onCancel }) => {
 
   return (
     <Modal defaultOpen onClose={onClose} closeIcon>
@@ -18,6 +18,7 @@ const UserNoteViewer = ({ note, onClose, onEdit }) => {
       </Modal.Content>
       <Modal.Actions>
         <Button primary onClick={onEdit}>Edit</Button>
+        <Button onClick={onCancel}>Back</Button>
         <Button onClick={onClose}>Close</Button>
       </Modal.Actions>
     </Modal>
@@ -30,6 +31,7 @@ UserNoteViewer.propTypes = {
   note: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default UserNoteViewer;

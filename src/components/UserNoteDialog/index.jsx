@@ -35,7 +35,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
       });
   };
 
-  const cancelEditing = () => {
+  const cancelEditOrViewing = () => {
     setIsEditing(false);
     setLoadedNote(null);
   };
@@ -115,10 +115,10 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
         </>
       )}
       {state === STATE_EDIT && (
-        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditing} onSave={onSave} />
+        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditOrViewing} onSave={onSave} />
       )}
       {state === STATE_VIEW && (
-        <NoteViewer note={loadedNote} onClose={onClose} onEdit={() => { setIsEditing(true); }} />
+        <NoteViewer note={loadedNote} onClose={onClose} onEdit={() => { setIsEditing(true); }} onCancel={cancelEditOrViewing} />
       )}
     </>
   );
