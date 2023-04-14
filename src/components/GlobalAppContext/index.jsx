@@ -50,7 +50,6 @@ export const GlobalAppContextProvider = ({ children }) => {
       });
   };
 
-
   // Get the authentication information
   useEffect(() => {
     getAuthInfo();
