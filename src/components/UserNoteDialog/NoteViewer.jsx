@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'; import {
 import MDEditor from '@uiw/react-md-editor';
 import NewTabLinkRewriter from './NewTabLinkRewriter';
 
-const UserNoteViewer = ({ note, onClose, onEdit, onCancel }) => {
+const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
 
   return (
     <Modal defaultOpen onClose={onClose} closeIcon>
@@ -22,6 +22,7 @@ const UserNoteViewer = ({ note, onClose, onEdit, onCancel }) => {
         </div>
       </Modal.Content>
       <Modal.Actions>
+        <Button style={{float: 'left'}} negativ onClick={() => onDelete(note)}>Delete</Button>
         <Button primary onClick={onEdit}>Edit</Button>
         <Button onClick={onCancel}>Back</Button>
         <Button onClick={onClose}>Close</Button>
@@ -37,6 +38,7 @@ UserNoteViewer.propTypes = {
   onClose: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default UserNoteViewer;

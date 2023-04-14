@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import Cookies from 'js-cookie';
 import { Message } from 'semantic-ui-react'
 import ErrorMessage from '../ErrorMessage';
 import NoteEditor from './NoteEditor';
 import NoteViewer from './NoteViewer';
 import NotesList from './NotesList';
-import { ENDPOINT_NOTES } from "../Endpoints";
+import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE } from "../Endpoints";
 
 export const STATE_LIST = 0;
 export const STATE_VIEW = 1;
@@ -25,13 +26,38 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
     fetch(ENDPOINT_NOTES(work, division.join("/")))
       .then((res) => res.json())
       .then((newData) => {
-        // setLoadedNote(newData[0]);
         setNotes(newData)
         setIsLoading(false);
       })
       .catch((e) => {
         setError(e.toString());
         setIsLoading(false);
+      });
+  };
+
+  /**
+   * Delete the note.
+   */
+  const onDeleteNote = (noteId) => {
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken')
+      },
+    };
+
+    fetch(ENDPOINT_NOTE_DELETE(noteId), requestOptions)
+      .then((res) => res.json())
+      .then(() => {
+        // Reload the notes
+        getNotes();
+        setLoadedNote(null);
+        setIsEditing(false);
+        setMessage("Note successfully deleted");
+      })
+      .catch((e) => {
+        setError(e.toString());
       });
   };
 
@@ -118,7 +144,13 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
         <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditOrViewing} onSave={onSave} />
       )}
       {state === STATE_VIEW && (
-        <NoteViewer note={loadedNote} onClose={onClose} onEdit={() => { setIsEditing(true); }} onCancel={cancelEditOrViewing} />
+        <NoteViewer
+          note={loadedNote}
+          onClose={onClose}
+          onEdit={() => { setIsEditing(true); }}
+          onCancel={cancelEditOrViewing}
+          onDelete={(note) => { onDeleteNote(note.pk) }}
+        />
       )}
     </>
   );
