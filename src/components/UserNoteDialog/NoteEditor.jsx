@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import ErrorMessage from '../ErrorMessage';
 import { ENDPOINT_NOTE_EDIT } from "../Endpoints";
 
-const UserNoteEditor = ({ note, onClose, onCancel, work, division, verse }) => {
+const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave }) => {
   const [error, setError] = useState(null);
   const [noteTitle, setNoteTitle] = useState(note && note.fields && note.fields.title);
   const [noteText, setNoteText] = useState(note && note.fields && note.fields.text);
@@ -14,7 +14,7 @@ const UserNoteEditor = ({ note, onClose, onCancel, work, division, verse }) => {
   /**
    * Save the note.
    */
-  const onSave = () => {
+  const onSaveNote = () => {
 
     const formData = new FormData();
     formData.append("title", noteTitle);
@@ -31,13 +31,12 @@ const UserNoteEditor = ({ note, onClose, onCancel, work, division, verse }) => {
       body: formData
     };
 
-    const noteId = null;
+    let isNew = !note;
 
     fetch(ENDPOINT_NOTE_EDIT(note?.pk), requestOptions)
       .then((res) => res.json())
-      .then((newData) => {
-        // TODO: get note ID for new notes
-        onClose(newData.pk);
+      .then((note) => {
+        onSave(note, isNew);
       })
       .catch((e) => {
         setError(e.toString());
@@ -66,7 +65,7 @@ const UserNoteEditor = ({ note, onClose, onCancel, work, division, verse }) => {
         </Form>
       </Modal.Content>
       <Modal.Actions>
-        <Button primary onClick={onSave}>Save</Button>
+        <Button primary onClick={onSaveNote}>Save</Button>
         <Button onClick={onCancel}>Cancel</Button>
         <Button onClick={onClose}>Close</Button>
       </Modal.Actions>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'semantic-ui-react';
 import ErrorMessage from '../ErrorMessage';
 import NoteEditor from './NoteEditor';
 import NotesList from './NotesList';
 import { ENDPOINT_NOTES } from "../Endpoints";
+import { Message } from 'semantic-ui-react'
 
 export const STATE_LIST = 0;
 export const STATE_VIEW = 1;
@@ -13,6 +13,7 @@ export const STATE_EDIT = 2;
 const UserNoteDialog = ({ onClose, work, division, verse }) => {
 
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loadedNote, setLoadedNote] = useState(null);
   const [newNote, setNewNote] = useState(false);
@@ -39,6 +40,20 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
     setIsEditing(true);
     setLoadedNote(null);
   }
+  
+  const onSave = (note, isNew) => {
+    setIsEditing(false);
+    setLoadedNote(null);
+
+    if(isNew) {
+      setMessage("Note successfully created");
+    }
+    else{
+      setMessage("Note successfully edited");
+    }
+    
+    getNotes();
+  }
 
   // Load the note when opening the form
   useEffect(() => {
@@ -59,16 +74,26 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
     }
   }
 
-  return (
-    <>
-      {error && (
-        <ErrorMessage
-          title="Unable to load the note"
-          description="Unable to get the note from the server"
-          message={error}
-        />
-      )}
+  let children = null;
 
+  if (error) {
+    children = (
+      <ErrorMessage
+        title="Unable to load the note"
+        description="Unable to get the note from the server"
+        message={error}
+      />
+    )
+  }
+
+  else if (message) {
+    children = (
+      <Message positive>{message}</Message>
+    )
+  }
+
+  return (
+    <> 
       {state === STATE_LIST && (
         <>
           <NotesList
@@ -79,14 +104,15 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
             onClose={onClose}
             onSelectNote={(note) => setLoadedNote(note)}
             onCreateNewNote={onCreateNewNote}
+            children={children}
           />
         </>
       )}
       {state === STATE_EDIT && (
-        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditing} />
+        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditing} onSave={onSave} />
       )}
       {state === STATE_VIEW && (
-        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditing} />
+        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditing} onSave={onSave} />
       )}
     </>
   );

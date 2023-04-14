@@ -6,7 +6,7 @@ import ButtonLink from '../ButtonLink';
 export const STATE_LIST = 0;
 export const STATE_EMPTY = 1;
 
-const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote }) => {
+const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, children }) => {
 
   let state = STATE_EMPTY;
 
@@ -18,6 +18,7 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote }) => {
     <Modal defaultOpen onClose={onClose} closeIcon>
       <Header icon="info" content="Notes" />
       <Modal.Content>
+        {children}
         <Table compact="very">
           <Table.Header>
             <Table.Row>
@@ -64,6 +65,11 @@ UserNotesList.propTypes = {
   onClose: PropTypes.func.isRequired,
   onSelectNote: PropTypes.func.isRequired,
   onCreateNewNote: PropTypes.func.isRequired,
+  children: PropTypes.element,
 };
+
+UserNotesList.defaultProps = {
+  children: null,
+}
 
 export default UserNotesList;
