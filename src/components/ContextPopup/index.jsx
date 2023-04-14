@@ -113,7 +113,7 @@ const ContextPopup = ({
             name='create_user_note'
             onClick={createUserNote}
           >
-            Create note
+            View or create notes
           </Menu.Item>
         );
       }
