@@ -40,6 +40,11 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
    */
   const onDeleteNote = (noteId) => {
 
+    // eslint-disable-next-line no-restricted-globals, no-alert
+    if( confirm("Are you sure you want to delete this note?") !== true ){
+      return false;
+    }
+
     const requestOptions = {
       method: 'POST',
       headers: {
