@@ -84,19 +84,21 @@ const ContextPopup = ({
         name='chapter_clipboard'
         onClick={copyChapterToClipboard}
       >
-        Copy chapter to clipboard
+        Copy chapter
       </Menu.Item>
     );
 
     if(contextType === CONTEXT_VERSE || contextType === CONTEXT_WORD ){
-      menuItems.push(
-        <Menu.Item
-          name='verse_clipboard'
-          onClick={copyVerseToClipboard}
-        >
-          Copy verse
-        </Menu.Item>
-      );
+      if(contextData.verse) {
+        menuItems.push(
+          <Menu.Item
+            name='verse_clipboard'
+            onClick={copyVerseToClipboard}
+          >
+            Copy verse
+          </Menu.Item>
+        );
+      }
 
       menuItems.push(
         <Menu.Item
@@ -113,7 +115,7 @@ const ContextPopup = ({
             name='create_user_note'
             onClick={createUserNote}
           >
-            View or create notes
+            {contextData.verse ? 'View/create notes on this verse' : 'View/create notes for this chapter'}
           </Menu.Item>
         );
       }
