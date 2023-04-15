@@ -8,8 +8,9 @@ import MDEditor from '@uiw/react-md-editor';
 import ErrorMessage from '../ErrorMessage';
 import NewTabLinkRewriter from './NewTabLinkRewriter';
 import { ENDPOINT_NOTE_EDIT } from "../Endpoints";
+import './index.scss';
 
-const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave, useMarkdown }) => {
+const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave, useMarkdownEditor }) => {
   const [error, setError] = useState(null);
   const [noteTitle, setNoteTitle] = useState(note && note.fields && note.fields.title);
   const [noteText, setNoteText] = useState(note && note.fields && note.fields.text);
@@ -109,17 +110,17 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
           />
         )}
         <Form>
-          <span>Title</span>
+          <div>Title</div>
           {noteTitleError && (
             <Message size="tiny" negative>{noteTitleError}</Message>
           )}
           <Input error={noteTitleError !== null} onChange={(_, data) => changeTitle(data.value)} fluid placeholder='Set the title...' value={noteTitle || ""} />
 
-          <span>Body</span>
+          <div className="note-content">Content</div>
           {noteTextError && (
             <Message size="tiny" negative>{noteTextError}</Message>
           )}
-          {useMarkdown && (
+          {useMarkdownEditor && (
             <div data-color-mode="light">
               <MDEditor
                 value={noteText || ""}
@@ -130,7 +131,7 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
               />
             </div>
           )}
-          {!useMarkdown && (
+          {!useMarkdownEditor && (
             <TextArea error={noteTextError !== null} onChange={(_, data) => changeText(data.value)} placeholder='Put your note here...' value={noteText || ""} />
           )}
         </Form>
@@ -154,11 +155,11 @@ UserNoteEditor.propTypes = {
   onClose: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
-  useMarkdown: PropTypes.bool,
+  useMarkdownEditor: PropTypes.bool,
 };
 
 UserNoteEditor.defaultProps = {
-  useMarkdown: false,
+  useMarkdownEditor: true,
 }
 
 export default UserNoteEditor;

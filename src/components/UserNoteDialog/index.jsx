@@ -69,6 +69,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
   const cancelEditOrViewing = () => {
     setIsEditing(false);
     setLoadedNote(null);
+    setMessage(null);
   };
 
   const onCreateNewNote = () => {
@@ -138,7 +139,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
             division={division}
             verse={verse}
             onClose={onClose}
-            onSelectNote={(note) => setLoadedNote(note)}
+            onSelectNote={(note) => { setLoadedNote(note); setMessage(null); }}
             onCreateNewNote={onCreateNewNote}
             topContent={topContent}
             isLoading={isLoading}
