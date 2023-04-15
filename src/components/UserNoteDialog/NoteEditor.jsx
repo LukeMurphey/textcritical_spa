@@ -104,7 +104,7 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
         {error && (
           <ErrorMessage
             title="Unable to save the note"
-            description="Unable to get save note to the server"
+            description="Unable to save the note to the server"
             message={error}
           />
         )}

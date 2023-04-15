@@ -115,8 +115,8 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
   if (error) {
     topContent = (
       <ErrorMessage
-        title="Unable to load the note"
-        description="Unable to get the note from the server"
+        title="Error"
+        description="Unable to communicate with the server"
         message={error}
       />
     )
