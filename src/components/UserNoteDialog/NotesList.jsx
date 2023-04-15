@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table, Modal, Header, Button, Placeholder } from 'semantic-ui-react';
+import { Table, Modal, Header, Button, Placeholder, Message } from 'semantic-ui-react';
 import ButtonLink from '../ButtonLink';
+import './NotesList.scss';
 
 export const STATE_LIST = 0;
 export const STATE_EMPTY = 1;
@@ -24,52 +25,62 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topConte
       <Header icon="info" content="Notes" />
       <Modal.Content>
         {topContent}
-        <Table compact="very">
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Title</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
+        {state === STATE_EMPTY && (
+          <>
+            <Message>
+              <Message.Header>No Notes Exist</Message.Header>
+              You do not have any notes for this passage.
+              <div className="create-first-note-button">
+                <Button onClick={onCreateNewNote}>Create New Note</Button>
+              </div>
+            </Message>
+          </>
+        )}
 
-          <Table.Body>
-            {state === STATE_LOADING && (
+        {state !== STATE_EMPTY && (
+          <Table compact="very">
+            <Table.Header>
               <Table.Row>
-                <Table.Cell>
-                  <Placeholder>
-                    <Placeholder.Paragraph>
-                      <Placeholder.Line />
-                      <Placeholder.Line />
-                      <Placeholder.Line />
-                      <Placeholder.Line />
-                    </Placeholder.Paragraph>
-                  </Placeholder>
-                </Table.Cell>
+                <Table.HeaderCell>Title</Table.HeaderCell>
               </Table.Row>
-            )}
-            {state === STATE_LIST && (
-              notes.map((note) => (
+            </Table.Header>
+
+            <Table.Body>
+              {state === STATE_LOADING && (
                 <Table.Row>
                   <Table.Cell>
-                    <ButtonLink onClick={() => onSelectNote(note)}>{note.fields.title}</ButtonLink>
+                    <Placeholder>
+                      <Placeholder.Paragraph>
+                        <Placeholder.Line />
+                        <Placeholder.Line />
+                        <Placeholder.Line />
+                        <Placeholder.Line />
+                      </Placeholder.Paragraph>
+                    </Placeholder>
                   </Table.Cell>
                 </Table.Row>
-              ))
-            )}
-            {state === STATE_EMPTY && (
+              )}
+              {state === STATE_LIST && (
+                notes.map((note) => (
+                  <Table.Row>
+                    <Table.Cell>
+                      <ButtonLink onClick={() => onSelectNote(note)}>{note.fields.title}</ButtonLink>
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              )}
+            </Table.Body>
+            {state !== STATE_LOADING && (
+            <Table.Footer fullWidth>
               <Table.Row>
-                <Table.Cell>No notes exist</Table.Cell>
+                <Table.HeaderCell>
+                  <Button onClick={onCreateNewNote}>Create New Note</Button>
+                </Table.HeaderCell>
               </Table.Row>
+            </Table.Footer>
             )}
-          </Table.Body>
-          <Table.Footer fullWidth>
-            <Table.Row>
-              <Table.HeaderCell>
-                <Button onClick={onCreateNewNote}>Create New Note</Button>
-              </Table.HeaderCell>
-            </Table.Row>
-          </Table.Footer>
-        </Table>
-
+          </Table>
+        )}
       </Modal.Content>
       <Modal.Actions>
         <Button onClick={onClose}>Close</Button>
@@ -80,6 +91,7 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topConte
 };
 
 UserNotesList.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
   notes: PropTypes.arrayOf(PropTypes.object).isRequired,
   onClose: PropTypes.func.isRequired,
   onSelectNote: PropTypes.func.isRequired,
