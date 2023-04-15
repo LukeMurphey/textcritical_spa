@@ -22,7 +22,7 @@ const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
         </div>
       </Modal.Content>
       <Modal.Actions>
-        <Button style={{float: 'left'}} negativ onClick={() => onDelete(note)}>Delete</Button>
+        <Button style={{float: 'left'}} negative onClick={() => onDelete(note)}>Delete</Button>
         <Button primary onClick={onEdit}>Edit</Button>
         <Button onClick={onCancel}>Back</Button>
         <Button onClick={onClose}>Close</Button>
