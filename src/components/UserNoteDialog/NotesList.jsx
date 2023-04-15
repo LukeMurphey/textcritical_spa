@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Table, Modal, Header, Button, Placeholder, Message } from 'semantic-ui-react';
+import moment from "moment";
 import ButtonLink from '../ButtonLink';
 import './NotesList.scss';
 
@@ -42,6 +43,7 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topConte
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Title</Table.HeaderCell>
+                <Table.HeaderCell>Created</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
 
@@ -66,6 +68,13 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topConte
                     <Table.Cell>
                       <ButtonLink onClick={() => onSelectNote(note)}>{note.fields.title}</ButtonLink>
                     </Table.Cell>
+                    <Table.Cell>
+                      {moment(note.fields.date_created).format("MMMM Do YYYY, h:mm:ss a")}
+                      {' '}
+                      (
+                      {moment(note.fields.date_created).fromNow()}
+                      )
+                    </Table.Cell>
                   </Table.Row>
                 ))
               )}
@@ -73,7 +82,7 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topConte
             {state !== STATE_LOADING && (
             <Table.Footer fullWidth>
               <Table.Row>
-                <Table.HeaderCell>
+                <Table.HeaderCell colSpan='2'>
                   <Button onClick={onCreateNewNote}>Create New Note</Button>
                 </Table.HeaderCell>
               </Table.Row>
