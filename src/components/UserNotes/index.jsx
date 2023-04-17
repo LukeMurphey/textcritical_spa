@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Segment, Container, Message } from "semantic-ui-react";
+import { Segment, Container, Message, Form, Input, Button } from "semantic-ui-react";
 import Cookies from 'js-cookie';
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
@@ -19,6 +19,7 @@ export const STATE_ERROR = 3;
 const UserNotes = ({ inverted, history }) => {
   const [error, setError] = useState(null);
   const [notes, setNotes] = useState(null);
+  const [search, setSearch] = useState(null);
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -30,7 +31,7 @@ const UserNotes = ({ inverted, history }) => {
 
   const getNotes = () => {
     setIsLoading(true);
-    fetch(ENDPOINT_NOTES())
+    fetch(ENDPOINT_NOTES(null, null, search))
       .then((res) => res.json())
       .then((newData) => {
         setNotes(newData);
@@ -91,6 +92,14 @@ const UserNotes = ({ inverted, history }) => {
     setIsEditing(false);
   }
 
+  const onSearchChange = (_, data) => {
+    setSearch(data.value);
+  }
+
+  const onSearch = () => {
+    getNotes();
+  }
+
   // Load the note when opening the form
   useEffect(() => {
     getNotes();
@@ -147,12 +156,20 @@ const UserNotes = ({ inverted, history }) => {
             />
           )}
           {state !== STATE_ERROR && (
-            <UserNotesTable
-              inverted={inverted}
-              notes={notes}
-              isLoading={isLoading}
-              onSelectNote={onSelectNote}
-            />
+            <>
+              <Form>
+                <Input placeholder='Search...' onChange={onSearchChange}>
+                  <input />
+                  <Button type='submit' onClick={onSearch}>Search</Button>
+                </Input>
+              </Form>
+              <UserNotesTable
+                inverted={inverted}
+                notes={notes}
+                isLoading={isLoading}
+                onSelectNote={onSelectNote}
+              />
+            </>
           )}
         </Segment>
       </Container>

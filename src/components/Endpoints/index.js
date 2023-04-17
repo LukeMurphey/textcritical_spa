@@ -142,7 +142,7 @@ export function ENDPOINT_NOTE(noteId) {
   return `${getHostConfig()}/api/notes/${noteId}/`;
 }
 
-export function ENDPOINT_NOTES(work = null, division = null) {
+export function ENDPOINT_NOTES(work = null, division = null, search = null) {
 
   let query = '';
 
@@ -152,6 +152,10 @@ export function ENDPOINT_NOTES(work = null, division = null) {
 
   if (division) {
     query += appendAmpersand(query, `division=${division}`);
+  }
+
+  if (search && search.length > 0) {
+    query += appendAmpersand(query, `search=${search}`);
   }
 
   return `${getHostConfig()}/api/notes/?${query}`;
