@@ -96,7 +96,6 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
     getNotes()
   }, []);
 
-
   // Determine what state the UI ought to be in
   let state = STATE_LIST;
 
