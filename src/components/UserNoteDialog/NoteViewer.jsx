@@ -22,9 +22,15 @@ const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
         </div>
       </Modal.Content>
       <Modal.Actions>
-        <Button style={{float: 'left'}} negative onClick={() => onDelete(note)}>Delete</Button>
-        <Button primary onClick={onEdit}>Edit</Button>
-        <Button onClick={onCancel}>Back</Button>
+        { onDelete && (
+          <Button style={{float: 'left'}} negative onClick={() => onDelete(note)}>Delete</Button>
+        )}
+        { onEdit && (
+          <Button primary onClick={onEdit}>Edit</Button>
+        )}
+        { onCancel && (
+          <Button onClick={onCancel}>Back</Button>
+        )}
         <Button onClick={onClose}>Close</Button>
       </Modal.Actions>
     </Modal>
@@ -36,9 +42,15 @@ UserNoteViewer.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   note: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
+  onEdit: PropTypes.func,
+  onCancel: PropTypes.func,
+  onDelete: PropTypes.func,
 };
+
+UserNoteViewer.defaultProps = {
+  onCancel: null,
+  onEdit: null,
+  onDelete: null,
+}
 
 export default UserNoteViewer;

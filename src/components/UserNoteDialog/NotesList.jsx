@@ -4,21 +4,7 @@ import { Modal, Header, Button } from 'semantic-ui-react';
 import UserNotesTable from '../UserNotesTable';
 import './NotesList.scss';
 
-export const STATE_LIST = 0;
-export const STATE_EMPTY = 1;
-export const STATE_LOADING = 2;
-
 const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topContent, isLoading }) => {
-
-  let state = STATE_EMPTY;
-
-  if (isLoading) {
-    state = STATE_LOADING;
-  }
-
-  else if (notes && notes.length > 0) {
-    state = STATE_LIST;
-  }
 
   return (
     <Modal defaultOpen onClose={onClose} closeIcon>

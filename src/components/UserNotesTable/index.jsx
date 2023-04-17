@@ -1,18 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Placeholder, Button, Message, Icon } from 'semantic-ui-react';
+import { Table, Placeholder, Button, Message, Pagination } from 'semantic-ui-react';
 import moment from "moment";
 import ButtonLink from "../ButtonLink";
 import { READ_WORK } from '../URLs';
+import './index.scss';
 
 export const STATE_LOADING = 0;
 export const STATE_ERROR = 1;
 export const STATE_LIST = 2;
 export const STATE_NO_NOTES = 3;
 
+const numberOfPlaceholderRows = 5;
+const notesPerPage = 10;
+
 const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectNote, showWorkLinks }) => {
 
+  const [activePage, setActivePage] = useState(1);
   let state = STATE_NO_NOTES;
+  let totalPages = 0;
+  let pagedNotes = null;
 
   if (isLoading) {
     state = STATE_LOADING;
@@ -20,6 +27,13 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
 
   else if (notes && notes.length > 0) {
     state = STATE_LIST;
+    totalPages = Math.ceil(notes.length / notesPerPage);
+    const start = (activePage - 1) * notesPerPage;
+    pagedNotes = notes.slice(start, start + notesPerPage);
+  }
+
+  const onPageChange = (event, data) => {
+    setActivePage(data.activePage);
   }
 
   return (
@@ -39,7 +53,7 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
             <Table.Row>
               <Table.HeaderCell>Title</Table.HeaderCell>
               <Table.HeaderCell>Created</Table.HeaderCell>
-              { showWorkLinks && (
+              {showWorkLinks && (
                 <Table.HeaderCell>Work</Table.HeaderCell>
               )}
             </Table.Row>
@@ -47,21 +61,40 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
 
           <Table.Body>
             {state === STATE_LOADING && (
-              <Table.Row>
-                <Table.Cell>
-                  <Placeholder>
-                    <Placeholder.Paragraph>
-                      <Placeholder.Line />
-                      <Placeholder.Line />
-                      <Placeholder.Line />
-                      <Placeholder.Line />
-                    </Placeholder.Paragraph>
-                  </Placeholder>
-                </Table.Cell>
-              </Table.Row>
+              <>
+                {[...Array(numberOfPlaceholderRows)].map((x) => (
+                  <Table.Row key={x}>
+                    <Table.Cell>
+                      <Placeholder inverted={inverted}>
+                        <Placeholder.Paragraph>
+                          <Placeholder.Line />
+                        </Placeholder.Paragraph>
+                      </Placeholder>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Placeholder inverted={inverted}>
+                        <Placeholder.Paragraph>
+                          <Placeholder.Line />
+                          <Placeholder.Line />
+                        </Placeholder.Paragraph>
+                      </Placeholder>
+                    </Table.Cell>
+                    {showWorkLinks && (
+                      <Table.Cell>
+                        <Placeholder inverted={inverted}>
+                          <Placeholder.Paragraph>
+                            <Placeholder.Line />
+                          </Placeholder.Paragraph>
+                        </Placeholder>
+                      </Table.Cell>
+                    )}
+                  </Table.Row>
+                )
+                )}
+              </>
             )}
             {state === STATE_LIST && (
-              notes.map((note) => (
+              pagedNotes.map((note) => (
                 <Table.Row>
                   <Table.Cell>
                     <ButtonLink onClick={() => onSelectNote(note)}>{note.fields.title}</ButtonLink>
@@ -73,7 +106,7 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
                     {moment(note.fields.date_created).fromNow()}
                     )
                   </Table.Cell>
-                  { showWorkLinks && (
+                  {showWorkLinks && (
                     <>
                       <Table.Cell>
                         <a href={READ_WORK(note.fields.work_title_slug, null, note.fields.division_full_descriptor)}>View Reference</a>
@@ -88,7 +121,12 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
             <Table.Footer fullWidth>
               <Table.Row>
                 <Table.HeaderCell colSpan={showWorkLinks ? '3' : '2'}>
-                  <Button onClick={onCreateNewNote}>Create New Note</Button>
+                  {onCreateNewNote && (
+                    <Button onClick={onCreateNewNote}>Create New Note</Button>
+                  )}
+                  <div className="paginator">
+                    <Pagination className="paginator" onPageChange={onPageChange} inverted={inverted} defaultActivePage={activePage} totalPages={totalPages} />
+                  </div>
                 </Table.HeaderCell>
               </Table.Row>
             </Table.Footer>
