@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import history from './history';
 import NotFound from './components/NotFound';
 import BasicLoader from './components/BasicLoader';
+import UserNotes from './components/UserNotes';
 
 const ContactMe = React.lazy(() => import('./components/ContactMe'));
 const About = React.lazy(() => import('./components/About'));
@@ -41,6 +42,9 @@ const AppRouter = ({ inverted }) => (
         </Route>
         <Route exact path="/auth_success">
           <AuthSuccess inverted={inverted} />
+        </Route>
+        <Route exact path="/notes">
+          <UserNotes inverted={inverted} />
         </Route>
         <Route>
           <NotFound inverted={inverted} />
