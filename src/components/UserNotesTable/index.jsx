@@ -1,48 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { Table, Placeholder, Button, Message } from 'semantic-ui-react';
+import { Table, Placeholder, Button, Message, Icon } from 'semantic-ui-react';
 import moment from "moment";
-import { ENDPOINT_NOTES } from "../Endpoints";
 import ButtonLink from "../ButtonLink";
+import { READ_WORK } from '../URLs';
 
 export const STATE_LOADING = 0;
 export const STATE_ERROR = 1;
 export const STATE_LIST = 2;
 export const STATE_NO_NOTES = 3;
 
-const UserNotesTable = ({ inverted }) => {
-
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
-  const [notes, setNotes] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const getNotes = () => {
-    setIsLoading(true);
-    fetch(ENDPOINT_NOTES())
-      .then((res) => res.json())
-      .then((newData) => {
-        setNotes(newData)
-        setIsLoading(false);
-      })
-      .catch((e) => {
-        setError(e.toString());
-        setIsLoading(false);
-      });
-  };
-
-  // Load the note when opening the form
-  useEffect(() => {
-    getNotes()
-  }, []);
-
-  const onCreateNewNote = () => {
-
-  };
-
-  const onSelectNote = () => {
-
-  }
+const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectNote, showWorkLinks }) => {
 
   let state = STATE_NO_NOTES;
 
@@ -71,6 +39,9 @@ const UserNotesTable = ({ inverted }) => {
             <Table.Row>
               <Table.HeaderCell>Title</Table.HeaderCell>
               <Table.HeaderCell>Created</Table.HeaderCell>
+              { showWorkLinks && (
+                <Table.HeaderCell>Work</Table.HeaderCell>
+              )}
             </Table.Row>
           </Table.Header>
 
@@ -102,6 +73,13 @@ const UserNotesTable = ({ inverted }) => {
                     {moment(note.fields.date_created).fromNow()}
                     )
                   </Table.Cell>
+                  { showWorkLinks && (
+                    <>
+                      <Table.Cell>
+                        <a href={READ_WORK(note.fields.work_title_slug, null, note.fields.division_full_descriptor)}>View Reference</a>
+                      </Table.Cell>
+                    </>
+                  )}
                 </Table.Row>
               ))
             )}
@@ -109,7 +87,7 @@ const UserNotesTable = ({ inverted }) => {
           {state !== STATE_LOADING && (
             <Table.Footer fullWidth>
               <Table.Row>
-                <Table.HeaderCell colSpan='2'>
+                <Table.HeaderCell colSpan={showWorkLinks ? '3' : '2'}>
                   <Button onClick={onCreateNewNote}>Create New Note</Button>
                 </Table.HeaderCell>
               </Table.Row>
@@ -123,10 +101,19 @@ const UserNotesTable = ({ inverted }) => {
 
 UserNotesTable.propTypes = {
   inverted: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  notes: PropTypes.arrayOf(PropTypes.object),
+  isLoading: PropTypes.bool,
+  onCreateNewNote: PropTypes.func.isRequired,
+  onSelectNote: PropTypes.func.isRequired,
+  showWorkLinks: PropTypes.bool,
 };
 
 UserNotesTable.defaultProps = {
   inverted: false,
+  isLoading: false,
+  notes: null,
+  showWorkLinks: true,
 };
 
 export default UserNotesTable;

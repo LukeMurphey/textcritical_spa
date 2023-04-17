@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
 import { Message } from 'semantic-ui-react'
 import ErrorMessage from '../ErrorMessage';
-import NoteEditor from './NoteEditor';
+import UserNoteEditor from './UserNoteEditor';
 import NoteViewer from './NoteViewer';
 import NotesList from './NotesList';
 import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE } from "../Endpoints";
@@ -146,7 +146,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
         </>
       )}
       {state === STATE_EDIT && (
-        <NoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditOrViewing} onSave={onSave} />
+        <UserNoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditOrViewing} onSave={onSave} />
       )}
       {state === STATE_VIEW && (
         <NoteViewer

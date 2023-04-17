@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table, Modal, Header, Button, Placeholder, Message } from 'semantic-ui-react';
-import moment from "moment";
-import ButtonLink from '../ButtonLink';
+import { Modal, Header, Button } from 'semantic-ui-react';
+import UserNotesTable from '../UserNotesTable';
 import './NotesList.scss';
 
 export const STATE_LIST = 0;
@@ -26,70 +25,13 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topConte
       <Header icon="info" content="Notes" />
       <Modal.Content>
         {topContent}
-        {state === STATE_EMPTY && (
-          <>
-            <Message>
-              <Message.Header>No Notes Exist</Message.Header>
-              You do not have any notes for this passage.
-              <div className="create-first-note-button">
-                <Button onClick={onCreateNewNote}>Create New Note</Button>
-              </div>
-            </Message>
-          </>
-        )}
-
-        {state !== STATE_EMPTY && (
-          <Table compact="very">
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Title</Table.HeaderCell>
-                <Table.HeaderCell>Created</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-              {state === STATE_LOADING && (
-                <Table.Row>
-                  <Table.Cell>
-                    <Placeholder>
-                      <Placeholder.Paragraph>
-                        <Placeholder.Line />
-                        <Placeholder.Line />
-                        <Placeholder.Line />
-                        <Placeholder.Line />
-                      </Placeholder.Paragraph>
-                    </Placeholder>
-                  </Table.Cell>
-                </Table.Row>
-              )}
-              {state === STATE_LIST && (
-                notes.map((note) => (
-                  <Table.Row>
-                    <Table.Cell>
-                      <ButtonLink onClick={() => onSelectNote(note)}>{note.fields.title}</ButtonLink>
-                    </Table.Cell>
-                    <Table.Cell>
-                      {moment(note.fields.date_created).format("MMMM Do YYYY, h:mm:ss a")}
-                      {' '}
-                      (
-                      {moment(note.fields.date_created).fromNow()}
-                      )
-                    </Table.Cell>
-                  </Table.Row>
-                ))
-              )}
-            </Table.Body>
-            {state !== STATE_LOADING && (
-            <Table.Footer fullWidth>
-              <Table.Row>
-                <Table.HeaderCell colSpan='2'>
-                  <Button onClick={onCreateNewNote}>Create New Note</Button>
-                </Table.HeaderCell>
-              </Table.Row>
-            </Table.Footer>
-            )}
-          </Table>
-        )}
+        <UserNotesTable
+          notes={notes}
+          isLoading={isLoading}
+          onSelectNote={onSelectNote}
+          onCreateNewNote={onCreateNewNote}
+          showWorkLinks
+        />
       </Modal.Content>
       <Modal.Actions>
         <Button onClick={onClose}>Close</Button>
