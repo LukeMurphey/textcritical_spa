@@ -127,7 +127,7 @@ const ContextPopup = ({
           name='search_this_work'
           onClick={searchThisWork}
         >
-          Search in this work
+          Search for this word in this work
         </Menu.Item>
       );
 
@@ -136,7 +136,7 @@ const ContextPopup = ({
           name='search_all_works'
           onClick={searchAllWorks}
         >
-          Search in all works
+          Search for this word in all works
         </Menu.Item>
       );
     }
