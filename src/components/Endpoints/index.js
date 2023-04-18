@@ -171,3 +171,7 @@ export function ENDPOINT_NOTE_EDIT(noteId = null) {
 export function ENDPOINT_NOTE_DELETE(noteId) {
   return `${getHostConfig()}/api/notes/delete/${noteId}/`;
 }
+
+export function ENDPOINT_EXPORT_NOTES() {
+  return `${getHostConfig()}/api/export_notes/`;
+}

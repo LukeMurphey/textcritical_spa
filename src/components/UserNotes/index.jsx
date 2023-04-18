@@ -8,7 +8,7 @@ import FullscreenDialog from "../FullscreenDialog";
 import UserNotesTable from "../UserNotesTable";
 import UserNoteEditor from "../UserNoteDialog/UserNoteEditor";
 import UserNoteViewer from "../UserNoteDialog/NoteViewer";
-import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE } from "../Endpoints";
+import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE, ENDPOINT_EXPORT_NOTES } from "../Endpoints";
 import ErrorMessage from "../ErrorMessage";
 
 export const STATE_LIST = 0;
@@ -166,6 +166,8 @@ const UserNotes = ({ inverted, history }) => {
               <Form>
                 <Input placeholder='Search...' onChange={onSearchChange} action={<Button type='submit' onClick={onSearch}>Search</Button>} />
               </Form>
+
+              <Button secondary onClick={() => { window.location = ENDPOINT_EXPORT_NOTES(); }}>Export Notes</Button>
 
               {state === STATE_SEARCH_NO_RESULTS && (
                 <Message inverted={inverted} warning>
