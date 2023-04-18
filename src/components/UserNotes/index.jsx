@@ -15,11 +15,13 @@ export const STATE_LIST = 0;
 export const STATE_VIEW = 1;
 export const STATE_EDIT = 2;
 export const STATE_ERROR = 3;
+export const STATE_SEARCH_NO_RESULTS = 4;
 
 const UserNotes = ({ inverted, history }) => {
   const [error, setError] = useState(null);
   const [notes, setNotes] = useState(null);
   const [search, setSearch] = useState(null);
+  const [appliedSearch, setAppliedSearch] = useState(null);
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -36,6 +38,7 @@ const UserNotes = ({ inverted, history }) => {
       .then((newData) => {
         setNotes(newData);
         setIsLoading(false);
+        setAppliedSearch(search);
       })
       .catch((e) => {
         setError(e.toString());
@@ -119,6 +122,9 @@ const UserNotes = ({ inverted, history }) => {
   else if (notes && notes.length > 0) {
     state = STATE_LIST;
   }
+  else if(appliedSearch && appliedSearch.length > 0 && notes && notes.length === 0) {
+    state = STATE_SEARCH_NO_RESULTS;
+  }
 
   return (
     <FullscreenDialog
@@ -158,17 +164,23 @@ const UserNotes = ({ inverted, history }) => {
           {state !== STATE_ERROR && (
             <>
               <Form>
-                <Input placeholder='Search...' onChange={onSearchChange}>
-                  <input />
-                  <Button type='submit' onClick={onSearch}>Search</Button>
-                </Input>
+                <Input placeholder='Search...' onChange={onSearchChange} action={<Button type='submit' onClick={onSearch}>Search</Button>} />
               </Form>
-              <UserNotesTable
-                inverted={inverted}
-                notes={notes}
-                isLoading={isLoading}
-                onSelectNote={onSelectNote}
-              />
+
+              {state === STATE_SEARCH_NO_RESULTS && (
+                <Message inverted={inverted} warning>
+                  <Message.Header>No Notes Match</Message.Header>
+                  <p>No notes match the given search.</p>
+                </Message>
+              )}
+              {state !== STATE_SEARCH_NO_RESULTS && (
+                <UserNotesTable
+                  inverted={inverted}
+                  notes={notes}
+                  isLoading={isLoading}
+                  onSelectNote={onSelectNote}
+                />
+              )}
             </>
           )}
         </Segment>

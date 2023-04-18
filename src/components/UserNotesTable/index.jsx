@@ -42,9 +42,11 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
         <Message>
           <Message.Header>No Notes Exist</Message.Header>
           You do not have any notes for this passage.
-          <div className="create-first-note-button">
-            <Button onClick={onCreateNewNote}>Create New Note</Button>
-          </div>
+          {onCreateNewNote && (
+            <div className="create-first-note-button">
+              <Button onClick={onCreateNewNote}>Create New Note</Button>
+            </div>
+          )}
         </Message>
       )}
       {state !== STATE_NO_NOTES && (
@@ -142,7 +144,7 @@ UserNotesTable.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   notes: PropTypes.arrayOf(PropTypes.object),
   isLoading: PropTypes.bool,
-  onCreateNewNote: PropTypes.func.isRequired,
+  onCreateNewNote: PropTypes.func,
   onSelectNote: PropTypes.func.isRequired,
   showWorkLinks: PropTypes.bool,
 };
@@ -152,6 +154,7 @@ UserNotesTable.defaultProps = {
   isLoading: false,
   notes: null,
   showWorkLinks: true,
+  onCreateNewNote: null,
 };
 
 export default UserNotesTable;
