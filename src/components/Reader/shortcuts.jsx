@@ -5,9 +5,6 @@ import {
 import { toTitleCase } from "../Utils";
 import AboutWorkDialog from "../AboutWorkDialog";
 import WorkDownloadDialog from "../WorkDownloadDialog";
-import WordInformation from "../WordInformation/WordInformationPopup";
-import FootnotePopup from "../FootnotePopup";
-import ContextPopup from "../ContextPopup";
 
 /**
  * Defines how long a division name can get before it is considered long.
@@ -145,71 +142,6 @@ export function getDialogs(modal, data, loading, loadedWork, closeModal) {
         <WorkDownloadDialog
           work={loadedWork}
           onClose={() => closeModal()}
-        />
-      )}
-    </>
-  );
-}
-
-export const MODAL_WORD = "word";
-export const MODAL_FOOTNOTE = "note";
-export const MODAL_CONTEXT = "context";
-
-/**
- * Get the popups.
- */
-export function getPopups(modal,
-  data,
-  loading,
-  selectedWord,
-  popupX,
-  popupY,
-  popupPositionRight,
-  popupPositionBelow,
-  selectedNote,
-  loadedWork,
-  closeModal,
-  searchState,
-  inverted,
-  popupContextData) {
-  return (
-    <>
-      {data && !loading && modal === MODAL_WORD && (
-        <WordInformation
-          inverted={inverted}
-          positionBelow={popupPositionBelow}
-          positionRight={popupPositionRight}
-          x={popupX}
-          y={popupY}
-          word={selectedWord}
-          work={loadedWork}
-          onClose={() => closeModal()}
-          searchState={searchState}
-        />
-      )}
-      {data && !loading && modal === MODAL_FOOTNOTE && (
-        <FootnotePopup
-          inverted={inverted}
-          positionBelow={popupPositionBelow}
-          positionRight={popupPositionRight}
-          x={popupX}
-          y={popupY}
-          notes={selectedNote}
-          onClose={() => closeModal()}
-        />
-      )}
-      {data && !loading && modal === MODAL_CONTEXT && false && (
-        <ContextPopup
-          inverted={inverted}
-          positionBelow={popupPositionBelow}
-          positionRight={popupPositionRight}
-          x={popupX}
-          y={popupY}
-          data={data}
-          onClose={() => closeModal()}
-          contextType={popupContextData.contextType}
-          contextData={popupContextData.contextData}
-          event={popupContextData.event}
         />
       )}
     </>

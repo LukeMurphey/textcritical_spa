@@ -32,6 +32,18 @@ export function ENDPOINT_READ_WORK(work = '', ...divisions) {
   return `${getHostConfig()}/api/work/${work}`;
 }
 
+export function ENDPOINT_WORK_TEXT(work = '', ...divisions) {
+
+  let divisionReference = '';
+
+  if (divisions.length > 0 && work) {
+    divisionReference = divisions.join('/');
+    return `${getHostConfig()}/api/work_text/${work}/${divisionReference}`;
+  }
+
+  return `${getHostConfig()}/api/work_text/${work}`;
+}
+
 export function ENDPOINT_WORK_INFO(work) {
   return `${getHostConfig()}/api/work_info/${work}`;
 }
@@ -108,6 +120,9 @@ export function ENDPOINT_CONVERT_BETA_CODE_QUERY(query) {
   return `${getHostConfig()}/api/convert_query_beta_code/?q=${query}`;
 }
 
+/*
+ * User preferences
+ */
 export function ENDPOINT_USER_PREFERENCES() {
   return `${getHostConfig()}/api/user_preferences`;
 }
@@ -118,4 +133,26 @@ export function ENDPOINT_USER_PREFERENCE_EDIT(name) {
 
 export function ENDPOINT_USER_PREFERENCE_DELETE(name) {
   return `${getHostConfig()}/api/user_preference/delete/${name}`;
+}
+
+/*
+ * Notes
+ */
+export function ENDPOINT_NOTE(noteId) {
+  return `${getHostConfig()}/api/notes/${noteId}/`;
+}
+
+export function ENDPOINT_NOTES() {
+  return `${getHostConfig()}/api/notes/`;
+}
+
+export function ENDPOINT_NOTE_EDIT(noteId = null) {
+  if(noteId === null) {
+    return `${getHostConfig()}/api/notes/edit/`;
+  }
+  return `${getHostConfig()}/api/notes/edit/${noteId}/`;
+}
+
+export function ENDPOINT_NOTE_DELETE(noteId) {
+  return `${getHostConfig()}/api/notes/delete/${noteId}/`;
 }

@@ -28,7 +28,7 @@ export function getWorksList(name, storageOverride = null) {
       try {
         const worksListParsed = JSON.parse(worksList);
 
-        // Make sure that the list is an array and has the necesary properties.
+        // Make sure that the list is an array and has the necessary properties.
         return worksListParsed.filter((entry) => {
           return entry.workTitleSlug;
         });

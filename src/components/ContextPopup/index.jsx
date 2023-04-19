@@ -1,32 +1,163 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from "react-router-dom";
 import { Menu } from 'semantic-ui-react'
 import PopupDialog from '../PopupDialog';
-import { getText } from '../Utils';
+import UserNoteDialog from "../UserNoteDialog";
+import { CONTEXT_WORD, CONTEXT_VERSE } from '../Reader/ChapterEventHandlers';
+import { SEARCH, READ_WORK } from '../URLs'
+import { ENDPOINT_WORK_TEXT } from '../Endpoints';
+import { GlobalAppContext } from "../GlobalAppContext";
 
 const ContextPopup = ({
-  data, onClose, x, y, positionBelow, positionRight, inverted, contextType, contextData, event,
+  data, onClose, x, y, positionBelow, positionRight, inverted, contextType, contextData, history,
 }) => {
 
-  const convertToPlain = (html) => {
+  const { features, authentication } = React.useContext(GlobalAppContext);
 
-    // Create a new div element
-    const tempDivElement = document.createElement("div");
+  const [userNoteDialogOpen, setUserNoteDialogOpen] = useState(false);
 
-    // Set the HTML content with the given value
-    tempDivElement.innerHTML = html;
+  const getDivisionReference = (verse = null) => {
+    const divisions = [data.chapter.descriptor];
 
-    // Retrieve the text property of the element 
-    return tempDivElement.textContent || tempDivElement.innerText || "";
-}
+    if(Object.prototype.hasOwnProperty.call(data.chapter, 'parent_division') && data.chapter.parent_division && data.chapter.parent_division.descriptor) {
+      divisions.splice(0, 0, data.chapter.parent_division.descriptor);
+    }
+
+    // Add in the verse
+    if(verse) {
+      divisions.push(verse);
+    }
+
+    return divisions;
+  };
 
   const copyVerseToClipboard = () => {
-    const textForVerse = getText(event.target);
-    navigator.clipboard.writeText(textForVerse);
+    fetch(ENDPOINT_WORK_TEXT(data.work.title_slug, ...getDivisionReference(contextData.verse)))
+      .then((res) => res.json())
+      .then((newData) => {
+        navigator.clipboard.writeText(newData);
+        onClose();
+    })
   }
 
   const copyChapterToClipboard = () => {
-    navigator.clipboard.writeText(convertToPlain(data.content).replaceAll(/[\n]+/ig, '').replaceAll(/[ ]+/ig, ' '));
+    fetch(ENDPOINT_WORK_TEXT(data.work.title_slug, ...getDivisionReference()))
+      .then((res) => res.json())
+      .then((newData) => {
+        navigator.clipboard.writeText(newData);
+        onClose();
+    })
+  }
+
+  const copyLinkToClipboard = () => {
+    // Get the URL to the verse if for a verse
+    if(contextData.verse !== undefined) {
+      navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}${READ_WORK(data.work.title_slug, null, ...getDivisionReference(contextData.verse))}`);
+    }
+    else{
+      navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}${READ_WORK(data.work.title_slug, null, ...getDivisionReference())}`);
+    }
+    onClose();
+  }
+
+  const createUserNote = () => {
+    setUserNoteDialogOpen(true);
+  }
+
+  const searchAllWorks = () => {
+    history.push(SEARCH(contextData.word));
+    onClose();
+  }
+
+  const searchThisWork = () => {
+    history.push(SEARCH(`work:${data.work.title_slug} ${contextData.word}`));
+    onClose();
+  }
+
+  const getMenuItems = () => {
+    const menuItems = [];
+  
+    // Add the copy to chapter option
+    menuItems.push(
+      <Menu.Item
+        name='chapter_clipboard'
+        onClick={copyChapterToClipboard}
+      >
+        Copy chapter to clipboard
+      </Menu.Item>
+    );
+
+    if(contextType === CONTEXT_VERSE || contextType === CONTEXT_WORD ){
+      menuItems.push(
+        <Menu.Item
+          name='verse_clipboard'
+          onClick={copyVerseToClipboard}
+        >
+          Copy verse
+        </Menu.Item>
+      );
+
+      menuItems.push(
+        <Menu.Item
+          name='link_clipboard'
+          onClick={copyLinkToClipboard}
+        >
+          Copy link
+        </Menu.Item>
+      );
+
+      if(features.userNotesEnabled && authentication.authenticated) {
+        menuItems.push(
+          <Menu.Item
+            name='create_user_note'
+            onClick={createUserNote}
+          >
+            Create note
+          </Menu.Item>
+        );
+      }
+    }
+
+    if(contextType === CONTEXT_WORD){
+      menuItems.push(
+        <Menu.Item
+          name='search_this_work'
+          onClick={searchThisWork}
+        >
+          Search in this work
+        </Menu.Item>
+      );
+
+      menuItems.push(
+        <Menu.Item
+          name='search_all_works'
+          onClick={searchAllWorks}
+        >
+          Search in all works
+        </Menu.Item>
+      );
+    }
+
+    return menuItems;
+
+  }
+
+  // Get the list of items to render
+  const menuItems = getMenuItems();
+
+  // Determine the height
+  const height = 16 + (menuItems.length * 43);
+
+  if (userNoteDialogOpen) {
+    return (
+      <UserNoteDialog
+        onClose={onClose}
+        work={data.work.title_slug}
+        division={getDivisionReference(contextData.verse)}
+        verse={contextData.verse}
+      />
+    )
   }
 
   return (
@@ -38,28 +169,17 @@ const ContextPopup = ({
       positionBelow={positionBelow}
       positionRight={positionRight}
       width={250}
-      maxHeight={140}
+      maxHeight={height}
       frameless
     >
       <div>
         <Menu style={{ width: '100%' }} inverted={inverted} vertical>
-          <Menu.Item
-            name='chapter_clipboard'
-            onClick={copyChapterToClipboard}
-          >
-            Copy chapter to clipboard
-          </Menu.Item>
-          <Menu.Item
-            name='verse_clipboard'
-            onClick={copyVerseToClipboard}
-          >
-            Copy verse to clipboard
-          </Menu.Item>
-
+          {menuItems}
         </Menu>
       </div>
     </PopupDialog>
   );
+
 };
 
 ContextPopup.propTypes = {
@@ -75,7 +195,7 @@ ContextPopup.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   contextData: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  event: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
 };
 
 ContextPopup.defaultProps = {
@@ -84,4 +204,4 @@ ContextPopup.defaultProps = {
   inverted: false,
 };
 
-export default ContextPopup;
+export default withRouter(ContextPopup);

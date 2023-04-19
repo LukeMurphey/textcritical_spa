@@ -11,6 +11,7 @@ import {
   ENDPOINT_RESOLVE_REFERENCE,
   ENDPOINT_READ_WORK,
 } from "../Endpoints";
+import { GlobalAppContext } from "../GlobalAppContext";
 
 const NextPageStyle = {
   bottom: "20px",
@@ -53,9 +54,9 @@ const ReadingMenuBar = ({
   decreaseFontSize,
   increaseFontSizeDisabled,
   decreaseFontSizeDisabled,
-  authenticationCompleted,
-  authInfo
  }) => {
+  const { authentication } = React.useContext(GlobalAppContext);
+
   // Create a custom className for signaling the desire to switch to inverted
   let classNameSuffix = "";
 
@@ -266,11 +267,12 @@ const ReadingMenuBar = ({
     const checkAuthWindowURL = (loginWindow) => {
       if(loginWindow && loginWindow.document) {
         if(loginWindow.document.location.pathname === '/auth_success') {
-          // Close the authentication window now that it is done
-          loginWindow.close();
 
           // Refresh the authentication info
-          authenticationCompleted();
+          authentication.checkAuthenticationState();
+
+          // Close the authentication window now that it is done
+          loginWindow.close();
 
           // Close the menu
           setMenuOpen(false);
@@ -347,11 +349,11 @@ const ReadingMenuBar = ({
         )}
           <div style={{ float: "right", marginLeft: "auto", marginTop: 11 }}>
             <Responsive minWidth={768}>
-              {authInfo && authInfo.authenticated && (
+              {authentication && authentication.authenticated && (
                 <span style={{marginRight: 18}}>
                   Hello 
                   {' '}
-                  {authInfo.first_name}
+                  {authentication.first_name}
                 </span>
               )}
               <Dropdown icon="ellipsis vertical" direction="left" open={menuOpen} onClick={() => setMenuOpen(true)} onBlur={() => setMenuOpen(false)}>
@@ -378,19 +380,19 @@ const ReadingMenuBar = ({
                     text="Search"
                     onClick={() => openSearchPage()}
                   />
-                  {authInfo && authInfo.authenticated && (
+                  {authentication && authentication.authenticated && (
                     <Dropdown.Item
                       text="Logout"
                       onClick={() => {
-                        window.location = authInfo.logout;
+                        window.location = authentication.logout;
                       }}
                     /> 
                   )}
-                  {authInfo && !authInfo.authenticated && (
+                  {authentication && !authentication.authenticated && (
                     <Dropdown.Item
                       text="Login"
                       onClick={() => {
-                        const loginWindow = window.open(authInfo.login_google, 'login_google', 'height=500,width=800');
+                        const loginWindow = window.open(authentication.login_google, 'login_google', 'height=500,width=800');
                         checkAuthWindowURL(loginWindow);
                         setMenuOpen(false);
                       }}
@@ -467,8 +469,6 @@ ReadingMenuBar.propTypes = {
   previousChapterDescriptor: PropTypes.string,
   increaseFontSizeDisabled: PropTypes.bool,
   decreaseFontSizeDisabled: PropTypes.bool,
-  // eslint-disable-next-line react/forbid-prop-types
-  authInfo: PropTypes.object,
 }
 
 ReadingMenuBar.defaultProps = {
@@ -488,7 +488,6 @@ ReadingMenuBar.defaultProps = {
   increaseFontSizeDisabled: true,
   decreaseFontSizeDisabled: true,
   authenticationCompleted: null,
-  authInfo: null
 }
 
 export default withRouter(ReadingMenuBar);
