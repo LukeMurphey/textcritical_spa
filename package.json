@@ -57,6 +57,7 @@
   "scripts": {
     "test": "jest --coverage",
     "start": "webpack-dev-server --open --config webpack.dev.js --content-base public",
+    "start_listen_all": "webpack-dev-server --open --config webpack.dev.js --content-base public --host 0.0.0.0 --allowed-hosts all",
     "build": "webpack --mode production --config webpack.prod.js",
     "watch": "jest --coverage --watch",
     "deploy": "cp -r dist ../textcritical_net/src/media"
