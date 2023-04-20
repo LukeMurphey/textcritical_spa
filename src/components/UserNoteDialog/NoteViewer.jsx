@@ -11,11 +11,11 @@ const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
     <Modal defaultOpen onClose={onClose} closeIcon>
       <Header icon="info" content="Note" />
       <Modal.Content>
-        <Header level={2}>{note && note.fields && note.fields.title}</Header>
+        <Header level={2}>{note  && note.title}</Header>
 
         <div data-color-mode="light">
           <MDEditor.Markdown
-            source={note && note.fields && note.fields.text}
+            source={note && note.text}
             style={{ whiteSpace: 'pre-wrap' }}
             rehypeRewrite={NewTabLinkRewriter}
           />

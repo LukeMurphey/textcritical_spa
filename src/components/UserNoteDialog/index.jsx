@@ -154,7 +154,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
           onClose={onClose}
           onEdit={() => { setIsEditing(true); }}
           onCancel={cancelEditOrViewing}
-          onDelete={(note) => { onDeleteNote(note.pk) }}
+          onDelete={(note) => { onDeleteNote(note.id) }}
         />
       )}
     </>

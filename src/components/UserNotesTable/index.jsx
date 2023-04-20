@@ -99,19 +99,21 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
               pagedNotes.map((note) => (
                 <Table.Row>
                   <Table.Cell>
-                    <ButtonLink onClick={() => onSelectNote(note)}>{note.fields.title}</ButtonLink>
+                    <ButtonLink onClick={() => onSelectNote(note)}>{note.title}</ButtonLink>
                   </Table.Cell>
                   <Table.Cell>
-                    {moment(note.fields.date_created).format("MMMM Do YYYY, h:mm:ss a")}
+                    {moment(note.date_created).format("MMMM Do YYYY, h:mm:ss a")}
                     {' '}
                     (
-                    {moment(note.fields.date_created).fromNow()}
+                    {moment(note.date_created).fromNow()}
                     )
                   </Table.Cell>
                   {showWorkLinks && (
                     <>
                       <Table.Cell>
-                        <a href={READ_WORK(note.fields.work_title_slug, null, note.fields.division_full_descriptor)}>View Reference</a>
+                        {note.references && note.references.length > 0 && (
+                          <a href={READ_WORK(note.references[0].work_title_slug, null, note.references[0].division_full_descriptor)}>View Reference</a>
+                        )}
                       </Table.Cell>
                     </>
                   )}
@@ -153,7 +155,7 @@ UserNotesTable.defaultProps = {
   inverted: false,
   isLoading: false,
   notes: null,
-  showWorkLinks: true,
+  showWorkLinks: false,
   onCreateNewNote: null,
 };
 

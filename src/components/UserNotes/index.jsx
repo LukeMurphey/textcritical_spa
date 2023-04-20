@@ -63,7 +63,7 @@ const UserNotes = ({ inverted, history }) => {
       },
     };
 
-    fetch(ENDPOINT_NOTE_DELETE(note.pk), requestOptions)
+    fetch(ENDPOINT_NOTE_DELETE(note.id), requestOptions)
       .then((res) => res.json())
       .then(() => {
         // Reload the notes
@@ -181,6 +181,7 @@ const UserNotes = ({ inverted, history }) => {
                   notes={notes}
                   isLoading={isLoading}
                   onSelectNote={onSelectNote}
+                  showWorkLinks
                 />
               )}
             </>

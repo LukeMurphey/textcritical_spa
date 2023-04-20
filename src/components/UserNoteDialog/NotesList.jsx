@@ -16,7 +16,6 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topConte
           isLoading={isLoading}
           onSelectNote={onSelectNote}
           onCreateNewNote={onCreateNewNote}
-          showWorkLinks
         />
       </Modal.Content>
       <Modal.Actions>

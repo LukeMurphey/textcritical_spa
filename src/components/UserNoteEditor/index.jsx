@@ -12,8 +12,8 @@ import './index.scss';
 
 const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave, useMarkdownEditor }) => {
   const [error, setError] = useState(null);
-  const [noteTitle, setNoteTitle] = useState(note && note.fields && note.fields.title);
-  const [noteText, setNoteText] = useState(note && note.fields && note.fields.text);
+  const [noteTitle, setNoteTitle] = useState(note && note.title);
+  const [noteText, setNoteText] = useState(note && note.text);
 
   const [noteTitleError, setNoteTitleError] = useState(null);
   const [noteTextError, setNoteTextError] = useState(null);
@@ -74,7 +74,7 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
       body: formData
     };
 
-    fetch(ENDPOINT_NOTE_EDIT(note?.pk), requestOptions)
+    fetch(ENDPOINT_NOTE_EDIT(note?.id), requestOptions)
       .then((res) => res.json())
       .then((editedNote) => {
         // BTW: "!note" is used to tell the function that the note didn't exist before and should
@@ -86,7 +86,7 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
       });
   };
 
-  const isEditing = note && note.pk;
+  const isEditing = note && note.id;
 
   const changeTitle = (newValue) => {
     // checkInput(true);
