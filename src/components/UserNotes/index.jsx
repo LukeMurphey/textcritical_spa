@@ -10,6 +10,7 @@ import UserNoteEditor from "../UserNoteDialog/UserNoteEditor";
 import UserNoteViewer from "../UserNoteDialog/NoteViewer";
 import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE, ENDPOINT_EXPORT_NOTES } from "../Endpoints";
 import ErrorMessage from "../ErrorMessage";
+import UserNotesImportDialog from "../UserNotesImportDialog";
 import './index.css';
 
 export const STATE_LIST = 0;
@@ -17,6 +18,9 @@ export const STATE_VIEW = 1;
 export const STATE_EDIT = 2;
 export const STATE_ERROR = 3;
 export const STATE_SEARCH_NO_RESULTS = 4;
+export const STATE_IMPORT = 5;
+
+export const MODAL_IMPORT = 'import';
 
 const UserNotes = ({ inverted, history }) => {
   const [error, setError] = useState(null);
@@ -27,6 +31,7 @@ const UserNotes = ({ inverted, history }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
+  const [modalToShow, setModalToShow] = useState(null);
 
   const onClickBack = () => {
     history.push(READ_WORK());
@@ -104,6 +109,14 @@ const UserNotes = ({ inverted, history }) => {
     getNotes();
   }
 
+  const onDialogClose = () => {
+    setModalToShow(null);
+  }
+
+  const onShowImportModal = () => {
+    setModalToShow(MODAL_IMPORT);
+  }
+
   // Load the note when opening the form
   useEffect(() => {
     getNotes();
@@ -172,7 +185,9 @@ const UserNotes = ({ inverted, history }) => {
                 </div>
 
                 <div className="secondary-notes-options">
+                  <Button secondary onClick={onShowImportModal}>Import Notes</Button>
                   <Button secondary onClick={() => { window.location = ENDPOINT_EXPORT_NOTES(); }}>Export Notes</Button>
+                  
                 </div>
               </div>
 
@@ -192,6 +207,9 @@ const UserNotes = ({ inverted, history }) => {
                 />
               )}
             </>
+          )}
+          { modalToShow === MODAL_IMPORT && (
+            <UserNotesImportDialog onClose={onDialogClose} />
           )}
         </Segment>
       </Container>
