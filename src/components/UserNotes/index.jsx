@@ -10,6 +10,7 @@ import UserNoteEditor from "../UserNoteDialog/UserNoteEditor";
 import UserNoteViewer from "../UserNoteDialog/NoteViewer";
 import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE, ENDPOINT_EXPORT_NOTES } from "../Endpoints";
 import ErrorMessage from "../ErrorMessage";
+import './index.css';
 
 export const STATE_LIST = 0;
 export const STATE_VIEW = 1;
@@ -163,11 +164,17 @@ const UserNotes = ({ inverted, history }) => {
           )}
           {state !== STATE_ERROR && (
             <>
-              <Form>
-                <Input placeholder='Search...' onChange={onSearchChange} action={<Button type='submit' onClick={onSearch}>Search</Button>} />
-              </Form>
+              <div className="notes-options">
+                <div className="primary-notes-options">
+                  <Form>
+                    <Input placeholder='Search...' onChange={onSearchChange} action={<Button type='submit' onClick={onSearch}>Search</Button>} />
+                  </Form>
+                </div>
 
-              <Button secondary onClick={() => { window.location = ENDPOINT_EXPORT_NOTES(); }}>Export Notes</Button>
+                <div className="secondary-notes-options">
+                  <Button secondary onClick={() => { window.location = ENDPOINT_EXPORT_NOTES(); }}>Export Notes</Button>
+                </div>
+              </div>
 
               {state === STATE_SEARCH_NO_RESULTS && (
                 <Message inverted={inverted} warning>
