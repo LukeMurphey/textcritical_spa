@@ -9,10 +9,9 @@ export function getCookiesAccepted(storageOverride = null) {
   const storage = storageOverride || localStorage;
   const accepted = storage.getItem(COOKIE_ACCEPTED) || false;
 
-  if( accepted == "true") {
+  if( accepted === "true") {
     return true;
   }
-  else {
-    return false;
-  }
+  
+  return false;
 }
