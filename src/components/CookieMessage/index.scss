@@ -1,0 +1,15 @@
+.cookie-message {
+    z-index: 1;
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+
+    .text {
+        display: inline-block;
+    }
+
+    .acknowledge {
+        margin-left: 16px;
+        display: inline-block;
+    }
+}

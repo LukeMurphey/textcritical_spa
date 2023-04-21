@@ -7,6 +7,7 @@ import history from './history';
 import NotFound from './components/NotFound';
 import BasicLoader from './components/BasicLoader';
 import UserNotes from './components/UserNotes';
+import CookieMessage from './components/CookieMessage';
 
 const ContactMe = React.lazy(() => import('./components/ContactMe'));
 const About = React.lazy(() => import('./components/About'));
@@ -23,7 +24,10 @@ const AppRouter = ({ inverted }) => (
           exact
           path="/work/:work?/:division0?/:division1?/:division2?/:division3?/:division4?/:leftovers?"
         >
-          <App inverted={inverted} />
+          <>
+            <CookieMessage inverted={inverted} />
+            <App inverted={inverted} />
+          </>
         </Route>
         <Route exact path="/">
           <Redirect to="/work" />
