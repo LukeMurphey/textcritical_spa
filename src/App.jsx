@@ -5,11 +5,11 @@ import Reader from './components/Reader';
 import { GlobalAppContextProvider } from "./components/GlobalAppContext";
 
 const App = ({ inverted }) => (
-    <GlobalAppContextProvider>
-      <Reader
-        inverted={inverted}
-      />
-    </GlobalAppContextProvider>
+  <GlobalAppContextProvider>
+    <Reader
+      inverted={inverted}
+    />
+  </GlobalAppContextProvider>
 )
 
 App.propTypes = {

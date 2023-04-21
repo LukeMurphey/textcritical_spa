@@ -33,3 +33,14 @@ Alternatively, the public instance of TextCritical can be used by modifying `web
         changeOrigin: true,
       },
     },
+
+## Steps Needed for the Development Environment
+
+You will need to install nodeJS. Apt on Ubuntu will often give you an older version of nodeJS. You can install a later version by running the following:
+
+    sudo apt install -y curl
+    curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+
+Once you do that, install some other things:
+
+    sudo apt install yarn npm

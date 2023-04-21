@@ -5,6 +5,7 @@ export const BASE_PATH_START_PAGE = "/";
 export const BASE_PATH_BETA_CODE_CONVERT = "/beta_code_converter";
 export const BASE_PATH_READ_WORK = "/work";
 export const BASE_PATH_SEARCH = "/search";
+export const BASE_PATH_NOTES = "/notes";
 
 export const BASE_PATH_GOOGLE_SEARCH = "https://www.google.com/search";
 export const BASE_PATH_PERSEUS_WORD_LOOKUP =

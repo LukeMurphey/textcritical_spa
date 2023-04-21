@@ -1,109 +1,171 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Button, Header, Modal, Input, TextArea, Form,
-} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import ErrorMessage from '../ErrorMessage';
-import { ENDPOINT_NOTE, ENDPOINT_NOTE_EDIT } from "../Endpoints";
 import Cookies from 'js-cookie';
+import { Message } from 'semantic-ui-react'
+import ErrorMessage from '../ErrorMessage';
+import UserNoteEditor from './UserNoteEditor';
+import NoteViewer from './NoteViewer';
+import NotesList from './NotesList';
+import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE } from "../Endpoints";
 
-const UserNoteDialog = ({ onClose, noteId, work, division, verse }) => {
+export const STATE_LIST = 0;
+export const STATE_VIEW = 1;
+export const STATE_EDIT = 2;
 
-  const [noteTitle, setNoteTitle] = useState(null);
-  const [noteText, setNoteText] = useState(null);
+const UserNoteDialog = ({ onClose, work, division, verse }) => {
+
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [loadedNote, setLoadedNote] = useState(null);
+  const [notes, setNotes] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const getNote = () => {
-    fetch(ENDPOINT_NOTE(noteId))
+  const getNotes = () => {
+    setIsLoading(true);
+    fetch(ENDPOINT_NOTES(work, division.join("/")))
       .then((res) => res.json())
       .then((newData) => {
-        setNoteTitle(newData.title);
-        setNoteText(newData.text);
+        setNotes(newData)
+        setIsLoading(false);
       })
       .catch((e) => {
         setError(e.toString());
+        setIsLoading(false);
       });
   };
 
   /**
-   * Save the note.
+   * Delete the note.
    */
-  const onSave = () => {
+  const onDeleteNote = (noteId) => {
 
-    const formData = new FormData();
-    formData.append("title", noteTitle);
-    formData.append("text", noteText);
-    formData.append("work", work);
-    formData.append("division", division.join("/"));
-    formData.append("verse", verse);
+    // eslint-disable-next-line no-restricted-globals, no-alert
+    if( confirm("Are you sure you want to delete this note?") !== true ){
+      return;
+    }
 
     const requestOptions = {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': Cookies.get('csrftoken')
-        },
-        body: formData
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken')
+      },
     };
 
-    fetch(ENDPOINT_NOTE_EDIT(noteId), requestOptions)
+    fetch(ENDPOINT_NOTE_DELETE(noteId), requestOptions)
       .then((res) => res.json())
-      .then((newData) => {
-        // TODO: get note ID for new notes
-        onClose(newData.noteId);
+      .then(() => {
+        // Reload the notes
+        getNotes();
+        setLoadedNote(null);
+        setIsEditing(false);
+        setMessage("Note successfully deleted");
       })
       .catch((e) => {
         setError(e.toString());
       });
   };
 
+  const cancelEditOrViewing = () => {
+    setIsEditing(false);
+    setLoadedNote(null);
+    setMessage(null);
+  };
+
+  const onCreateNewNote = () => {
+    setIsEditing(true);
+    setLoadedNote(null);
+  }
+  
+  const onSave = (_, isNew) => {
+    setIsEditing(false);
+    setLoadedNote(null);
+
+    if(isNew) {
+      setMessage("Note successfully created");
+    }
+    else{
+      setMessage("Note successfully edited");
+    }
+    
+    getNotes();
+  }
+
   // Load the note when opening the form
   useEffect(() => {
-    if(noteId !== null) {
-        getNote();
-    }
+    getNotes()
   }, []);
 
-  return (
-    <Modal defaultOpen onClose={onClose} closeIcon>
-      <Header icon="info" content="New Note" />
-      <Modal.Content>
-        {error && (
-          <ErrorMessage
-            title="Unable to load the note"
-            description="Unable to get the note from the server"
-            message={error}
-          />
-        )}
-        {!error && (
-          <Form>
-            <span>Title</span>
-            <Input onChange={(event, data) => setNoteTitle(data.value)} fluid placeholder='Set the title...' />
+  // Determine what state the UI ought to be in
+  let state = STATE_LIST;
 
-            <span>Body</span>
-            <TextArea onChange={(event, data) => setNoteText(data.value)} placeholder='Put your note here...' />
-          </Form>
-        )}
-      </Modal.Content>
-      <Modal.Actions>
-        {!error && (
-          <Button primary onClick={onSave}>Save</Button>
-        )}
-        <Button onClick={onClose}>Close</Button>
-      </Modal.Actions>
-    </Modal>
+  if(!error) {
+
+    if(isEditing === true) {
+      state = STATE_EDIT;
+    }
+
+    else if(loadedNote) {
+      state = STATE_VIEW;
+    }
+  }
+
+  let topContent = null;
+
+  if (error) {
+    topContent = (
+      <ErrorMessage
+        title="Error"
+        description="Unable to communicate with the server"
+        message={error}
+      />
+    )
+  }
+
+  else if (message) {
+    topContent = (
+      <Message positive>{message}</Message>
+    )
+  }
+
+  return (
+    <> 
+      {state === STATE_LIST && (
+        <>
+          <NotesList
+            notes={notes}
+            work={work}
+            division={division}
+            verse={verse}
+            onClose={onClose}
+            onSelectNote={(note) => { setLoadedNote(note); setMessage(null); }}
+            onCreateNewNote={onCreateNewNote}
+            topContent={topContent}
+            isLoading={isLoading}
+          />
+        </>
+      )}
+      {state === STATE_EDIT && (
+        <UserNoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditOrViewing} onSave={onSave} />
+      )}
+      {state === STATE_VIEW && (
+        <NoteViewer
+          note={loadedNote}
+          onClose={onClose}
+          onEdit={() => { setIsEditing(true); }}
+          onCancel={cancelEditOrViewing}
+          onDelete={(note) => { onDeleteNote(note.id) }}
+        />
+      )}
+    </>
   );
 };
 
 UserNoteDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
-  noteId: PropTypes.number,
   work: PropTypes.string.isRequired,
   division: PropTypes.string.isRequired,
   verse: PropTypes.string.isRequired,
 };
-
-UserNoteDialog.defaultProps = {
-    noteId: null,
-}
 
 export default UserNoteDialog;

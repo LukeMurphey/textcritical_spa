@@ -3,8 +3,7 @@ import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-rea
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS, ENDPOINT_USER_PREFERENCES } from "../Endpoints";
-import RemoteStorage from "../Settings/RemoteStorage";
+import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS } from "../Endpoints";
 import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
@@ -136,14 +135,11 @@ const Reader = ({
 
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState(getFontAdjustment());
 
-  // This stores the storage provider that will store user preferences
-  const [storageProvider, setStorageProvider] = useState(null);
-
   // Keep a list of verse references that are known to be a reference within the current chapter
   const verseReferences = useRef([]);
   const popupContextData = useRef(null);
 
-  const { authentication } = React.useContext(GlobalAppContext);
+  const { authentication, storageProvider } = React.useContext(GlobalAppContext);
 
   /**
    * Set an error state.
@@ -669,23 +665,6 @@ const Reader = ({
       }
     }
   });
-
-  // Get the user preferences
-  const getPreferences = (csrfToken) => {
-    fetch(ENDPOINT_USER_PREFERENCES())
-      .then((res) => res.json())
-      .then((prefs) => {
-        // eslint-disable-next-line no-console
-        console.info("Successfully loaded the user's preferences");
-        setStorageProvider(new RemoteStorage(prefs, csrfToken));
-        setAuthLoadingDone(true);
-      })
-  };
-
-  // Handle the case where the ReadingMenuBar tells us that authentication was completed; reload our state accordingly
-  const authenticationCompleted = () => {
-    authentication.checkAuthenticationState();
-  };
 
   // Figure out a description for the chapter
   let description = "";

@@ -142,12 +142,27 @@ export function ENDPOINT_NOTE(noteId) {
   return `${getHostConfig()}/api/notes/${noteId}/`;
 }
 
-export function ENDPOINT_NOTES() {
-  return `${getHostConfig()}/api/notes/`;
+export function ENDPOINT_NOTES(work = null, division = null, search = null) {
+
+  let query = '';
+
+  if (work) {
+    query += appendAmpersand(query, `work=${work}`);
+  }
+
+  if (division) {
+    query += appendAmpersand(query, `division=${division}`);
+  }
+
+  if (search && search.length > 0) {
+    query += appendAmpersand(query, `search=${search}`);
+  }
+
+  return `${getHostConfig()}/api/notes/?${query}`;
 }
 
 export function ENDPOINT_NOTE_EDIT(noteId = null) {
-  if(noteId === null) {
+  if(!noteId) {
     return `${getHostConfig()}/api/notes/edit/`;
   }
   return `${getHostConfig()}/api/notes/edit/${noteId}/`;
@@ -155,4 +170,8 @@ export function ENDPOINT_NOTE_EDIT(noteId = null) {
 
 export function ENDPOINT_NOTE_DELETE(noteId) {
   return `${getHostConfig()}/api/notes/delete/${noteId}/`;
+}
+
+export function ENDPOINT_EXPORT_NOTES() {
+  return `${getHostConfig()}/api/export_notes/`;
 }

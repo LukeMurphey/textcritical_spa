@@ -2,7 +2,7 @@
  * This page provides helper functions for creating URLs for the website.
  */
 
-import { BASE_PATH_START_PAGE, BASE_PATH_BETA_CODE_CONVERT, BASE_PATH_READ_WORK, BASE_PATH_SEARCH, BASE_PATH_GOOGLE_SEARCH, BASE_PATH_PERSEUS_WORD_LOOKUP, BASE_PATH_LOGEION_WORD_LOOKUP } from "./BasePaths";
+import { BASE_PATH_START_PAGE, BASE_PATH_BETA_CODE_CONVERT, BASE_PATH_READ_WORK, BASE_PATH_SEARCH, BASE_PATH_GOOGLE_SEARCH, BASE_PATH_PERSEUS_WORD_LOOKUP, BASE_PATH_LOGEION_WORD_LOOKUP, BASE_PATH_NOTES } from "./BasePaths";
 import { PARAMS_SEARCH, PARAMS_GOOGLE_SEARCH, PARAMS_PERSEUS_WORD_LOOKUP, PARAMS_READ_WORK } from "./Parameters";
 
 export function START_PAGE() {
@@ -33,6 +33,10 @@ export function SEARCH(
   page = '',
 ) {
   return `${BASE_PATH_SEARCH}${PARAMS_SEARCH(q, ignoreDiacritics, searchRelatedForms, page)}`;
+}
+
+export function NOTES() {
+  return `${BASE_PATH_NOTES}`;
 }
 
 export function GOOGLE_SEARCH(q = '') {

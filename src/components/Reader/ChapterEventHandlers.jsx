@@ -31,6 +31,12 @@
  * @returns { verseDescriptor, verse, id, href }
  */
 export const getVerseInfoFromVerseLinkElement = (verseLinkElement) => {
+
+  // Stop if we weren't provided a valid element
+  if (verseLinkElement === null) {
+    return { verseDescriptor: null, verse: null, id: null, href: null };
+  }
+
   // Get the descriptor of the verse
   const verseDescriptorElem = Array.from(verseLinkElement.attributes).find(
     (element) => element.name === "data-verse-descriptor"
@@ -65,29 +71,57 @@ export const getVerseInfoFromVerseLinkElement = (verseLinkElement) => {
   return { verseDescriptor, verse, id, href };
 };
 
+export const findVerseLinkElement = (element) => {
+  /* The on-click handlers need to find the element matching ".verse-link" in order to find the
+     verse information.
+  */
+     let currentTarget = element;
+     let verseLinkElement = null;
+   
+     // Recurse until you find ".verse-container"
+     let attempts = 0;
+     while (attempts < 5 && verseLinkElement === null) {
+       // Stop if we found the verse-container element
+       if (currentTarget !== null && currentTarget.className.includes("verse-container")) {
+         verseLinkElement = currentTarget;
+       }
+   
+       // Recurse to the next one
+       else{
+         currentTarget = currentTarget.parentElement;
+         attempts += 1;
+       }
+     }
+   
+     // Find the related ".verse-link"
+     const verseLinkElements = verseLinkElement.getElementsByClassName("verse-link")
+   
+     // Stop if we couldn't find the verse information
+     if (verseLinkElements.length === 0) {
+       console.info("Failed to find the verse-link");
+       return null;
+     }
+
+     return verseLinkElements[0];
+}
+
 /**
  * Get the verse information from the event. This assumes the event fired for the element with the class "verse-link".
  * @param {*} event 
  * @returns { verseDescriptor, verse, id, href }
  */
 export const getVerseInfoFromEvent = (event) => {
-  // Get the target containing the verse info
-  const target = event.target.parentElement;
 
-  return getVerseInfoFromVerseLinkElement(target);
+  // Get the target containing the verse info
+  return getVerseInfoFromVerseLinkElement(findVerseLinkElement(event.target));
 };
 
 export const getWordFromEvent = (event) => {
   if (event.target.className.includes("word")) {
     let data = {};
 
-    // Try to find the verse link so that we can et the verse information
-    const verseLinkElements = event.target.parentElement.parentElement.getElementsByClassName("verse-link");
+    data = getVerseInfoFromVerseLinkElement(findVerseLinkElement(event.target))
 
-    if( verseLinkElements.length > 0 ){
-      data = getVerseInfoFromVerseLinkElement(verseLinkElements[0]);
-    }
-    
     data.word = event.target.innerText
     return data;
   }
