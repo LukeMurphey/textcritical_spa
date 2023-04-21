@@ -13,4 +13,4 @@ You need to use the RemoteStorage class. To use it, instantiate and instance and
 
 ## How do I dictate which settings are saved server-side and which are client-side?
 
-By default, they are stored client-size in local storage. Pass a RemoteStorage to get it to store on the server, or don't to save it on the client. This is how fontAdjustment works right now, it is never stored on the server (since it is likely only relevant to the particular browser it is being used on).
+By default, they are stored client-side in local storage. Pass a RemoteStorage to get it to store on the server, or don't to save it on the client. This is how fontAdjustment works right now, it is never stored on the server (since it is likely only relevant to the particular browser it is being used on).
