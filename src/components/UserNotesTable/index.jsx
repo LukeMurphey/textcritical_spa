@@ -36,6 +36,17 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
     setActivePage(data.activePage);
   }
 
+  const getNoteReferenceDescription = (noteReference) => {
+    if (noteReference.work && noteReference.division) {
+      return `${noteReference.division.description} (${noteReference.work.title})`
+    }
+    if (noteReference.work) {
+      return `${noteReference.work.title}`
+    }
+
+    return '';
+  }
+
   return (
     <>
       {state === STATE_NO_NOTES && (
@@ -56,7 +67,7 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
               <Table.HeaderCell>Title</Table.HeaderCell>
               <Table.HeaderCell>Created</Table.HeaderCell>
               {showWorkLinks && (
-                <Table.HeaderCell>Work</Table.HeaderCell>
+                <Table.HeaderCell>Reference</Table.HeaderCell>
               )}
             </Table.Row>
           </Table.Header>
@@ -97,7 +108,7 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
             )}
             {state === STATE_LIST && (
               pagedNotes.map((note) => (
-                <Table.Row>
+                <Table.Row key={note.id}>
                   <Table.Cell>
                     <ButtonLink onClick={() => onSelectNote(note)}>{note.title}</ButtonLink>
                   </Table.Cell>
@@ -112,7 +123,7 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
                     <>
                       <Table.Cell>
                         {note.references && note.references.length > 0 && (
-                          <a href={READ_WORK(note.references[0].work_title_slug, null, note.references[0].division_full_descriptor)}>View Reference</a>
+                          <a href={READ_WORK(note.references[0].work_title_slug, null, note.references[0].division_full_descriptor)}>{getNoteReferenceDescription(note.references[0])}</a>
                         )}
                       </Table.Cell>
                     </>
