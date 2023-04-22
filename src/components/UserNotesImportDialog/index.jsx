@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { Modal, Header, Button, Segment, Icon, Progress } from "semantic-ui-react";
+import { Modal, Header, Button, Segment, Icon, Progress, Message, Table } from "semantic-ui-react";
 import { readString } from "react-papaparse";
 import { useDropzone } from 'react-dropzone';
 import Cookies from 'js-cookie';
@@ -19,18 +19,55 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
 
   const [notesToBeImported, setNotesToBeImported] = useState(null);
   const [importingState, setImportingState] = useState(STATE_NOT_STARTED);
-  const [notesImportedUnsuccessfully, setNotesImportedUnsuccessfully] = useState([]);
-  const [notesImportedSuccessfully, setNotesImportedSuccessfully] = useState([]);
   const [error, setError] = useState(null);
+
+  const notesImportedUnsuccessfully = useRef([]);
+  const notesImportedSuccessfully = useRef([]);
+  const importErrors = useRef({});
 
   let notesProcessed = 0;
 
-  if (notesImportedUnsuccessfully) {
-    notesProcessed += notesImportedUnsuccessfully.length;
+  if (notesImportedUnsuccessfully.current) {
+    notesProcessed += notesImportedUnsuccessfully.current.length;
   }
 
-  if (notesImportedSuccessfully) {
-    notesProcessed += notesImportedSuccessfully.length;
+  if (notesImportedSuccessfully.current) {
+    notesProcessed += notesImportedSuccessfully.current.length;
+  }
+
+  /**
+   * Validate the file.
+   *
+   * @param {object} notedata The parsed notes import file
+   * @returns 
+   */
+  const getFileValidationErrors = (notedata) => {
+    // Verify that the required columns are present
+    if (!notedata) {
+      return "File is empty";
+    }
+
+    // Stop if there isn't at least one row
+    if (notedata.length < 1) {
+      return "There are no rows to import";
+    }
+
+    const requiredColumns = ['title', 'text', 'work', 'division', 'verse'];
+    const firstrow = notedata[0];
+
+    const missingColumns = requiredColumns.map((column) => {
+      if (!(column in firstrow)) {
+        return column;
+      }
+      
+      return null;
+    }).filter((data) => data !== null)
+
+    if (missingColumns && missingColumns.length > 0) {
+      return `File is missing some required columns: ${missingColumns.join(", ")}`;
+    }
+
+    return null;
   }
 
   const onDrop = useCallback(acceptedFiles => {
@@ -44,17 +81,64 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
         // Parse it
         const result = readString(text, { header: true, skipEmptyLines: true });
 
-        // Add the notes to be imported
-        setNotesToBeImported(result.data);
+        // Validate the file
+        const fileValidationErrors = getFileValidationErrors(result.data);
+
+        if (fileValidationErrors) {
+          setError(fileValidationErrors);
+        }
+        else {
+          // Add the notes to be imported
+          setNotesToBeImported(result.data);
+        }
       });
   }, []);
 
   /**
    * Make sure the entry appears to be valid.
+   * 
+   * This will return null if there are no errors and will return a string describing the problem
+   * if there is one.
    */
-  const isValidNote = (notedata) => {
+  const getNoteValidationErrors = (notedata) => {
     // Verify that the required columns are present
-    return true;
+    if (!notedata) {
+      return "Note is empty";
+    }
+
+    // Stop if there isn't at least one row
+    if (notedata.length < 1) {
+      return "There is no data to import";
+    }
+
+    const requiredColumns = ['title', 'text', 'work', 'division', 'verse'];
+
+    const missingColumns = requiredColumns.map((column) => {
+      if (!(column in notedata)) {
+        return column;
+      }
+      
+      if (!notedata[column] || notedata[column].length === 0){
+        return column;
+      }
+
+      return null;
+    }).filter((data) => data !== null)
+
+    if (missingColumns && missingColumns.length > 0) {
+      return `Note is missing some data: ${missingColumns.join(", ")}`;
+    }
+
+    return null;
+  }
+
+  const addImportError = (validationError) => {
+      if (validationError in importErrors.current) {
+        importErrors.current[validationError] += 1;
+      }
+      else {
+        importErrors.current[validationError] = 1;
+      }
   }
 
   /**
@@ -63,9 +147,11 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
   const importNote = (noteData) => {
 
     // Stop if the data is invalid
-    if (!isValidNote(noteData)) {
-      notesImportedUnsuccessfully.push(noteData);
-      setNotesImportedUnsuccessfully(notesImportedUnsuccessfully);
+    const validationError = getNoteValidationErrors(noteData)
+    if (validationError !== null) {
+      notesImportedUnsuccessfully.current.push(noteData);
+
+      addImportError(validationError);
     }
 
     // Continue if it is valid
@@ -97,12 +183,17 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
       fetch(ENDPOINT_NOTE_EDIT(), requestOptions)
         .then((res) => res.json())
         .then((editedNote) => {
-          notesImportedSuccessfully.push(editedNote);
-          setNotesImportedSuccessfully(notesImportedSuccessfully);
+          if ('message' in editedNote) {
+            notesImportedUnsuccessfully.current.push(noteData);
+            addImportError(editedNote.message);
+          }
+          else {
+            notesImportedSuccessfully.current.push(editedNote);
+          }
         })
         .catch((e) => {
-          notesImportedUnsuccessfully.push(noteData);
-          setNotesImportedUnsuccessfully(notesImportedUnsuccessfully);
+          notesImportedUnsuccessfully.current.push(noteData);
+          addImportError(e);
         });
     }
   };
@@ -123,12 +214,19 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
     }
   }, [notesToBeImported]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+  // Get the things we need for the dropzone
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
     <Modal defaultOpen onClose={onClose} closeIcon>
       <Header icon="info" content="Import Notes" />
       <Modal.Content>
+        {error && (
+          <Message negative>
+            <Message.Header>File could not be imported</Message.Header>
+            <p>{error}</p>
+          </Message>
+        )}
         {importingState === STATE_NOT_STARTED && (
           <div {...getRootProps()}>
             <input {...getInputProps()} />
@@ -156,14 +254,35 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
         {importingState === STATE_DONE && (
           <>
             <Progress percent={100} success>
-              {notesImportedSuccessfully.length}
+              {notesImportedSuccessfully.current.length}
               {' '}
               notes were successfully imported.
               {' '}
-              {notesImportedUnsuccessfully.length}
+              {notesImportedUnsuccessfully.current.length}
               {' '}
               notes were not successfully imported.
             </Progress>
+            <Table celled>
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell>Metric</Table.HeaderCell>
+                  <Table.HeaderCell>Count</Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+
+              <Table.Body>
+                <Table.Row>
+                  <Table.Cell>Successfully imported</Table.Cell>
+                  <Table.Cell>{notesImportedSuccessfully.current.length}</Table.Cell>
+                </Table.Row>
+                {Object.entries(importErrors.current).map((importError) => (
+                  <Table.Row>
+                    <Table.Cell>{importError[0]}</Table.Cell>
+                    <Table.Cell>{importError[1]}</Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table>
           </>
         )}
       </Modal.Content>
