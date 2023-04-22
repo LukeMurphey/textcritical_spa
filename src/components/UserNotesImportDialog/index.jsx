@@ -11,9 +11,10 @@ import regeneratorRuntime from 'regenerator-runtime';
 import { ENDPOINT_NOTE_EDIT } from "../Endpoints";
 
 const STATE_NOT_STARTED = 0;
-const STATE_ERROR = 1;
-const STATE_IN_PROGRESS = 2;
-const STATE_DONE = 3;
+const STATE_IN_PROGRESS = 1;
+const STATE_DONE = 2;
+
+const REQUIRED_COLUMNS = ['title', 'text', 'work', 'division'];
 
 const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
 
@@ -52,10 +53,9 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
       return "There are no rows to import";
     }
 
-    const requiredColumns = ['title', 'text', 'work', 'division', 'verse'];
     const firstrow = notedata[0];
 
-    const missingColumns = requiredColumns.map((column) => {
+    const missingColumns = REQUIRED_COLUMNS.map((column) => {
       if (!(column in firstrow)) {
         return column;
       }
@@ -111,9 +111,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
       return "There is no data to import";
     }
 
-    const requiredColumns = ['title', 'text', 'work', 'division', 'verse'];
-
-    const missingColumns = requiredColumns.map((column) => {
+    const missingColumns = REQUIRED_COLUMNS.map((column) => {
       if (!(column in notedata)) {
         return column;
       }
@@ -166,10 +164,6 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
 
       if (noteData.division) {
         formData.append("division", noteData.division);
-      }
-
-      if (noteData.verse) {
-        formData.append("verse", noteData.verse);
       }
 
       const requestOptions = {
