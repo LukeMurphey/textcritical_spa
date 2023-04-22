@@ -1,19 +1,22 @@
 import React, { useState, useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Modal, Header, Button, Segment, Icon, Progress } from "semantic-ui-react";
-import { parse } from "papaparse";
-import {useDropzone} from 'react-dropzone';
+import { readString } from "react-papaparse";
+import { useDropzone } from 'react-dropzone';
 import Cookies from 'js-cookie';
-import { ENDPOINT_NOTE_EDIT } from "../Endpoints";
+// regeneratorRuntime is needed to papa-parse to work (even though the variable isn't used
+// explicitly here)
+// eslint-disable-next-line no-unused-vars
 import regeneratorRuntime from 'regenerator-runtime';
+import { ENDPOINT_NOTE_EDIT } from "../Endpoints";
 
 const STATE_NOT_STARTED = 0;
-const STATE_PREFLIGHT = 1;
+const STATE_ERROR = 1;
 const STATE_IN_PROGRESS = 2;
 const STATE_DONE = 3;
 
 const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
-  
+
   const [notesToBeImported, setNotesToBeImported] = useState(null);
   const [importingState, setImportingState] = useState(STATE_NOT_STARTED);
   const [notesImportedUnsuccessfully, setNotesImportedUnsuccessfully] = useState([]);
@@ -39,8 +42,8 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
         const text = await file.text();
 
         // Parse it
-        const result = parse(text, { header: true });
-        
+        const result = readString(text, { header: true, skipEmptyLines: true });
+
         // Add the notes to be imported
         setNotesToBeImported(result.data);
       });
@@ -50,6 +53,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
    * Make sure the entry appears to be valid.
    */
   const isValidNote = (notedata) => {
+    // Verify that the required columns are present
     return true;
   }
 
@@ -65,7 +69,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
     }
 
     // Continue if it is valid
-    else{
+    else {
       const formData = new FormData();
       formData.append("title", noteData.title);
       formData.append("text", noteData.text);
@@ -73,15 +77,15 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
       if (noteData.work) {
         formData.append("work", noteData.work);
       }
-      
+
       if (noteData.division) {
         formData.append("division", noteData.division);
       }
-      
+
       if (noteData.verse) {
         formData.append("verse", noteData.verse);
       }
-      
+
       const requestOptions = {
         method: 'POST',
         headers: {
@@ -100,7 +104,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
           notesImportedUnsuccessfully.push(noteData);
           setNotesImportedUnsuccessfully(notesImportedUnsuccessfully);
         });
-      }
+    }
   };
 
   /**
@@ -119,40 +123,47 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
     }
   }, [notesToBeImported]);
 
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
-    return (
+  return (
     <Modal defaultOpen onClose={onClose} closeIcon>
       <Header icon="info" content="Import Notes" />
       <Modal.Content>
-        { importingState === STATE_NOT_STARTED && (
+        {importingState === STATE_NOT_STARTED && (
           <div {...getRootProps()}>
             <input {...getInputProps()} />
             <Segment placeholder>
-                <Header icon>
-                  <Icon name='file outline' />
-                  {
-                    isDragActive ? 'Drop the files here...' : 'Drag and drop a file; or click here to select a file.'
-                  }
-                </Header>
+              <Header icon>
+                <Icon name='file outline' />
+                {
+                  isDragActive ? 'Drop the files here...' : 'Drag and drop a file; or click here to select a file.'
+                }
+              </Header>
             </Segment>
           </div>
         )}
-        { importingState === STATE_IN_PROGRESS && (
+        {importingState === STATE_IN_PROGRESS && (
           <>
-          { notesToBeImported && (
-          <Progress percent={notesToBeImported/notesProcessed} active>
-            There are {notesToBeImported.length - notesProcessed} notes left to import
-          </Progress>
-          )}
+            {notesToBeImported && (
+              <Progress percent={notesToBeImported / notesProcessed} active>
+                There are
+                {notesToBeImported.length - notesProcessed}
+                notes left to import
+              </Progress>
+            )}
           </>
         )}
-        { importingState === STATE_DONE && (
+        {importingState === STATE_DONE && (
           <>
-          <Progress percent={100} success>
-            {notesImportedSuccessfully.length} notes were successfully imported.
-            {notesImportedUnsuccessfully.length} notes were not successfully imported.
-          </Progress>
+            <Progress percent={100} success>
+              {notesImportedSuccessfully.length}
+              {' '}
+              notes were successfully imported.
+              {' '}
+              {notesImportedUnsuccessfully.length}
+              {' '}
+              notes were not successfully imported.
+            </Progress>
           </>
         )}
       </Modal.Content>
