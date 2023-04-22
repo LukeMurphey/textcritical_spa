@@ -117,6 +117,10 @@ const UserNotes = ({ inverted, history }) => {
     setModalToShow(MODAL_IMPORT);
   }
 
+  const onNotesImported = () => {
+    getNotes();
+  }
+
   // Load the note when opening the form
   useEffect(() => {
     getNotes();
@@ -209,7 +213,7 @@ const UserNotes = ({ inverted, history }) => {
             </>
           )}
           { modalToShow === MODAL_IMPORT && (
-            <UserNotesImportDialog onClose={onDialogClose} />
+            <UserNotesImportDialog onClose={onDialogClose} onNotesImported={onNotesImported} />
           )}
         </Segment>
       </Container>
