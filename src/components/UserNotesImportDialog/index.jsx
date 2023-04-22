@@ -14,7 +14,7 @@ const STATE_NOT_STARTED = 0;
 const STATE_IN_PROGRESS = 1;
 const STATE_DONE = 2;
 
-const REQUIRED_COLUMNS = ['title', 'text', 'work', 'division'];
+const REQUIRED_COLUMNS = ['title', 'text', 'work', 'reference'];
 
 const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
 
@@ -162,8 +162,8 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
         formData.append("work", noteData.work);
       }
 
-      if (noteData.division) {
-        formData.append("division", noteData.division);
+      if (noteData.reference) {
+        formData.append("division", noteData.reference);
       }
 
       const requestOptions = {
