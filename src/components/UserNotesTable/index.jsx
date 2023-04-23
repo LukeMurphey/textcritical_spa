@@ -52,7 +52,7 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
       {state === STATE_NO_NOTES && (
         <Message>
           <Message.Header>No Notes Exist</Message.Header>
-          You do not have any notes for this passage.
+          You do not have any notes.
           {onCreateNewNote && (
             <div className="create-first-note-button">
               <Button onClick={onCreateNewNote}>Create New Note</Button>
