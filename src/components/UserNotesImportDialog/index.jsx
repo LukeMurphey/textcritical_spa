@@ -157,6 +157,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
       const formData = new FormData();
       formData.append("title", noteData.title);
       formData.append("text", noteData.text);
+      formData.append("be_forgiving", "1");
 
       if (noteData.work) {
         formData.append("work", noteData.work);
