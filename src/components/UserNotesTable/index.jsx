@@ -38,13 +38,21 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
 
   const getNoteReferenceDescription = (noteReference) => {
     if (noteReference.work && noteReference.division) {
-      return `${noteReference.division.description} (${noteReference.work.title})`
+      return `${noteReference.work.title}: ${noteReference.division.description}`
     }
     if (noteReference.work) {
       return `${noteReference.work.title}`
     }
 
     return '';
+  }
+
+  const getUrlForReference = (note_reference) => {
+    if (note_reference.verse_indicator) {
+      return READ_WORK(note_reference.work_title_slug, null, `${note_reference.division_full_descriptor}\\${note_reference.verse_indicator}`)
+    }
+
+    return READ_WORK(note_reference.work_title_slug, null, note_reference.division_full_descriptor);
   }
 
   return (
@@ -120,13 +128,9 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
                     )
                   </Table.Cell>
                   {showWorkLinks && (
-                    <>
-                      <Table.Cell>
-                        {note.references && note.references.length > 0 && (
-                          <a href={READ_WORK(note.references[0].work_title_slug, null, note.references[0].division_full_descriptor)}>{getNoteReferenceDescription(note.references[0])}</a>
-                        )}
-                      </Table.Cell>
-                    </>
+                    <Table.Cell>
+                      <a href={getUrlForReference(note.references[0])}>{getNoteReferenceDescription(note.references[0])}</a>
+                    </Table.Cell>
                   )}
                 </Table.Row>
               ))
