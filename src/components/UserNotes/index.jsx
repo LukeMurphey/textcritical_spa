@@ -93,6 +93,7 @@ const UserNotes = ({ inverted, history }) => {
 
   const onSave = () => {
     setSelectedNote(null);
+    setIsEditing(false);
     getNotes();
   };
 
