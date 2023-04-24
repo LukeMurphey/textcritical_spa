@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { Modal, Header, Button, Segment, Icon, Progress, Message, Table } from "semantic-ui-react";
+import { Modal, Header, Button, Segment, Icon, Progress, Message, Table, List } from "semantic-ui-react";
 import { readString } from "react-papaparse";
 import { useDropzone } from 'react-dropzone';
 import Cookies from 'js-cookie';
@@ -9,6 +9,7 @@ import Cookies from 'js-cookie';
 // eslint-disable-next-line no-unused-vars
 import regeneratorRuntime from 'regenerator-runtime';
 import { ENDPOINT_NOTE_EDIT } from "../Endpoints";
+import './index.css';
 
 const STATE_NOT_STARTED = 0;
 const STATE_IN_PROGRESS = 1;
@@ -222,17 +223,40 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
           </Message>
         )}
         {importingState === STATE_NOT_STARTED && (
-          <div {...getRootProps()}>
-            <input {...getInputProps()} />
-            <Segment placeholder>
-              <Header icon>
-                <Icon name='file outline' />
-                {
-                  isDragActive ? 'Drop the files here...' : 'Drag and drop a file; or click here to select a file.'
-                }
-              </Header>
-            </Segment>
-          </div>
+          <>
+            You can import notes from a CSV file. The file needs to include four columns:
+            <div className="fields-list">
+              <List>
+                <List.Item>
+                  <strong>work</strong>:
+                  The name of the work (e.g. "New Testament" or "new-testament")
+                </List.Item>
+                <List.Item>
+                  <strong>title</strong>:
+                  The title of the note
+                </List.Item>
+                <List.Item>
+                  <strong>text</strong>:
+                  The text of the note; can include Markdown
+                </List.Item>
+                <List.Item>
+                  <strong>reference</strong>:
+                  The chapter and or verse the note is for (e.g. "John 1:1")
+                </List.Item>
+              </List>
+            </div>
+            <div {...getRootProps()}>
+              <input {...getInputProps()} />
+              <Segment placeholder>
+                <Header icon>
+                  <Icon name='file outline' />
+                  {
+                    isDragActive ? 'Drop the files here...' : 'Drag and drop a file; or click here to select a file.'
+                  }
+                </Header>
+              </Segment>
+            </div>
+          </>
         )}
         {importingState === STATE_IN_PROGRESS && (
           <>

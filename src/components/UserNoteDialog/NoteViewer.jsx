@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'; import {
   Button, Header, Modal,
 } from 'semantic-ui-react';
 import MDEditor from '@uiw/react-md-editor';
+import rehypeSanitize from "rehype-sanitize";
 import NewTabLinkRewriter from './NewTabLinkRewriter';
 
 const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
@@ -18,6 +19,9 @@ const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
             source={note && note.text}
             style={{ whiteSpace: 'pre-wrap' }}
             rehypeRewrite={NewTabLinkRewriter}
+            previewOptions={{
+              rehypePlugins: [[rehypeSanitize]],
+            }}
           />
         </div>
       </Modal.Content>

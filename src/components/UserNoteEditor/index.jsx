@@ -5,6 +5,7 @@ import {
 } from 'semantic-ui-react';
 import Cookies from 'js-cookie';
 import MDEditor from '@uiw/react-md-editor';
+import rehypeSanitize from "rehype-sanitize";
 import ErrorMessage from '../ErrorMessage';
 import NewTabLinkRewriter from './NewTabLinkRewriter';
 import { ENDPOINT_NOTE_EDIT } from "../Endpoints";
@@ -126,7 +127,8 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
                 value={noteText || ""}
                 onChange={changeText}
                 previewOptions={{
-                  rehypeRewrite: NewTabLinkRewriter
+                  rehypeRewrite: NewTabLinkRewriter,
+                  rehypePlugins: [[rehypeSanitize]],
                 }}
               />
             </div>
