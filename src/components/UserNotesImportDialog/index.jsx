@@ -228,20 +228,20 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
             <div className="fields-list">
               <List>
                 <List.Item>
-                  <strong>work</strong>:
-                  The name of the work (e.g. "New Testament" or "new-testament")
+                  <strong>work:</strong>
+                  {"The name of the work (e.g. \"New Testament\" or \"new-testament\")"}
                 </List.Item>
                 <List.Item>
-                  <strong>title</strong>:
+                  <strong>title:</strong>
                   The title of the note
                 </List.Item>
                 <List.Item>
-                  <strong>text</strong>:
+                  <strong>text:</strong>
                   The text of the note; can include Markdown
                 </List.Item>
                 <List.Item>
-                  <strong>reference</strong>:
-                  The chapter and or verse the note is for (e.g. "John 1:1")
+                  <strong>reference:</strong>
+                  {"The chapter and or verse the note is for (e.g. \"John 1:1\")"}
                 </List.Item>
               </List>
             </div>
