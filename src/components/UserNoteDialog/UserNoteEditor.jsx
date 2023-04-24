@@ -140,6 +140,7 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
               <MDEditor
                 value={noteText || ""}
                 onChange={changeText}
+                highlightEnable={false}
                 previewOptions={{
                   rehypeRewrite: NewTabLinkRewriter,
                   rehypePlugins: [[rehypeSanitize]],
