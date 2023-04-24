@@ -1,20 +1,18 @@
 import Cookies from 'js-cookie';
-import { ENDPOINT_NOTE_EDIT } from './urls';
+import { ENDPOINT_NOTE_EDIT, ENDPOINT_NOTE_DELETE, ENDPOINT_NOTES } from './urls';
 
-export function editNote({ onSuccess, onError, title, text, work, reference, noteId = null, beForgiving = false }) {
+function doGET({ onSuccess, onError, url }) {
+  fetch(url)
+  .then((res) => res.json())
+  .then((newData) => {
+    onSuccess(newData);
+  })
+  .catch((e) => {
+    onError(e.toString());
+  });
+}
 
-  const formData = new FormData();
-  formData.append("title", title);
-  formData.append("text", text);
-
-  if (work) {
-    formData.append("work", work);
-  }
-
-  if (reference) {
-    formData.append("division", reference);
-  }
-
+function doPOST({ onSuccess, onError, url, formData = null }) {
   const requestOptions = {
     method: 'POST',
     headers: {
@@ -25,7 +23,7 @@ export function editNote({ onSuccess, onError, title, text, work, reference, not
 
   let isError = false;
 
-  fetch(ENDPOINT_NOTE_EDIT(noteId, beForgiving), requestOptions)
+  fetch(url, requestOptions)
     .then((res) => {
       if(res.status >= 400) {
         isError = true;
@@ -47,7 +45,31 @@ export function editNote({ onSuccess, onError, title, text, work, reference, not
     });
 }
 
+export function editNote({ onSuccess, onError, title, text, work, reference, noteId = null, beForgiving = false }) {
+
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("text", text);
+
+  if (work) {
+    formData.append("work", work);
+  }
+
+  if (reference) {
+    formData.append("division", reference);
+  }
+
+  doPOST({ onSuccess, onError, formData, url: ENDPOINT_NOTE_EDIT(noteId, beForgiving) });
+}
 
 export function deleteNote({ onSuccess, onError, noteId }) {
-
+  doPOST({ onSuccess, onError, url: ENDPOINT_NOTE_DELETE(noteId) });
 };
+
+export function getNotes({ onSuccess, onError, search = null, work = null, division = null }) {
+  doGET({
+    url: ENDPOINT_NOTES(work, division, search),
+    onSuccess,
+    onError
+  });
+}

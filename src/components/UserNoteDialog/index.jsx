@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Cookies from 'js-cookie';
 import { Message } from 'semantic-ui-react'
 import ErrorMessage from '../ErrorMessage';
 import UserNoteEditor from './UserNoteEditor';
 import NoteViewer from './NoteViewer';
 import NotesList from './NotesList';
-import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE } from "../Endpoints/urls";
+import { deleteNote, getNotes } from "../Endpoints";
 
 export const STATE_LIST = 0;
 export const STATE_VIEW = 1;
@@ -21,18 +20,20 @@ const UserNoteDialog = ({ onClose, work, division }) => {
   const [notes, setNotes] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const getNotes = () => {
+  const fetchNotes = () => {
     setIsLoading(true);
-    fetch(ENDPOINT_NOTES(work, division.join("/")))
-      .then((res) => res.json())
-      .then((newData) => {
-        setNotes(newData)
+    getNotes({
+      onSuccess: (newData) => {
+        setNotes(newData);
         setIsLoading(false);
-      })
-      .catch((e) => {
-        setError(e.toString());
+      },
+      onError: (e) => {
+        setError(e);
         setIsLoading(false);
-      });
+      },
+      work,
+      division: division.join("/")
+    });
   };
 
   /**
@@ -45,25 +46,19 @@ const UserNoteDialog = ({ onClose, work, division }) => {
       return;
     }
 
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': Cookies.get('csrftoken')
-      },
-    };
-
-    fetch(ENDPOINT_NOTE_DELETE(noteId), requestOptions)
-      .then((res) => res.json())
-      .then(() => {
+    deleteNote({
+      onSuccess: () => {
         // Reload the notes
-        getNotes();
+        fetchNotes();
         setLoadedNote(null);
         setIsEditing(false);
         setMessage("Note successfully deleted");
-      })
-      .catch((e) => {
-        setError(e.toString());
-      });
+      },
+      onError: (data) => {
+        setError(data);
+      },
+      noteId,
+    })
   };
 
   const cancelEditOrViewing = () => {
@@ -88,12 +83,12 @@ const UserNoteDialog = ({ onClose, work, division }) => {
       setMessage("Note successfully edited");
     }
     
-    getNotes();
+    fetchNotes();
   }
 
   // Load the note when opening the form
   useEffect(() => {
-    getNotes()
+    fetchNotes()
   }, []);
 
   // Determine what state the UI ought to be in

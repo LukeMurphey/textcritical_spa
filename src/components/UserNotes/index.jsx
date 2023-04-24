@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Segment, Container, Message, Form, Input, Button } from "semantic-ui-react";
-import Cookies from 'js-cookie';
 import PropTypes from "prop-types";
-import { withRouter } from "react-router-dom";
+import { withRouter } from 'react-router-dom';
 import { READ_WORK } from "../URLs";
 import FullscreenDialog from "../FullscreenDialog";
 import UserNotesTable from "../UserNotesTable";
 import UserNoteEditor from "../UserNoteDialog/UserNoteEditor";
 import UserNoteViewer from "../UserNoteDialog/NoteViewer";
-import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE, ENDPOINT_EXPORT_NOTES } from "../Endpoints/urls";
+import { deleteNote, getNotes } from "../Endpoints";
+import { ENDPOINT_EXPORT_NOTES } from "../Endpoints/urls";
 import ErrorMessage from "../ErrorMessage";
 import UserNotesImportDialog from "../UserNotesImportDialog";
 import './index.css';
@@ -37,19 +37,20 @@ const UserNotes = ({ inverted, history }) => {
     history.push(READ_WORK());
   };
 
-  const getNotes = () => {
+  const fetchNotes = () => {
     setIsLoading(true);
-    fetch(ENDPOINT_NOTES(null, null, search))
-      .then((res) => res.json())
-      .then((newData) => {
+    getNotes({
+      onSuccess: (newData) => {
         setNotes(newData);
         setIsLoading(false);
         setAppliedSearch(search);
-      })
-      .catch((e) => {
-        setError(e.toString());
+      },
+      onError: (e) => {
+        setError(e);
         setIsLoading(false);
-      });
+      },
+      search
+    });
   };
   
   /**
@@ -62,25 +63,19 @@ const UserNotes = ({ inverted, history }) => {
       return;
     }
 
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': Cookies.get('csrftoken')
-      },
-    };
-
-    fetch(ENDPOINT_NOTE_DELETE(note.id), requestOptions)
-      .then((res) => res.json())
-      .then(() => {
+    deleteNote({
+      onSuccess: () => {
         // Reload the notes
         getNotes();
         setSelectedNote(null);
         setIsEditing(false);
         setMessage("Note successfully deleted");
-      })
-      .catch((e) => {
-        setError(e.toString());
-      });
+      },
+      onError: (data) => {
+        setError(data);
+      },
+      noteId: note.id,
+    });
   };
 
   const onEdit = () => {
@@ -94,7 +89,7 @@ const UserNotes = ({ inverted, history }) => {
   const onSave = () => {
     setSelectedNote(null);
     setIsEditing(false);
-    getNotes();
+    fetchNotes();
   };
 
   const onClose = () => {
@@ -107,7 +102,7 @@ const UserNotes = ({ inverted, history }) => {
   }
 
   const onSearch = () => {
-    getNotes();
+    fetchNotes();
   }
 
   const onDialogClose = () => {
@@ -119,12 +114,12 @@ const UserNotes = ({ inverted, history }) => {
   }
 
   const onNotesImported = () => {
-    getNotes();
+    fetchNotes();
   }
 
   // Load the note when opening the form
   useEffect(() => {
-    getNotes();
+    fetchNotes();
   }, []);
 
   let state = STATE_LIST
