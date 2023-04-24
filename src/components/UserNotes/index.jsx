@@ -8,7 +8,7 @@ import FullscreenDialog from "../FullscreenDialog";
 import UserNotesTable from "../UserNotesTable";
 import UserNoteEditor from "../UserNoteDialog/UserNoteEditor";
 import UserNoteViewer from "../UserNoteDialog/NoteViewer";
-import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE, ENDPOINT_EXPORT_NOTES } from "../Endpoints";
+import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE, ENDPOINT_EXPORT_NOTES } from "../Endpoints/urls";
 import ErrorMessage from "../ErrorMessage";
 import UserNotesImportDialog from "../UserNotesImportDialog";
 import './index.css';

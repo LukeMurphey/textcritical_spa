@@ -3,7 +3,7 @@ import {
   Button, Header, Modal, Radio, Form,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import { ENDPOINT_WORK_DOWNLOAD } from '../Endpoints';
+import { ENDPOINT_WORK_DOWNLOAD } from '../Endpoints/urls';
 
 const MOBI_FORMAT = 'mobi';
 const EPUB_FORMAT = 'epub';

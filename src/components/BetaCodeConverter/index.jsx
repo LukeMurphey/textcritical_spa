@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Container, Form, TextArea, Segment, Dimmer, Loader, Header } from 'semantic-ui-react';
 import { withRouter } from "react-router-dom";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { ENDPOINT_CONVERT_BETA_CODE_QUERY } from '../Endpoints';
+import { ENDPOINT_CONVERT_BETA_CODE_QUERY } from '../Endpoints/urls';
 import { READ_WORK } from '../URLs';
 import FullscreenDialog from '../FullscreenDialog';
 import WordInformation from "../WordInformation/WordInformationPopup";

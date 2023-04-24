@@ -3,7 +3,7 @@ import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-rea
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS } from "../Endpoints";
+import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS } from "../Endpoints/urls";
 import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";

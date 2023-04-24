@@ -1,4 +1,4 @@
-import { ENDPOINT_USER_PREFERENCES, ENDPOINT_USER_PREFERENCE_EDIT, ENDPOINT_USER_PREFERENCE_DELETE } from "../../Endpoints"
+import { ENDPOINT_USER_PREFERENCE_EDIT, ENDPOINT_USER_PREFERENCE_DELETE } from "../../Endpoints/urls"
 
 // Setup a remote storage
 export default class RemoteStorage {
@@ -16,10 +16,8 @@ export default class RemoteStorage {
             return null;
         }
         
-        else{
-            // Get this from the server
-            return this.store[key] || null;
-        }
+        // Get this from the server
+        return this.store[key] || null;
     }
     
     setItem(key, value) {

@@ -3,15 +3,14 @@ import PropTypes from 'prop-types';
 import {
   Button, Header, Modal, Input, Form, TextArea, Message
 } from 'semantic-ui-react';
-import Cookies from 'js-cookie';
 import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from "rehype-sanitize";
 import ErrorMessage from '../ErrorMessage';
 import NewTabLinkRewriter from './NewTabLinkRewriter';
-import { ENDPOINT_NOTE_EDIT } from "../Endpoints";
+import { editNote } from "../Endpoints";
 import './index.scss';
 
-const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave, useMarkdownEditor }) => {
+const UserNoteEditor = ({ note, work, division, onClose, onCancel, onSave, useMarkdownEditor }) => {
   const [error, setError] = useState(null);
   const [noteTitle, setNoteTitle] = useState(note && note.title);
   const [noteText, setNoteText] = useState(note && note.text);
@@ -61,44 +60,25 @@ const UserNoteEditor = ({ note, work, division, verse, onClose, onCancel, onSave
     }
 
     // Stop if the form is being used to make a new note but the information is incomplete
-    if((!work || !division || !verse) && (!note && !note.id)) {
+    if((!work || !division) && (!note && !note.id)) {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("title", noteTitle);
-    formData.append("text", noteText);
-
-    if (work) {
-      formData.append("work", work);
-    }
-    
-    if (division) {
-      formData.append("division", division.join("/"));
-    }
-    
-    if (verse) {
-      formData.append("verse", verse);
-    }
-    
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': Cookies.get('csrftoken')
-      },
-      body: formData
-    };
-
-    fetch(ENDPOINT_NOTE_EDIT(note?.id), requestOptions)
-      .then((res) => res.json())
-      .then((editedNote) => {
+    editNote({
+      onSuccess: (editedNote) => {
         // BTW: "!note" is used to tell the function that the note didn't exist before and should
         // therefore be considered new
         onSave(editedNote, !note);
-      })
-      .catch((e) => {
-        setError(e.toString());
-      });
+      },
+      onError: (data) => {
+        setError(data);
+      },
+      noteId: note?.id,
+      title: noteTitle,
+      text:  noteText,
+      work,
+      reference: division.join("/"),
+    });
   };
 
   const isEditing = note && note.id;
@@ -170,7 +150,6 @@ UserNoteEditor.propTypes = {
   note: PropTypes.object.isRequired,
   work: PropTypes.string,
   division: PropTypes.string,
-  verse: PropTypes.string,
   onClose: PropTypes.func.isRequired,
   onCancel: PropTypes.func,
   onSave: PropTypes.func.isRequired,
@@ -181,7 +160,6 @@ UserNoteEditor.defaultProps = {
   useMarkdownEditor: true,
   work: null,
   division: null,
-  verse: null,
   onCancel: null,
 }
 

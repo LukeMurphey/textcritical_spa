@@ -3,12 +3,11 @@ import PropTypes from "prop-types";
 import { Modal, Header, Button, Segment, Icon, Progress, Message, Table, List } from "semantic-ui-react";
 import { readString } from "react-papaparse";
 import { useDropzone } from 'react-dropzone';
-import Cookies from 'js-cookie';
 // regeneratorRuntime is needed to papa-parse to work (even though the variable isn't used
 // explicitly here)
 // eslint-disable-next-line no-unused-vars
 import regeneratorRuntime from 'regenerator-runtime';
-import { ENDPOINT_NOTE_EDIT } from "../Endpoints";
+import { editNote } from "../Endpoints";
 import './index.css';
 
 const STATE_NOT_STARTED = 0;
@@ -155,29 +154,8 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
 
     // Continue if it is valid
     else {
-      const formData = new FormData();
-      formData.append("title", noteData.title);
-      formData.append("text", noteData.text);
-
-      if (noteData.work) {
-        formData.append("work", noteData.work);
-      }
-
-      if (noteData.reference) {
-        formData.append("division", noteData.reference);
-      }
-
-      const requestOptions = {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': Cookies.get('csrftoken')
-        },
-        body: formData
-      };
-
-      fetch(ENDPOINT_NOTE_EDIT(null, true), requestOptions)
-        .then((res) => res.json())
-        .then((editedNote) => {
+      editNote({
+        onSuccess: (editedNote) => {
           if ('message' in editedNote) {
             notesImportedUnsuccessfully.current.push(noteData);
             addImportError(editedNote.message);
@@ -185,11 +163,16 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
           else {
             notesImportedSuccessfully.current.push(editedNote);
           }
-        })
-        .catch((e) => {
+        },
+        onError: (e) => {
           notesImportedUnsuccessfully.current.push(noteData);
           addImportError(e);
-        });
+        },
+        title: noteData.title,
+        text: noteData.text,
+        work: noteData.work,
+        reference: noteData.reference,
+      });
     }
   };
 

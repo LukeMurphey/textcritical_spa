@@ -6,7 +6,7 @@ import PopupDialog from '../PopupDialog';
 import UserNoteDialog from "../UserNoteDialog";
 import { CONTEXT_WORD, CONTEXT_VERSE } from '../Reader/ChapterEventHandlers';
 import { SEARCH, READ_WORK } from '../URLs'
-import { ENDPOINT_WORK_TEXT } from '../Endpoints';
+import { ENDPOINT_WORK_TEXT } from '../Endpoints/urls';
 import { GlobalAppContext } from "../GlobalAppContext";
 
 const ContextPopup = ({
@@ -157,7 +157,6 @@ const ContextPopup = ({
         onClose={onClose}
         work={data.work.title_slug}
         division={getDivisionReference(contextData.verse)}
-        verse={contextData.verse}
       />
     )
   }

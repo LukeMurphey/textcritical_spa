@@ -6,13 +6,13 @@ import ErrorMessage from '../ErrorMessage';
 import UserNoteEditor from './UserNoteEditor';
 import NoteViewer from './NoteViewer';
 import NotesList from './NotesList';
-import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE } from "../Endpoints";
+import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE } from "../Endpoints/urls";
 
 export const STATE_LIST = 0;
 export const STATE_VIEW = 1;
 export const STATE_EDIT = 2;
 
-const UserNoteDialog = ({ onClose, work, division, verse }) => {
+const UserNoteDialog = ({ onClose, work, division }) => {
 
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
@@ -136,7 +136,6 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
             notes={notes}
             work={work}
             division={division}
-            verse={verse}
             onClose={onClose}
             onSelectNote={(note) => { setLoadedNote(note); setMessage(null); }}
             onCreateNewNote={onCreateNewNote}
@@ -146,7 +145,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
         </>
       )}
       {state === STATE_EDIT && (
-        <UserNoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditOrViewing} onSave={onSave} />
+        <UserNoteEditor note={loadedNote} work={work} division={division} onClose={onClose} onCancel={cancelEditOrViewing} onSave={onSave} />
       )}
       {state === STATE_VIEW && (
         <NoteViewer
@@ -165,7 +164,6 @@ UserNoteDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   work: PropTypes.string.isRequired,
   division: PropTypes.string.isRequired,
-  verse: PropTypes.string.isRequired,
 };
 
 export default UserNoteDialog;

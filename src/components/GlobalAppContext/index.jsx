@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import features from './features.json';
-import { ENDPOINT_SOCIAL_LOGIN, ENDPOINT_USER_PREFERENCES } from "../Endpoints";
+import { ENDPOINT_SOCIAL_LOGIN, ENDPOINT_USER_PREFERENCES } from "../Endpoints/urls";
 import RemoteStorage from "../Settings/RemoteStorage";
 
 export const GlobalAppContext = React.createContext({});

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Placeholder, Accordion, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { ENDPOINT_WORD_PARSE } from '../Endpoints';
+import { ENDPOINT_WORD_PARSE } from '../Endpoints/urls';
 import { SEARCH } from '../URLs';
 import { PARAMS_SEARCH } from '../URLs/Parameters';
 import ErrorMessage from '../ErrorMessage';

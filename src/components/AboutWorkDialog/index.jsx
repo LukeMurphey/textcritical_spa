@@ -3,7 +3,7 @@ import {
   Button, Header, Modal, Table, Placeholder, Image,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import { ENDPOINT_WORK_INFO, ENDPOINT_WORK_IMAGE } from '../Endpoints';
+import { ENDPOINT_WORK_INFO, ENDPOINT_WORK_IMAGE } from '../Endpoints/urls';
 import ErrorMessage from '../ErrorMessage';
 
 
