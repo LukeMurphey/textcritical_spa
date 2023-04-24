@@ -157,7 +157,6 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
       const formData = new FormData();
       formData.append("title", noteData.title);
       formData.append("text", noteData.text);
-      formData.append("be_forgiving", "1");
 
       if (noteData.work) {
         formData.append("work", noteData.work);
@@ -175,7 +174,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
         body: formData
       };
 
-      fetch(ENDPOINT_NOTE_EDIT(), requestOptions)
+      fetch(ENDPOINT_NOTE_EDIT(null, true), requestOptions)
         .then((res) => res.json())
         .then((editedNote) => {
           if ('message' in editedNote) {

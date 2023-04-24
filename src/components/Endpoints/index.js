@@ -161,11 +161,18 @@ export function ENDPOINT_NOTES(work = null, division = null, search = null) {
   return `${getHostConfig()}/api/notes/?${query}`;
 }
 
-export function ENDPOINT_NOTE_EDIT(noteId = null) {
-  if(!noteId) {
-    return `${getHostConfig()}/api/notes/edit/`;
+export function ENDPOINT_NOTE_EDIT(noteId = null, beForgiving=false) {
+
+  let query = '';
+
+  if (beForgiving) {
+    query = "be_forgiving=1";
   }
-  return `${getHostConfig()}/api/notes/edit/${noteId}/`;
+
+  if(!noteId) {
+    return `${getHostConfig()}/api/notes/edit/?${query}`;
+  }
+  return `${getHostConfig()}/api/notes/edit/${noteId}/?${query}`;
 }
 
 export function ENDPOINT_NOTE_DELETE(noteId) {
