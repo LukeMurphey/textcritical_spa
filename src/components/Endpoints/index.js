@@ -66,9 +66,9 @@ export function deleteNote({ onSuccess, onError, noteId }) {
   doPOST({ onSuccess, onError, url: ENDPOINT_NOTE_DELETE(noteId) });
 };
 
-export function getNotes({ onSuccess, onError, search = null, work = null, division = null }) {
+export function getNotes({ onSuccess, onError, search = null, work = null, division = null, includeRelated = false }) {
   doGET({
-    url: ENDPOINT_NOTES(work, division, search),
+    url: ENDPOINT_NOTES(work, division, search, includeRelated),
     onSuccess,
     onError
   });

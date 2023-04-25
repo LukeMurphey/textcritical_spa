@@ -32,7 +32,8 @@ const UserNoteDialog = ({ onClose, work, division }) => {
         setIsLoading(false);
       },
       work,
-      division: division.join("/")
+      division: division.join("/"),
+      includeRelated: true
     });
   };
 
