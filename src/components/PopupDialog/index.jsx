@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Segment, Icon, Portal } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import './PopupDialog.scss';
@@ -16,8 +16,6 @@ export const getPositionRecommendation = (event) => {
 };
 
 const PopupDialog = ({ children, onClose, x, y, positionBelow, positionRight, footer, width, maxHeight, inverted, frameless}) => {
-
-  const ref = useRef(null);
 
   /**
    * This is done to get rid of the outline around the close button and get it to show up at the
@@ -83,7 +81,7 @@ const PopupDialog = ({ children, onClose, x, y, positionBelow, positionRight, fo
 
   // Get the main content for the popup
   const getContent = () => (
-    <Segment ref={ref} className="popupDialog" inverted={inverted} style={getSegmentStyle()}>
+    <Segment className="popupDialog" inverted={inverted} style={getSegmentStyle()}>
       <div style={{ padding: frameless? 0 : 15 }}>
         {!frameless && <Icon style={closeButtonStyle} onClick={onClose}>&#10005;</Icon>}
         {children}
