@@ -885,14 +885,8 @@ const Reader = ({
                             );
                           }}
                           onNoteClick={onNoteClick}
-                          onContextClick={(x, y, positionRight, positionBelow) => {
-                            onContextClick(
-                              data,
-                              x,
-                              y,
-                              positionRight,
-                              positionBelow,
-                            );
+                          onContextClick={(x, y, positionRight, positionBelow, content, contextType, contextData, event) => {
+                            onContextClick(x, y, positionRight, positionBelow, data.work, content, contextType, contextData, event);
                           }}
                           onClickAway={() => setModal(null)}
                           highlightedVerse={highlightedVerse}
@@ -931,14 +925,8 @@ const Reader = ({
                               );
                             }}
                             onNoteClick={onNoteClick}
-                            onContextClick={(x, y, positionRight, positionBelow) => {
-                              onContextClick(
-                                data,
-                                x,
-                                y,
-                                positionRight,
-                                positionBelow,
-                              );
+                            onContextClick={(x, y, positionRight, positionBelow, content, contextType, contextData, event) => {
+                              onContextClick(x, y, positionRight, positionBelow, secondWorkData.work, content, contextType, contextData, event);
                             }}
                             onClickAway={() => setModal(null)}
                             highlightedVerse={highlightedVerse}
