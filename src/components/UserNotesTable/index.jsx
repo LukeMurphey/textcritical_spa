@@ -12,9 +12,8 @@ export const STATE_LIST = 2;
 export const STATE_NO_NOTES = 3;
 
 const numberOfPlaceholderRows = 5;
-const notesPerPage = 10;
 
-const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectNote, showWorkLinks }) => {
+const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectNote, showWorkLinks, pageSize }) => {
 
   const [activePage, setActivePage] = useState(1);
   let state = STATE_NO_NOTES;
@@ -27,9 +26,9 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
 
   else if (notes && notes.length > 0) {
     state = STATE_LIST;
-    totalPages = Math.ceil(notes.length / notesPerPage);
-    const start = (activePage - 1) * notesPerPage;
-    pagedNotes = notes.slice(start, start + notesPerPage);
+    totalPages = Math.ceil(notes.length / pageSize);
+    const start = (activePage - 1) * pageSize;
+    pagedNotes = notes.slice(start, start + pageSize);
   }
 
   const onPageChange = (event, data) => {
@@ -47,12 +46,12 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
     return '';
   }
 
-  const getUrlForReference = (note_reference) => {
-    if (note_reference.verse_indicator) {
-      return READ_WORK(note_reference.work_title_slug, null, `${note_reference.division_full_descriptor}\\${note_reference.verse_indicator}`)
+  const getUrlForReference = (noteReference) => {
+    if (noteReference.verse_indicator) {
+      return READ_WORK(noteReference.work_title_slug, null, `${noteReference.division_full_descriptor}\\${noteReference.verse_indicator}`)
     }
 
-    return READ_WORK(note_reference.work_title_slug, null, note_reference.division_full_descriptor);
+    return READ_WORK(noteReference.work_title_slug, null, noteReference.division_full_descriptor);
   }
 
   return (
@@ -164,6 +163,7 @@ UserNotesTable.propTypes = {
   onCreateNewNote: PropTypes.func,
   onSelectNote: PropTypes.func.isRequired,
   showWorkLinks: PropTypes.bool,
+  pageSize: PropTypes.number,
 };
 
 UserNotesTable.defaultProps = {
@@ -172,6 +172,7 @@ UserNotesTable.defaultProps = {
   notes: null,
   showWorkLinks: false,
   onCreateNewNote: null,
+  pageSize: 10,
 };
 
 export default UserNotesTable;
