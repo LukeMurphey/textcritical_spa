@@ -159,7 +159,7 @@ const UserNoteDialog = ({ onClose, work, division }) => {
 UserNoteDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   work: PropTypes.string.isRequired,
-  division: PropTypes.string.isRequired,
+  division: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default UserNoteDialog;

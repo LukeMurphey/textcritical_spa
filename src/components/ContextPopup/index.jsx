@@ -83,6 +83,7 @@ const ContextPopup = ({
       <Menu.Item
         name='chapter_clipboard'
         onClick={copyChapterToClipboard}
+        key='chapter_clipboard'
       >
         Copy chapter
       </Menu.Item>
@@ -94,6 +95,7 @@ const ContextPopup = ({
           <Menu.Item
             name='verse_clipboard'
             onClick={copyVerseToClipboard}
+            key='verse_clipboard'
           >
             Copy verse
           </Menu.Item>
@@ -104,6 +106,7 @@ const ContextPopup = ({
         <Menu.Item
           name='link_clipboard'
           onClick={copyLinkToClipboard}
+          key='link_clipboard'
         >
           Copy link
         </Menu.Item>
@@ -114,6 +117,7 @@ const ContextPopup = ({
           <Menu.Item
             name='create_user_note'
             onClick={createUserNote}
+            key='create_user_note'
           >
             {contextData.verse ? 'View/create notes on this verse' : 'View/create notes for this chapter'}
           </Menu.Item>

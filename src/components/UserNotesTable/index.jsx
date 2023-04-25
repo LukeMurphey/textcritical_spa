@@ -82,8 +82,9 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
           <Table.Body>
             {state === STATE_LOADING && (
               <>
-                {[...Array(numberOfPlaceholderRows)].map((x) => (
-                  <Table.Row key={x}>
+                {[...Array(numberOfPlaceholderRows)].map((x, index) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <Table.Row key={index}>
                     <Table.Cell>
                       <Placeholder inverted={inverted}>
                         <Placeholder.Paragraph>

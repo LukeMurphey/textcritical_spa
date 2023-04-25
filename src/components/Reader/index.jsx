@@ -768,26 +768,28 @@ const Reader = ({
                 {getDialogs(modal, data, loading, loadedWork, () =>
                   setModal(null)
                 )}
-                <Popups
-                  modal={modal} 
-                  data={data}
-                  loading={loading}
-                  selectedWord={selectedWord}
-                  popupX={popupX}
-                  popupY={popupY}
-                  popupPositionRight={popupPositionRight}
-                  popupPositionBelow={popupPositionBelow}
-                  selectedNote={selectedNote}
-                  popupWork={popupWork}
-                  closeModal={() => setModal(null)}
-                  searchState={{
-                    work: loadedWork,
-                    secondWork,
-                    divisions,
-                  }}
-                  inverted={inverted}
-                  popupContextData={popupContextData.current}
-                />
+                { modal && (
+                  <Popups
+                    modal={modal} 
+                    data={data}
+                    loading={loading}
+                    selectedWord={selectedWord}
+                    popupX={popupX}
+                    popupY={popupY}
+                    popupPositionRight={popupPositionRight}
+                    popupPositionBelow={popupPositionBelow}
+                    selectedNote={selectedNote}
+                    popupWork={popupWork}
+                    closeModal={() => setModal(null)}
+                    searchState={{
+                      work: loadedWork,
+                      secondWork,
+                      divisions,
+                    }}
+                    inverted={inverted}
+                    popupContextData={popupContextData.current}
+                  />
+                ) }
                 <Grid inverted={inverted}>
                   <Grid.Row>
                     <Grid.Column width={8}>
