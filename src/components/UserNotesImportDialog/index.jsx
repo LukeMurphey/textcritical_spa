@@ -26,6 +26,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
   const notesImportedUnsuccessfully = useRef([]);
   const notesImportedSuccessfully = useRef([]);
   const importErrors = useRef({});
+  const stopImport = useRef(false);
 
   let notesProcessed = 0;
 
@@ -35,6 +36,11 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
 
   if (notesImportedSuccessfully.current) {
     notesProcessed += notesImportedSuccessfully.current.length;
+  }
+
+  const stopAndClose = () => {
+    stopImport.current = true;
+    onClose();
   }
 
   /**
@@ -178,21 +184,23 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
   };
 
   const importNextNote = (offset) => {
-
+    if (stopImport.current) {
+      // Stop the import but not scheduling the next import
+    }
     // Stop if we are done
-    if (offset >= notesToBeImported.length) {
+    else if (offset >= notesToBeImported.length) {
       setImportingState(STATE_DONE);
       onNotesImported();
     }
 
     // Otherwise, import the next note
     else {
-      // Get the note to import
+      // Import the note
       importNote(notesToBeImported[offset]);
       setLastNoteImported(notesToBeImported[offset].title);
-      
-      const nextOne = () => importNextNote(offset + 1);
-      setTimeout(nextOne, 100);
+
+      // Queue up the next one
+      setTimeout(() => importNextNote(offset + 1), 100);
     }
   }
 
@@ -200,6 +208,8 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
    * Import the notes we received.
    */
   const importNotes = (useTimeout = true) => {
+    stopImport.current = false;
+
     if (useTimeout) {
       importNextNote(0);
     }
@@ -221,7 +231,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <Modal defaultOpen onClose={onClose} closeIcon closeOnDimmerClick={false} closeOnDocumentClick={false}>
+    <Modal defaultOpen onClose={stopAndClose} closeIcon closeOnDimmerClick={false} closeOnDocumentClick={false}>
       <Header icon="info" content="Import Notes" />
       <Modal.Content>
         {error && (
@@ -280,13 +290,20 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
               </Progress>
             )}
             {importingState === STATE_IN_PROGRESS && (
-              <Progress percent={Math.round(100 * (notesProcessed / notesToBeImported.length))} progress color='blue'>
-                There are
-                { ' ' }
-                {notesToBeImported.length - notesProcessed}
-                { ' ' }
-                notes left to import.
-              </Progress>
+              <>
+                <Progress percent={Math.round(100 * (notesProcessed / notesToBeImported.length))} progress color='blue'>
+                  There are
+                  { ' ' }
+                  {notesToBeImported.length - notesProcessed}
+                  { ' ' }
+                  notes left to import.
+                </Progress>
+                <div>
+                  Processed &quot;
+                  { lastNoteImported }
+                  &quot;.
+                </div>
+              </>
             )}
             <Table celled>
               <Table.Header>
@@ -313,7 +330,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
         )}
       </Modal.Content>
       <Modal.Actions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={stopAndClose}>Close</Button>
       </Modal.Actions>
     </Modal>
   );
