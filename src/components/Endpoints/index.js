@@ -41,7 +41,7 @@ function doPOST({ onSuccess, onError, url, formData = null }) {
       }
     })
     .catch((e) => {
-      onError(onError(e));
+      onError(e.message);
     });
 }
 

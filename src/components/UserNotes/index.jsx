@@ -65,8 +65,9 @@ const UserNotes = ({ inverted, history }) => {
 
     deleteNote({
       onSuccess: () => {
+
         // Reload the notes
-        getNotes();
+        fetchNotes();
         setSelectedNote(null);
         setIsEditing(false);
         setMessage("Note successfully deleted");
