@@ -771,7 +771,7 @@ const Reader = ({
                 { modal && (
                   <Popups
                     modal={modal} 
-                    data={data}
+                    data={popupWork?.title_slug === loadedWork ? data : secondWorkData}
                     loading={loading}
                     selectedWord={selectedWord}
                     popupX={popupX}
