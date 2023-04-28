@@ -129,7 +129,9 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
                   </Table.Cell>
                   {showWorkLinks && (
                     <Table.Cell>
-                      <a href={getUrlForReference(note.references[0])}>{getNoteReferenceDescription(note.references[0])}</a>
+                      {note.references && note.references.length > 0 && (
+                        <a href={getUrlForReference(note.references[0])}>{getNoteReferenceDescription(note.references[0])}</a>
+                      )}
                     </Table.Cell>
                   )}
                 </Table.Row>
