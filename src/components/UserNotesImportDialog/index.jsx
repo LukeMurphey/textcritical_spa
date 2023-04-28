@@ -21,6 +21,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
   const [notesToBeImported, setNotesToBeImported] = useState(null);
   const [importingState, setImportingState] = useState(STATE_NOT_STARTED);
   const [error, setError] = useState(null);
+  const [whatever, setWhatever] = useState(0);
 
   const notesImportedUnsuccessfully = useRef([]);
   const notesImportedSuccessfully = useRef([]);
@@ -176,13 +177,37 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
     }
   };
 
+  const importNextNote = (offset) => {
+
+    // Stop if we are done
+    if (offset >= notesToBeImported.length) {
+      setImportingState(STATE_DONE);
+      onNotesImported();
+    }
+
+    // Otherwise, import the next note
+    else {
+      // Get the note to import
+      importNote(notesToBeImported[offset]);
+      setWhatever(new Date().getMilliseconds());
+
+      const nextOne = () => importNextNote(offset + 1);
+      setTimeout(nextOne, 100);
+    }
+  }
+
   /**
    * Import the notes we received.
    */
-  const importNotes = () => {
-    notesToBeImported.map((noteData) => importNote(noteData));
-    setImportingState(STATE_DONE);
-    onNotesImported();
+  const importNotes = (useTimeout = true) => {
+    if (useTimeout) {
+      importNextNote(0);
+    }
+    else {
+      notesToBeImported.map((noteData) => importNote(noteData));
+      setImportingState(STATE_DONE);
+      onNotesImported();
+    }
   };
 
   useEffect(() => {
@@ -241,32 +266,33 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
             </div>
           </>
         )}
-        {importingState === STATE_IN_PROGRESS && (
+        {(importingState === STATE_IN_PROGRESS || importingState === STATE_DONE) && (
           <>
-            {notesToBeImported && (
-              <Progress percent={notesToBeImported / notesProcessed} active>
-                There are
-                {notesToBeImported.length - notesProcessed}
-                notes left to import
+            {importingState === STATE_DONE && (
+              <Progress percent={100} success>
+                {notesImportedSuccessfully.current.length}
+                {' '}
+                notes were successfully imported.
+                {' '}
+                {notesImportedUnsuccessfully.current.length}
+                {' '}
+                notes were not successfully imported.
               </Progress>
             )}
-          </>
-        )}
-        {importingState === STATE_DONE && (
-          <>
-            <Progress percent={100} success>
-              {notesImportedSuccessfully.current.length}
-              {' '}
-              notes were successfully imported.
-              {' '}
-              {notesImportedUnsuccessfully.current.length}
-              {' '}
-              notes were not successfully imported.
-            </Progress>
+            {importingState === STATE_IN_PROGRESS && (
+              <Progress percent={100 * (notesProcessed / notesToBeImported.length)} active>
+                There are
+                { ' ' }
+                {notesToBeImported.length - notesProcessed}
+                { ' ' }
+                notes left to import.
+                { ' ' }
+              </Progress>
+            )}
             <Table celled>
               <Table.Header>
                 <Table.Row>
-                  <Table.HeaderCell>Metric</Table.HeaderCell>
+                  <Table.HeaderCell>Message</Table.HeaderCell>
                   <Table.HeaderCell>Count</Table.HeaderCell>
                 </Table.Row>
               </Table.Header>
