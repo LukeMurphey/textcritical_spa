@@ -130,6 +130,7 @@ const ContextPopup = ({
         <Menu.Item
           name='search_this_work'
           onClick={searchThisWork}
+          key='search_this_work'
         >
           Search for this word in this work
         </Menu.Item>
@@ -139,6 +140,7 @@ const ContextPopup = ({
         <Menu.Item
           name='search_all_works'
           onClick={searchAllWorks}
+          key='search_all_works'
         >
           Search for this word in all works
         </Menu.Item>
