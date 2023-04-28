@@ -21,7 +21,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
   const [notesToBeImported, setNotesToBeImported] = useState(null);
   const [importingState, setImportingState] = useState(STATE_NOT_STARTED);
   const [error, setError] = useState(null);
-  const [whatever, setWhatever] = useState(0);
+  const [lastNoteImported, setLastNoteImported] = useState(0);
 
   const notesImportedUnsuccessfully = useRef([]);
   const notesImportedSuccessfully = useRef([]);
@@ -189,8 +189,8 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
     else {
       // Get the note to import
       importNote(notesToBeImported[offset]);
-      setWhatever(new Date().getMilliseconds());
-
+      setLastNoteImported(notesToBeImported[offset].title);
+      
       const nextOne = () => importNextNote(offset + 1);
       setTimeout(nextOne, 100);
     }
@@ -221,7 +221,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <Modal defaultOpen onClose={onClose} closeIcon>
+    <Modal defaultOpen onClose={onClose} closeIcon closeOnDimmerClick={false} closeOnDocumentClick={false}>
       <Header icon="info" content="Import Notes" />
       <Modal.Content>
         {error && (
@@ -280,13 +280,12 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
               </Progress>
             )}
             {importingState === STATE_IN_PROGRESS && (
-              <Progress percent={100 * (notesProcessed / notesToBeImported.length)} active>
+              <Progress percent={Math.round(100 * (notesProcessed / notesToBeImported.length))} progress color='blue'>
                 There are
                 { ' ' }
                 {notesToBeImported.length - notesProcessed}
                 { ' ' }
                 notes left to import.
-                { ' ' }
               </Progress>
             )}
             <Table celled>
