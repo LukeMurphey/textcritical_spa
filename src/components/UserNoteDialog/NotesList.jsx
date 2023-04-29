@@ -28,7 +28,7 @@ const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topConte
 
 UserNotesList.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  notes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  notes: PropTypes.arrayOf(PropTypes.object),
   onClose: PropTypes.func.isRequired,
   onSelectNote: PropTypes.func.isRequired,
   onCreateNewNote: PropTypes.func.isRequired,
@@ -39,6 +39,7 @@ UserNotesList.propTypes = {
 UserNotesList.defaultProps = {
   topContent: null,
   isLoading: false,
+  notes: null,
 }
 
 export default UserNotesList;

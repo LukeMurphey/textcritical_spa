@@ -3,7 +3,7 @@ import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-rea
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS } from "../Endpoints";
+import { ENDPOINT_READ_WORK, ENDPOINT_WORD_FORMS } from "../Endpoints/urls";
 import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
@@ -25,6 +25,7 @@ import WarningMessages from "./WarningMessages";
 import Popups, { MODAL_WORD, MODAL_FOOTNOTE, MODAL_CONTEXT } from "./Popups";
 import { MODE_LOADING, MODE_ERROR, MODE_DONE, MODE_NOT_READY } from "../Constants";
 import { GlobalAppContext } from "../GlobalAppContext";
+import { getNotesMetaData } from "../Endpoints";
 
 /**
  * Below are some notes about how this works:
@@ -134,6 +135,8 @@ const Reader = ({
   const [secondWorkTitle, setSecondWorkTitle] = useState(null);
 
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState(getFontAdjustment());
+
+  const [notesMetaData, setNotesMetaData] = useState(null);
 
   // Keep a list of verse references that are known to be a reference within the current chapter
   const verseReferences = useRef([]);
@@ -666,6 +669,19 @@ const Reader = ({
     }
   });
 
+  // When the data changes, get the notes meta-data
+  useEffect(() => {
+    if(data) {
+      getNotesMetaData({
+        onSuccess:(newData) => setNotesMetaData(newData),
+        work: loadedWork,
+        division: data.chapter.full_descriptor,
+        includeRelated: true }
+      );
+    }
+
+  }, [data]);
+
   // Figure out a description for the chapter
   let description = "";
   let referenceDescription = referenceValue;
@@ -768,26 +784,28 @@ const Reader = ({
                 {getDialogs(modal, data, loading, loadedWork, () =>
                   setModal(null)
                 )}
-                <Popups
-                  modal={modal} 
-                  data={data}
-                  loading={loading}
-                  selectedWord={selectedWord}
-                  popupX={popupX}
-                  popupY={popupY}
-                  popupPositionRight={popupPositionRight}
-                  popupPositionBelow={popupPositionBelow}
-                  selectedNote={selectedNote}
-                  popupWork={popupWork}
-                  closeModal={() => setModal(null)}
-                  searchState={{
-                    work: loadedWork,
-                    secondWork,
-                    divisions,
-                  }}
-                  inverted={inverted}
-                  popupContextData={popupContextData.current}
-                />
+                { modal && (
+                  <Popups
+                    modal={modal} 
+                    data={popupWork?.title_slug === loadedWork ? data : secondWorkData}
+                    loading={loading}
+                    selectedWord={selectedWord}
+                    popupX={popupX}
+                    popupY={popupY}
+                    popupPositionRight={popupPositionRight}
+                    popupPositionBelow={popupPositionBelow}
+                    selectedNote={selectedNote}
+                    popupWork={popupWork}
+                    closeModal={() => setModal(null)}
+                    searchState={{
+                      work: loadedWork,
+                      secondWork,
+                      divisions,
+                    }}
+                    inverted={inverted}
+                    popupContextData={popupContextData.current}
+                  />
+                ) }
                 <Grid inverted={inverted}>
                   <Grid.Row>
                     <Grid.Column width={8}>
@@ -854,6 +872,7 @@ const Reader = ({
                     inverted={inverted}
                     fontSizeAdjustment={fontSizeAdjustment}
                     highlightedWords={highlightedWords}
+                    notesMetaData={notesMetaData}
                   />
                 )}
 
@@ -883,20 +902,15 @@ const Reader = ({
                             );
                           }}
                           onNoteClick={onNoteClick}
-                          onContextClick={(x, y, positionRight, positionBelow) => {
-                            onContextClick(
-                              data,
-                              x,
-                              y,
-                              positionRight,
-                              positionBelow,
-                            );
+                          onContextClick={(x, y, positionRight, positionBelow, content, contextType, contextData, event) => {
+                            onContextClick(x, y, positionRight, positionBelow, data.work, content, contextType, contextData, event);
                           }}
                           onClickAway={() => setModal(null)}
                           highlightedVerse={highlightedVerse}
                           inverted={inverted}
                           fontSizeAdjustment={fontSizeAdjustment}
                           highlightedWords={highlightedWords}
+                          notesMetaData={notesMetaData}
                         />
                       </Grid.Column>
                       <Grid.Column>
@@ -929,14 +943,8 @@ const Reader = ({
                               );
                             }}
                             onNoteClick={onNoteClick}
-                            onContextClick={(x, y, positionRight, positionBelow) => {
-                              onContextClick(
-                                data,
-                                x,
-                                y,
-                                positionRight,
-                                positionBelow,
-                              );
+                            onContextClick={(x, y, positionRight, positionBelow, content, contextType, contextData, event) => {
+                              onContextClick(x, y, positionRight, positionBelow, secondWorkData.work, content, contextType, contextData, event);
                             }}
                             onClickAway={() => setModal(null)}
                             highlightedVerse={highlightedVerse}
@@ -944,6 +952,7 @@ const Reader = ({
                             verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
                             fontSizeAdjustment={fontSizeAdjustment}
                             highlightedWords={highlightedWords}
+                            notesMetaData={notesMetaData}
                           />
                         )}
                         {secondWorkData && secondWorkChapterNotFound && (

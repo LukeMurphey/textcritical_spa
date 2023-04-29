@@ -6,7 +6,7 @@ import PopupDialog from '../PopupDialog';
 import UserNoteDialog from "../UserNoteDialog";
 import { CONTEXT_WORD, CONTEXT_VERSE } from '../Reader/ChapterEventHandlers';
 import { SEARCH, READ_WORK } from '../URLs'
-import { ENDPOINT_WORK_TEXT } from '../Endpoints';
+import { ENDPOINT_WORK_TEXT } from '../Endpoints/urls';
 import { GlobalAppContext } from "../GlobalAppContext";
 
 const ContextPopup = ({
@@ -83,6 +83,7 @@ const ContextPopup = ({
       <Menu.Item
         name='chapter_clipboard'
         onClick={copyChapterToClipboard}
+        key='chapter_clipboard'
       >
         Copy chapter
       </Menu.Item>
@@ -94,6 +95,7 @@ const ContextPopup = ({
           <Menu.Item
             name='verse_clipboard'
             onClick={copyVerseToClipboard}
+            key='verse_clipboard'
           >
             Copy verse
           </Menu.Item>
@@ -104,6 +106,7 @@ const ContextPopup = ({
         <Menu.Item
           name='link_clipboard'
           onClick={copyLinkToClipboard}
+          key='link_clipboard'
         >
           Copy link
         </Menu.Item>
@@ -114,6 +117,7 @@ const ContextPopup = ({
           <Menu.Item
             name='create_user_note'
             onClick={createUserNote}
+            key='create_user_note'
           >
             {contextData.verse ? 'View/create notes on this verse' : 'View/create notes for this chapter'}
           </Menu.Item>
@@ -126,6 +130,7 @@ const ContextPopup = ({
         <Menu.Item
           name='search_this_work'
           onClick={searchThisWork}
+          key='search_this_work'
         >
           Search for this word in this work
         </Menu.Item>
@@ -135,6 +140,7 @@ const ContextPopup = ({
         <Menu.Item
           name='search_all_works'
           onClick={searchAllWorks}
+          key='search_all_works'
         >
           Search for this word in all works
         </Menu.Item>
@@ -157,7 +163,6 @@ const ContextPopup = ({
         onClose={onClose}
         work={data.work.title_slug}
         division={getDivisionReference(contextData.verse)}
-        verse={contextData.verse}
       />
     )
   }

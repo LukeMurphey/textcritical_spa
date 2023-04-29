@@ -12,9 +12,8 @@ export const STATE_LIST = 2;
 export const STATE_NO_NOTES = 3;
 
 const numberOfPlaceholderRows = 5;
-const notesPerPage = 10;
 
-const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectNote, showWorkLinks }) => {
+const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectNote, showWorkLinks, pageSize }) => {
 
   const [activePage, setActivePage] = useState(1);
   let state = STATE_NO_NOTES;
@@ -27,13 +26,32 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
 
   else if (notes && notes.length > 0) {
     state = STATE_LIST;
-    totalPages = Math.ceil(notes.length / notesPerPage);
-    const start = (activePage - 1) * notesPerPage;
-    pagedNotes = notes.slice(start, start + notesPerPage);
+    totalPages = Math.ceil(notes.length / pageSize);
+    const start = (activePage - 1) * pageSize;
+    pagedNotes = notes.slice(start, start + pageSize);
   }
 
   const onPageChange = (event, data) => {
     setActivePage(data.activePage);
+  }
+
+  const getNoteReferenceDescription = (noteReference) => {
+    if (noteReference.work && noteReference.division) {
+      return `${noteReference.work.title}: ${noteReference.division.description}`
+    }
+    if (noteReference.work) {
+      return `${noteReference.work.title}`
+    }
+
+    return '';
+  }
+
+  const getUrlForReference = (noteReference) => {
+    if (noteReference.verse_indicator) {
+      return READ_WORK(noteReference.work_title_slug, null, `${noteReference.division_full_descriptor}\\${noteReference.verse_indicator}`)
+    }
+
+    return READ_WORK(noteReference.work_title_slug, null, noteReference.division_full_descriptor);
   }
 
   return (
@@ -41,7 +59,7 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
       {state === STATE_NO_NOTES && (
         <Message>
           <Message.Header>No Notes Exist</Message.Header>
-          You do not have any notes for this passage.
+          You do not have any notes.
           {onCreateNewNote && (
             <div className="create-first-note-button">
               <Button onClick={onCreateNewNote}>Create New Note</Button>
@@ -56,7 +74,7 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
               <Table.HeaderCell>Title</Table.HeaderCell>
               <Table.HeaderCell>Created</Table.HeaderCell>
               {showWorkLinks && (
-                <Table.HeaderCell>Work</Table.HeaderCell>
+                <Table.HeaderCell>Reference</Table.HeaderCell>
               )}
             </Table.Row>
           </Table.Header>
@@ -64,8 +82,9 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
           <Table.Body>
             {state === STATE_LOADING && (
               <>
-                {[...Array(numberOfPlaceholderRows)].map((x) => (
-                  <Table.Row key={x}>
+                {[...Array(numberOfPlaceholderRows)].map((x, index) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <Table.Row key={index}>
                     <Table.Cell>
                       <Placeholder inverted={inverted}>
                         <Placeholder.Paragraph>
@@ -97,7 +116,7 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
             )}
             {state === STATE_LIST && (
               pagedNotes.map((note) => (
-                <Table.Row>
+                <Table.Row key={note.id}>
                   <Table.Cell>
                     <ButtonLink onClick={() => onSelectNote(note)}>{note.title}</ButtonLink>
                   </Table.Cell>
@@ -109,13 +128,11 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
                     )
                   </Table.Cell>
                   {showWorkLinks && (
-                    <>
-                      <Table.Cell>
-                        {note.references && note.references.length > 0 && (
-                          <a href={READ_WORK(note.references[0].work_title_slug, null, note.references[0].division_full_descriptor)}>View Reference</a>
-                        )}
-                      </Table.Cell>
-                    </>
+                    <Table.Cell>
+                      {note.references && note.references.length > 0 && (
+                        <a href={getUrlForReference(note.references[0])}>{getNoteReferenceDescription(note.references[0])}</a>
+                      )}
+                    </Table.Cell>
                   )}
                 </Table.Row>
               ))
@@ -149,6 +166,7 @@ UserNotesTable.propTypes = {
   onCreateNewNote: PropTypes.func,
   onSelectNote: PropTypes.func.isRequired,
   showWorkLinks: PropTypes.bool,
+  pageSize: PropTypes.number,
 };
 
 UserNotesTable.defaultProps = {
@@ -157,6 +175,7 @@ UserNotesTable.defaultProps = {
   notes: null,
   showWorkLinks: false,
   onCreateNewNote: null,
+  pageSize: 10,
 };
 
 export default UserNotesTable;

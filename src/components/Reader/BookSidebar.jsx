@@ -3,7 +3,7 @@ import { Sidebar, Image, Menu } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {
   ENDPOINT_WORK_IMAGE,
-} from "../Endpoints";
+} from "../Endpoints/urls";
 
 const BookSidebar = ({ sidebarVisible, work, openWorkInfoModal, openDownloadModal, openSearch, setSidebarVisible }) => {
   return (

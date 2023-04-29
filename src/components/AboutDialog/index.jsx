@@ -3,7 +3,7 @@ import {
   Button, Header, Modal, Table, Placeholder,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import { ENDPOINT_VERSION_INFO } from "../Endpoints";
+import { ENDPOINT_VERSION_INFO } from "../Endpoints/urls";
 import VersionInfo from '../../Version.json'
 
 const AboutDialog = ({ onClose }) => {

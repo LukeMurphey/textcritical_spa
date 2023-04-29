@@ -6,7 +6,8 @@ import { indexOfNoDiacritic } from "../Utils";
 const getDomReplaceFunction = (
   highlightedWords,
   verseIdentifierPrefix,
-  highlightedVerse
+  highlightedVerse,
+  notesMetaData
 ) => {
   return ({ attribs, children }) => {
     // Handle highlighted words
@@ -33,26 +34,51 @@ const getDomReplaceFunction = (
       }
     }
 
-    // Stop if this isn't a verse
-    if (!attribs || !("data-verse" in attribs)) return undefined;
+    // Process this if it is a verse
+    if(attribs && attribs["data-verse"]) {
+      // Set the highlighted class if this is a highlighted verse
+      const verseClassName =
+        attribs && attribs["data-verse"] === highlightedVerse
+          ? "verse-link highlighted"
+          : "verse-link";
 
-    const verseClassName =
-      attribs && attribs["data-verse"] === highlightedVerse
-        ? "verse-link highlighted"
-        : "verse-link";
+      return (
+        <a
+          className={verseClassName}
+          href={attribs.href}
+          data-verse={attribs["data-verse"]}
+          data-verse-descriptor={attribs["data-verse-descriptor"]}
+          data-original-id={attribs.id}
+          id={`${verseIdentifierPrefix}${attribs.id}`}
+        >
+          {domToReact(children)}
+        </a>
+      );
+    }
 
-    return (
-      <a
-        className={verseClassName}
-        href={attribs.href}
-        data-verse={attribs["data-verse"]}
-        data-verse-descriptor={attribs["data-verse-descriptor"]}
-        data-original-id={attribs.id}
-        id={`${verseIdentifierPrefix}${attribs.id}`}
-      >
-        {domToReact(children)}
-      </a>
-    );
+    // Process this if it is a verse-container
+    if(attribs && attribs.class === "verse-container") {
+
+        // Set the indicator saying that it matches a note
+        if (notesMetaData){
+          // Get the verse ID
+          const verseID = attribs.id;
+
+          // Parse out the verse number
+          const identifierMatch = /verse-([0-9]+)/g.exec(verseID);
+
+          const identifier = identifierMatch[1];
+
+          const notesMetaDataMatched = notesMetaData.find(metaData => metaData.verse_indicator === identifier);
+
+          if (notesMetaDataMatched) {
+            // eslint-disable-next-line no-param-reassign
+            attribs.class += " noted";
+          }
+        }
+    }
+
+    return undefined;
   };
 };
 

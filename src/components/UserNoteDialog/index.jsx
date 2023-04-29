@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Cookies from 'js-cookie';
 import { Message } from 'semantic-ui-react'
 import ErrorMessage from '../ErrorMessage';
 import UserNoteEditor from './UserNoteEditor';
 import NoteViewer from './NoteViewer';
 import NotesList from './NotesList';
-import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE } from "../Endpoints";
+import { deleteNote, getNotes } from "../Endpoints";
 
 export const STATE_LIST = 0;
 export const STATE_VIEW = 1;
 export const STATE_EDIT = 2;
 
-const UserNoteDialog = ({ onClose, work, division, verse }) => {
+const UserNoteDialog = ({ onClose, work, division }) => {
 
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
@@ -21,18 +20,21 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
   const [notes, setNotes] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const getNotes = () => {
+  const fetchNotes = () => {
     setIsLoading(true);
-    fetch(ENDPOINT_NOTES(work, division.join("/")))
-      .then((res) => res.json())
-      .then((newData) => {
-        setNotes(newData)
+    getNotes({
+      onSuccess: (newData) => {
+        setNotes(newData);
         setIsLoading(false);
-      })
-      .catch((e) => {
-        setError(e.toString());
+      },
+      onError: (e) => {
+        setError(e);
         setIsLoading(false);
-      });
+      },
+      work,
+      division: division.join("/"),
+      includeRelated: true
+    });
   };
 
   /**
@@ -45,25 +47,19 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
       return;
     }
 
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': Cookies.get('csrftoken')
-      },
-    };
-
-    fetch(ENDPOINT_NOTE_DELETE(noteId), requestOptions)
-      .then((res) => res.json())
-      .then(() => {
+    deleteNote({
+      onSuccess: () => {
         // Reload the notes
-        getNotes();
+        fetchNotes();
         setLoadedNote(null);
         setIsEditing(false);
         setMessage("Note successfully deleted");
-      })
-      .catch((e) => {
-        setError(e.toString());
-      });
+      },
+      onError: (data) => {
+        setError(data);
+      },
+      noteId,
+    })
   };
 
   const cancelEditOrViewing = () => {
@@ -88,12 +84,12 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
       setMessage("Note successfully edited");
     }
     
-    getNotes();
+    fetchNotes();
   }
 
   // Load the note when opening the form
   useEffect(() => {
-    getNotes()
+    fetchNotes()
   }, []);
 
   // Determine what state the UI ought to be in
@@ -136,7 +132,6 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
             notes={notes}
             work={work}
             division={division}
-            verse={verse}
             onClose={onClose}
             onSelectNote={(note) => { setLoadedNote(note); setMessage(null); }}
             onCreateNewNote={onCreateNewNote}
@@ -146,7 +141,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
         </>
       )}
       {state === STATE_EDIT && (
-        <UserNoteEditor note={loadedNote} work={work} division={division} verse={verse} onClose={onClose} onCancel={cancelEditOrViewing} onSave={onSave} />
+        <UserNoteEditor note={loadedNote} work={work} division={division} onClose={onClose} onCancel={cancelEditOrViewing} onSave={onSave} />
       )}
       {state === STATE_VIEW && (
         <NoteViewer
@@ -164,8 +159,7 @@ const UserNoteDialog = ({ onClose, work, division, verse }) => {
 UserNoteDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   work: PropTypes.string.isRequired,
-  division: PropTypes.string.isRequired,
-  verse: PropTypes.string.isRequired,
+  division: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default UserNoteDialog;

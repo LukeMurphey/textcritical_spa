@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Header, Segment, Button } from 'semantic-ui-react';
-import { ENDPOINT_VERSION_INFO } from '../Endpoints';
+import { ENDPOINT_VERSION_INFO } from '../Endpoints/urls';
 
 /**
  * This class renders the content of chapter of a work.

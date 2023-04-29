@@ -10,7 +10,7 @@ import { addHandler, removeHandler } from '../Utils';
 import {
   ENDPOINT_RESOLVE_REFERENCE,
   ENDPOINT_READ_WORK,
-} from "../Endpoints";
+} from "../Endpoints/urls";
 import { GlobalAppContext } from "../GlobalAppContext";
 
 const NextPageStyle = {

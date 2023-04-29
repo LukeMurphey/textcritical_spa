@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Segment, Container, Message, Form, Input, Button } from "semantic-ui-react";
-import Cookies from 'js-cookie';
 import PropTypes from "prop-types";
-import { withRouter } from "react-router-dom";
+import { withRouter } from 'react-router-dom';
 import { READ_WORK } from "../URLs";
 import FullscreenDialog from "../FullscreenDialog";
 import UserNotesTable from "../UserNotesTable";
 import UserNoteEditor from "../UserNoteDialog/UserNoteEditor";
 import UserNoteViewer from "../UserNoteDialog/NoteViewer";
-import { ENDPOINT_NOTES, ENDPOINT_NOTE_DELETE, ENDPOINT_EXPORT_NOTES } from "../Endpoints";
+import { deleteNote, getNotes } from "../Endpoints";
+import { ENDPOINT_EXPORT_NOTES } from "../Endpoints/urls";
 import ErrorMessage from "../ErrorMessage";
+import UserNotesImportDialog from "../UserNotesImportDialog";
 import './index.css';
 
 export const STATE_LIST = 0;
@@ -17,6 +18,9 @@ export const STATE_VIEW = 1;
 export const STATE_EDIT = 2;
 export const STATE_ERROR = 3;
 export const STATE_SEARCH_NO_RESULTS = 4;
+export const STATE_IMPORT = 5;
+
+export const MODAL_IMPORT = 'import';
 
 const UserNotes = ({ inverted, history }) => {
   const [error, setError] = useState(null);
@@ -27,24 +31,26 @@ const UserNotes = ({ inverted, history }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
+  const [modalToShow, setModalToShow] = useState(null);
 
   const onClickBack = () => {
     history.push(READ_WORK());
   };
 
-  const getNotes = () => {
+  const fetchNotes = () => {
     setIsLoading(true);
-    fetch(ENDPOINT_NOTES(null, null, search))
-      .then((res) => res.json())
-      .then((newData) => {
+    getNotes({
+      onSuccess: (newData) => {
         setNotes(newData);
         setIsLoading(false);
         setAppliedSearch(search);
-      })
-      .catch((e) => {
-        setError(e.toString());
+      },
+      onError: (e) => {
+        setError(e);
         setIsLoading(false);
-      });
+      },
+      search
+    });
   };
   
   /**
@@ -57,25 +63,20 @@ const UserNotes = ({ inverted, history }) => {
       return;
     }
 
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': Cookies.get('csrftoken')
-      },
-    };
+    deleteNote({
+      onSuccess: () => {
 
-    fetch(ENDPOINT_NOTE_DELETE(note.id), requestOptions)
-      .then((res) => res.json())
-      .then(() => {
         // Reload the notes
-        getNotes();
+        fetchNotes();
         setSelectedNote(null);
         setIsEditing(false);
         setMessage("Note successfully deleted");
-      })
-      .catch((e) => {
-        setError(e.toString());
-      });
+      },
+      onError: (data) => {
+        setError(data);
+      },
+      noteId: note.id,
+    });
   };
 
   const onEdit = () => {
@@ -88,7 +89,8 @@ const UserNotes = ({ inverted, history }) => {
 
   const onSave = () => {
     setSelectedNote(null);
-    getNotes();
+    setIsEditing(false);
+    fetchNotes();
   };
 
   const onClose = () => {
@@ -101,12 +103,24 @@ const UserNotes = ({ inverted, history }) => {
   }
 
   const onSearch = () => {
-    getNotes();
+    fetchNotes();
+  }
+
+  const onDialogClose = () => {
+    setModalToShow(null);
+  }
+
+  const onShowImportModal = () => {
+    setModalToShow(MODAL_IMPORT);
+  }
+
+  const onNotesImported = () => {
+    fetchNotes();
   }
 
   // Load the note when opening the form
   useEffect(() => {
-    getNotes();
+    fetchNotes();
   }, []);
 
   let state = STATE_LIST
@@ -172,7 +186,9 @@ const UserNotes = ({ inverted, history }) => {
                 </div>
 
                 <div className="secondary-notes-options">
+                  <Button secondary onClick={onShowImportModal}>Import Notes</Button>
                   <Button secondary onClick={() => { window.location = ENDPOINT_EXPORT_NOTES(); }}>Export Notes</Button>
+                  
                 </div>
               </div>
 
@@ -192,6 +208,9 @@ const UserNotes = ({ inverted, history }) => {
                 />
               )}
             </>
+          )}
+          { modalToShow === MODAL_IMPORT && (
+            <UserNotesImportDialog onClose={onDialogClose} onNotesImported={onNotesImported} />
           )}
         </Segment>
       </Container>

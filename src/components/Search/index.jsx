@@ -9,7 +9,7 @@ import SearchResults from './SearchResults';
 import SearchHelp from './SearchHelp';
 import ErrorMessage from '../ErrorMessage';
 import FullscreenDialog from '../FullscreenDialog';
-import { ENDPOINT_SEARCH } from '../Endpoints';
+import { ENDPOINT_SEARCH } from '../Endpoints/urls';
 import { SEARCH, READ_WORK } from '../URLs';
 import './index.scss';
 
