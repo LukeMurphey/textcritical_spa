@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable react/prop-types */
 import { domToReact } from "html-react-parser";
 import React from 'react';
@@ -42,18 +43,10 @@ const getDomReplaceFunction = (
           ? "verse-link highlighted"
           : "verse-link";
 
-      return (
-        <a
-          className={verseClassName}
-          href={attribs.href}
-          data-verse={attribs["data-verse"]}
-          data-verse-descriptor={attribs["data-verse-descriptor"]}
-          data-original-id={attribs.id}
-          id={`${verseIdentifierPrefix}${attribs.id}`}
-        >
-          {domToReact(children)}
-        </a>
-      );
+      
+      attribs.class = verseClassName;
+      attribs['data-original-id'] = attribs.id;
+      attribs.id = `${verseIdentifierPrefix}${attribs.id}`
     }
 
     // Process this if it is a verse-container
@@ -73,7 +66,6 @@ const getDomReplaceFunction = (
             const notesMetaDataMatched = notesMetaData.find(metaData => metaData.verse_indicator === identifier);
   
             if (notesMetaDataMatched) {
-              // eslint-disable-next-line no-param-reassign
               attribs.class += " noted";
             }
           }
