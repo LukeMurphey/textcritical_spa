@@ -43,7 +43,7 @@ const getDomReplaceFunction = (
           ? "verse-link highlighted"
           : "verse-link";
 
-      
+      // Update the attributes
       attribs.class = verseClassName;
       attribs['data-original-id'] = attribs.id;
       attribs.id = `${verseIdentifierPrefix}${attribs.id}`
