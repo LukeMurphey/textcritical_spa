@@ -57,23 +57,25 @@ const getDomReplaceFunction = (
     }
 
     // Process this if it is a verse-container
-    if(attribs && attribs.class === "verse-container") {
+    if(attribs && attribs.id && attribs.class === "verse-container") {
 
         // Set the indicator saying that it matches a note
         if (notesMetaData){
           // Get the verse ID
           const verseID = attribs.id;
-
+          
           // Parse out the verse number
-          const identifierMatch = /verse-([0-9]+)/g.exec(verseID);
-
-          const identifier = identifierMatch[1];
-
-          const notesMetaDataMatched = notesMetaData.find(metaData => metaData.verse_indicator === identifier);
-
-          if (notesMetaDataMatched) {
-            // eslint-disable-next-line no-param-reassign
-            attribs.class += " noted";
+          const identifierMatch = /verse-(.*)/g.exec(verseID);
+          
+          if (identifierMatch.length > 0) {
+            const identifier = identifierMatch[1];
+          
+            const notesMetaDataMatched = notesMetaData.find(metaData => metaData.verse_indicator === identifier);
+  
+            if (notesMetaDataMatched) {
+              // eslint-disable-next-line no-param-reassign
+              attribs.class += " noted";
+            }
           }
         }
     }
