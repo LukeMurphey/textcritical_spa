@@ -186,3 +186,22 @@ export function ENDPOINT_NOTE_DELETE(noteId) {
 export function ENDPOINT_EXPORT_NOTES() {
   return `${getHostConfig()}/api/export_notes/`;
 }
+
+export function ENDPOINT_NOTES_META_DATA(work = null, division = null, includeRelated = false) {
+
+  let query = '';
+
+  if (work) {
+    query += appendAmpersand(query, `work=${work}`);
+  }
+
+  if (division) {
+    query += appendAmpersand(query, `division=${division}`);
+  }
+
+  if (includeRelated) {
+    query += appendAmpersand(query, "include_related=1");
+  }
+
+  return `${getHostConfig()}/api/notes_metadata/?${query}`;
+}

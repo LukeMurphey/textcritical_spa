@@ -25,6 +25,7 @@ import WarningMessages from "./WarningMessages";
 import Popups, { MODAL_WORD, MODAL_FOOTNOTE, MODAL_CONTEXT } from "./Popups";
 import { MODE_LOADING, MODE_ERROR, MODE_DONE, MODE_NOT_READY } from "../Constants";
 import { GlobalAppContext } from "../GlobalAppContext";
+import { getNotesMetaData } from "../Endpoints";
 
 /**
  * Below are some notes about how this works:
@@ -134,6 +135,8 @@ const Reader = ({
   const [secondWorkTitle, setSecondWorkTitle] = useState(null);
 
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState(getFontAdjustment());
+
+  const [notesMetaData, setNotesMetaData] = useState(null);
 
   // Keep a list of verse references that are known to be a reference within the current chapter
   const verseReferences = useRef([]);
@@ -666,6 +669,19 @@ const Reader = ({
     }
   });
 
+  // When the data changes, get the notes meta-data
+  useEffect(() => {
+    if(data) {
+      getNotesMetaData({
+        onSuccess:(newData) => setNotesMetaData(newData),
+        work: loadedWork,
+        division: data.chapter.full_descriptor,
+        includeRelated: true }
+      );
+    }
+
+  }, [data]);
+
   // Figure out a description for the chapter
   let description = "";
   let referenceDescription = referenceValue;
@@ -856,6 +872,7 @@ const Reader = ({
                     inverted={inverted}
                     fontSizeAdjustment={fontSizeAdjustment}
                     highlightedWords={highlightedWords}
+                    notesMetaData={notesMetaData}
                   />
                 )}
 
@@ -893,6 +910,7 @@ const Reader = ({
                           inverted={inverted}
                           fontSizeAdjustment={fontSizeAdjustment}
                           highlightedWords={highlightedWords}
+                          notesMetaData={notesMetaData}
                         />
                       </Grid.Column>
                       <Grid.Column>
@@ -934,6 +952,7 @@ const Reader = ({
                             verseIdentifierPrefix={PARALLEL_WORK_PREFIX}
                             fontSizeAdjustment={fontSizeAdjustment}
                             highlightedWords={highlightedWords}
+                            notesMetaData={notesMetaData}
                           />
                         )}
                         {secondWorkData && secondWorkChapterNotFound && (

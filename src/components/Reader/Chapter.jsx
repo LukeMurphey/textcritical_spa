@@ -15,7 +15,7 @@ import './Chapter.scss';
  * HTML. This would mean that the content could not be cached. Right now, the server pre-processes
  * the content into HTML chunks and then caches so that it can be loaded quickly.
  */
-const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordClick, onWordHover, onClickAway, onContextClick, highlightedWords, fontSizeAdjustment, verseIdentifierPrefix, inverted} ) => {
+const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordClick, onWordHover, onClickAway, onContextClick, highlightedWords, fontSizeAdjustment, verseIdentifierPrefix, notesMetaData, inverted} ) => {
   // We need to track the event listener with the bind call so that it can be removed
   // See https://dev.to/em4nl/function-identity-in-javascript-or-how-to-remove-event-listeners-properly-1ll3
   const clickListener = useRef(null);
@@ -40,7 +40,8 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
       replace: getDomReplaceFunction(
         highlightedWords,
         verseIdentifierPrefix,
-        highlightedVerse
+        highlightedVerse,
+        notesMetaData
       ),
       condition: (node) => node.className.toLowerCase() === "word",
       modify: (node) => {
@@ -225,6 +226,7 @@ Chapter.propTypes = {
   inverted: PropTypes.bool,
   verseIdentifierPrefix: PropTypes.string,
   fontSizeAdjustment: PropTypes.number,
+  notesMetaData: PropTypes.arrayOf(PropTypes.shape),
 };
 
 Chapter.defaultProps = {
@@ -239,6 +241,7 @@ Chapter.defaultProps = {
   inverted: false,
   verseIdentifierPrefix: '',
   fontSizeAdjustment: 0,
+  notesMetaData: null,
 };
 
 export default Chapter;

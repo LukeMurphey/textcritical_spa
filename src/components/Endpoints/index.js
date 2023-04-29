@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { ENDPOINT_NOTE_EDIT, ENDPOINT_NOTE_DELETE, ENDPOINT_NOTES } from './urls';
+import { ENDPOINT_NOTE_EDIT, ENDPOINT_NOTE_DELETE, ENDPOINT_NOTES, ENDPOINT_NOTES_META_DATA } from './urls';
 
 function doGET({ onSuccess, onError, url }) {
   fetch(url)
@@ -69,6 +69,14 @@ export function deleteNote({ onSuccess, onError, noteId }) {
 export function getNotes({ onSuccess, onError, search = null, work = null, division = null, includeRelated = false }) {
   doGET({
     url: ENDPOINT_NOTES(work, division, search, includeRelated),
+    onSuccess,
+    onError
+  });
+}
+
+export function getNotesMetaData({ onSuccess, onError, work = null, division = null, includeRelated = false }) {
+  doGET({
+    url: ENDPOINT_NOTES_META_DATA(work, division, includeRelated),
     onSuccess,
     onError
   });
