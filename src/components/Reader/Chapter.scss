@@ -37,8 +37,25 @@
   line-height: 25px;
 }
 
+@keyframes backgroundFade {
+  0%   {
+    background-color:transparent;
+  }
+  90%   {
+    background-color:transparent;
+  }
+  98% {
+    background-color:#6f3939; left:0px; top:0px;
+  }
+  100% {
+    background-color:#6f3939; left:0px; top:0px;
+  }
+}
+
 .verse-container.noted {
-  background: #483131;
+  background: #563838;
+  animation-name: backgroundFade;
+  animation-duration: 1.5s;
 }
 
 .block {
