@@ -179,6 +179,7 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
         text: noteData.text,
         work: noteData.work,
         reference: noteData.reference,
+        beForgiving: true,
       });
     }
   };
