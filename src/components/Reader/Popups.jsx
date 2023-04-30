@@ -27,9 +27,10 @@ const Popups = ({
     popupContextData
 }) => {
     const { features } = React.useContext(GlobalAppContext);
+
     return (
       <>
-        {data && !loading && modal === MODAL_WORD && (
+        {selectedWord && !loading && modal === MODAL_WORD && (
         <WordInformation
           inverted={inverted}
           positionBelow={popupPositionBelow}
@@ -42,7 +43,7 @@ const Popups = ({
           searchState={searchState}
         />
         )}
-        {data && !loading && modal === MODAL_FOOTNOTE && (
+        {selectedNote && !loading && modal === MODAL_FOOTNOTE && (
         <FootnotePopup
           inverted={inverted}
           positionBelow={popupPositionBelow}
