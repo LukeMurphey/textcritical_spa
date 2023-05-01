@@ -119,7 +119,7 @@ const ContextPopup = ({
             onClick={createUserNote}
             key='create_user_note'
           >
-            {contextData.verse ? 'View/create notes on this verse' : 'View/create notes for this chapter'}
+            View or create notes
           </Menu.Item>
         );
       }
