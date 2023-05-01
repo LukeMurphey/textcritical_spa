@@ -9,7 +9,7 @@ import {
   ENDPOINT_WORKS_LISTS,
   ENDPOINT_VERSION_INFO,
   ENDPOINT_SEARCH,
-} from './index';
+} from './urls';
 
 test('Endpoints', () => {
   expect(ENDPOINT_READ_WORK('new-testament', 'Luke', '15', '1')).toBe('/api/work/new-testament/Luke/15/1');
