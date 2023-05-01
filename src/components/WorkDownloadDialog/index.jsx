@@ -20,8 +20,8 @@ const WorkDownloadDialog = ({ onClose, work }) => {
   }
 
   return (
-    <Modal size="tiny" defaultOpen onClose={onClose} closeIcon>
-      <Header icon="info" content="Download Book" />
+    <Modal size="tiny" defaultOpen onClose={onClose}>
+      <Header content="Download Book" />
       <Modal.Content>
         <div stryle={{ marginBottom: 12 }}>Select which format you would like to download:</div>
         <Form>

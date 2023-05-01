@@ -54,8 +54,8 @@ const AboutDialog = ({ onClose }) => {
   }
 
   return (
-    <Modal defaultOpen onClose={onClose} closeIcon>
-      <Header icon="info" content="About TextCritical.net" />
+    <Modal defaultOpen onClose={onClose}>
+      <Header content="About TextCritical.net" />
       <Modal.Content>
         <p>
           TextCritical.net is a website that provides ancient Greek texts and

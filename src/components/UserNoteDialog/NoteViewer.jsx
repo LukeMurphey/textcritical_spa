@@ -9,8 +9,8 @@ import NewTabLinkRewriter from './NewTabLinkRewriter';
 const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
 
   return (
-    <Modal defaultOpen onClose={onClose} closeIcon>
-      <Header icon="info" content="Note" />
+    <Modal defaultOpen onClose={onClose}>
+      <Header content="Note" />
       <Modal.Content>
         <Header level={2}>{note  && note.title}</Header>
 

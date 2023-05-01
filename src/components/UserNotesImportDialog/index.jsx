@@ -232,8 +232,8 @@ const UserNotesImportDialog = ({ onClose, onNotesImported }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <Modal defaultOpen onClose={stopAndClose} closeIcon closeOnDimmerClick={false} closeOnDocumentClick={false}>
-      <Header icon="info" content="Import Notes" />
+    <Modal defaultOpen onClose={stopAndClose} closeOnDimmerClick={false} closeOnDocumentClick={false}>
+      <Header content="Import Notes" />
       <Modal.Content>
         {error && (
           <Message negative>

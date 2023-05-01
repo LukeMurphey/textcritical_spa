@@ -94,8 +94,8 @@ const UserNoteEditor = ({ note, work, division, onClose, onCancel, onSave, useMa
   }
 
   return (
-    <Modal defaultOpen onClose={onClose} closeIcon>
-      <Header icon="info" content={isEditing ? "Edit Note" : "New Note"} />
+    <Modal defaultOpen onClose={onClose}>
+      <Header content={isEditing ? "Edit Note" : "New Note"} />
       <Modal.Content>
         {error && (
           <ErrorMessage
