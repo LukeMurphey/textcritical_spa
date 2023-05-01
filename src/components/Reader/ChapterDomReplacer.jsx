@@ -27,6 +27,8 @@ const getDomReplaceFunction = (
 
       // Add the highlight tag if we have a match
       if (highlightIndex >= 0) {
+        // attribs.class = `word highlighted highlight${highlightIndex}`;
+
         return (
           <span className={`word highlighted highlight${highlightIndex}`}>
             {domToReact(children)}
