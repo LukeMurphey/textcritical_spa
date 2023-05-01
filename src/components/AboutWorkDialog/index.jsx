@@ -38,12 +38,12 @@ const AboutWorkDialog = ({ onClose, work }) => {
   }, []);
 
   return (
-    <Modal size="small" defaultOpen onClose={onClose} closeIcon>
+    <Modal size="small" defaultOpen onClose={onClose}>
       {!data && (
-        <Header icon="info" content="About this Book" />
+        <Header content="About this Book" />
       )}
       {data && (
-        <Header icon="info" content={`About ${data.title}`} />
+        <Header content={`About ${data.title}`} />
       )}
       <Modal.Content scrolling>
         {error && (

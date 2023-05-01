@@ -7,8 +7,8 @@ import './NotesList.scss';
 const UserNotesList = ({ notes, onClose, onSelectNote, onCreateNewNote, topContent, isLoading }) => {
 
   return (
-    <Modal defaultOpen onClose={onClose} closeIcon>
-      <Header icon="info" content="Notes" />
+    <Modal defaultOpen onClose={onClose}>
+      <Header content="Notes" />
       <Modal.Content>
         {topContent}
         <UserNotesTable
