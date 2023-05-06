@@ -55,7 +55,7 @@ const getDomReplaceFunction = (
     if(attribs && attribs.id && attribs.class === "verse-container") {
 
         // Set the indicator saying that it matches a note
-        if (notesMetaData){
+        if (notesMetaData && notesMetaData.find){
           // Get the verse ID
           const verseID = attribs.id;
           
