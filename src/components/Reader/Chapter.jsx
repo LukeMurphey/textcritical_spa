@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
 import getDomReplaceFunction from './ChapterDomReplacer';
 import { getPositionRecommendation } from '../PopupDialog';
+import UseLongPress from "../UseLongPress";
 import { getEventInfo, getVerseInfoFromEvent, getWordFromEvent, getNoteFromEvent, determineEventTargetType, CONTEXT_WORD, CONTEXT_VERSE, CONTEXT_NOTE } from './ChapterEventHandlers';
 import './Chapter.scss';
 
@@ -180,12 +181,17 @@ const Chapter = ( {content, highlightedVerse, onVerseClick, onNoteClick, onWordC
     }
   };
 
+  const longPress = UseLongPress((event) => handleClick(event), 500);
+
   useEffect(() => {
     /**
      * Wire up handlers for the clicking of the words and verses.
      */
-    clickListener.current = (event) => handleClick(event);
+    clickListener.current = longPress;
     addHandler(clickListener.current, "click");
+    
+    // clickListener.current = (event) => handleClick(event);
+    // addHandler(clickListener.current, "click");
 
     hoverListener.current = (event) => handleHover(event);
     addHandler(hoverListener.current, "mousemove");
