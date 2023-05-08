@@ -25,7 +25,9 @@
   <noscript>
     You need to enable JavaScript to run this app.
   </noscript>
-  <script src="/app.bundle.js"></script>
+  <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+    <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+  <% } %>
 </body>
 
 </html>
