@@ -54,6 +54,8 @@ module.exports = {
   ],
   output: {
     filename: '[name].bundle.js',
+    chunkFilename: '[contenthash].bundle.js',
+    sourceMapFilename: '[contenthash].bundle.map',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
   },
