@@ -273,19 +273,30 @@ const ReadingMenuBar = ({
     });
 
     const checkAuthWindowURL = (loginWindow) => {
-      if(loginWindow && loginWindow.document) {
-        if(loginWindow.document.location.pathname === '/auth_success') {
+      if(loginWindow) {
+        let authSucceeded = false;
 
-          // Refresh the authentication info
-          authentication.checkAuthenticationState();
+        try {
+          if(loginWindow.document.location && loginWindow.document.location.pathname === '/auth_success') {
 
-          // Close the authentication window now that it is done
-          loginWindow.close();
+            // Refresh the authentication info
+            authentication.checkAuthenticationState();
 
-          // Close the menu
-          setMenuOpen(false);
+            // Close the authentication window now that it is done
+            loginWindow.close();
+
+            // Close the menu
+            setMenuOpen(false);
+
+            authSucceeded = true
+          }
+        } catch (DOMException) {
+          // This is due the window being on the Google login page.
+          // Ignore it for now and wait for the page to be redirected to the app login page.
+          authSucceeded = false;
         }
-        else {
+        
+        if (!authSucceeded) {
           setTimeout(() => checkAuthWindowURL(loginWindow), 500);
         }
       }
