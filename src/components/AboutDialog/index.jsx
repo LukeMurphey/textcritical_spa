@@ -4,7 +4,7 @@ import {
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { ENDPOINT_VERSION_INFO } from "../Endpoints/urls";
-import VersionInfo from '../../Version.json'
+import packageJson from '../../../package.json'
 
 const AboutDialog = ({ onClose }) => {
 
@@ -52,7 +52,7 @@ const AboutDialog = ({ onClose }) => {
       </Table.Row>
     );
   }
-
+  console.log(packageJson);
   return (
     <Modal defaultOpen onClose={onClose}>
       <Header content="About TextCritical.net" />
@@ -63,7 +63,7 @@ const AboutDialog = ({ onClose }) => {
         </p>
         <Table basic="very" celled collapsing>
           <Table.Body>
-            {getInfoRow('Version', VersionInfo.version)}
+            {getInfoRow('Version', packageJson.version)}
             {serverVersionInfo && getInfoRow('Server Version', `${serverVersionInfo.version}, ${serverVersionInfo.build} (${serverVersionInfo.build_date})`)}
             {!serverVersionInfo && !error && getInfoRow('Server Version', (<Placeholder><Placeholder.Line /></Placeholder>))}
             {error && getInfoRow('Server Version', 'Unable to get server version information')}
