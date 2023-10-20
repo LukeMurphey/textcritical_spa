@@ -3,6 +3,7 @@ import {
   Button, Header, Modal, Radio, Form,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import { toast } from 'react-semantic-toasts';
 import { ENDPOINT_WORK_DOWNLOAD } from '../Endpoints/urls';
 
 const MOBI_FORMAT = 'mobi';
@@ -12,7 +13,16 @@ const WorkDownloadDialog = ({ onClose, work }) => {
   const [format, setFormat] = useState(EPUB_FORMAT);
 
   const download = () => {
+    onClose();
     document.location = ENDPOINT_WORK_DOWNLOAD(work, format);
+    toast(
+      {
+          title: 'Download initiated',
+          description: <p>Download of the book has been started</p>,
+          animation: 'fade up',
+          icon: 'download',
+      },
+    );
   }
 
   const handleChange = (event, data) => {

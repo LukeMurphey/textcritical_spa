@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from "react-router-dom";
 import { Menu } from 'semantic-ui-react'
+import { toast } from 'react-semantic-toasts';
 import PopupDialog from '../PopupDialog';
 import UserNoteDialog from "../UserNoteDialog";
 import { CONTEXT_WORD, CONTEXT_VERSE } from '../Reader/ChapterEventHandlers';
@@ -38,6 +39,15 @@ const ContextPopup = ({
       .then((newData) => {
         navigator.clipboard.writeText(newData);
         onClose();
+
+        toast(
+          {
+              title: 'Copied!',
+              description: <p>Verse copied to the clipboard</p>,
+              animation: 'fade up',
+              icon: 'clipboard',
+          },
+        );
     })
   }
 
@@ -47,6 +57,14 @@ const ContextPopup = ({
       .then((newData) => {
         navigator.clipboard.writeText(newData);
         onClose();
+        toast(
+          {
+              title: 'Copied!',
+              description: <p>Chapter copied to the clipboard</p>,
+              animation: 'fade up',
+              icon: 'clipboard',
+          },
+        );
     })
   }
 
@@ -59,6 +77,15 @@ const ContextPopup = ({
       navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}${READ_WORK(data.work.title_slug, null, ...getDivisionReference())}`);
     }
     onClose();
+
+    toast(
+      {
+          title: 'Copied!',
+          description: <p>Link copied to the clipboard</p>,
+          animation: 'fade up',
+          icon: 'clipboard',
+      },
+    );
   }
 
   const createUserNote = () => {

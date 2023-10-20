@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-react";
+import { Container, Header, Grid, Segment, Sidebar, Icon, Portal } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
