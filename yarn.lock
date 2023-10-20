@@ -8794,6 +8794,11 @@ react-router@5.2.1:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
 
+react-semantic-toasts@^0.6.6:
+  version "0.6.6"
+  resolved "https://registry.yarnpkg.com/react-semantic-toasts/-/react-semantic-toasts-0.6.6.tgz#57f103903b2b4edb8303a82c4f0220128f89272f"
+  integrity sha512-sRSL3aikNSVxxhLai785UtSEaSZw3/pxQrPJVmLs83VpAkJyfBhy8RKxxBej0FGr+ah8qCRGHDJUPccNoraHKA==
+
 react-test-renderer@^16.13.1:
   version "16.14.0"
   resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.14.0.tgz"
