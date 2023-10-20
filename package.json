@@ -24,6 +24,7 @@
     "react-dropzone": "^14.2.3",
     "react-papaparse": "^4.1.0",
     "react-router-dom": "^5.1.2",
+    "react-semantic-toasts": "^0.6.6",
     "regenerator-runtime": "^0.13.5",
     "rehype-sanitize": "^5.0.1",
     "semantic-ui-react": "^0.88.2"
