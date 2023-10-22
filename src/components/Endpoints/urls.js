@@ -44,6 +44,18 @@ export function ENDPOINT_WORK_TEXT(work = '', ...divisions) {
   return `${getHostConfig()}/api/work_text/${work}`;
 }
 
+export function ENDPOINT_CHAPTER_DOWNLOAD(work = '', ...divisions) {
+
+  let divisionReference = '';
+
+  if (divisions.length > 0 && work) {
+    divisionReference = divisions.join('/');
+    return `${getHostConfig()}/api/download_chapter/${work}/${divisionReference}`;
+  }
+
+  return `${getHostConfig()}/api/download_chapter/${work}`;
+}
+
 export function ENDPOINT_WORK_INFO(work) {
   return `${getHostConfig()}/api/work_info/${work}`;
 }

@@ -7,7 +7,7 @@ import PopupDialog from '../PopupDialog';
 import UserNoteDialog from "../UserNoteDialog";
 import { CONTEXT_WORD, CONTEXT_VERSE } from '../Reader/ChapterEventHandlers';
 import { SEARCH, READ_WORK } from '../URLs'
-import { ENDPOINT_WORK_TEXT } from '../Endpoints/urls';
+import { ENDPOINT_WORK_TEXT, ENDPOINT_CHAPTER_DOWNLOAD } from '../Endpoints/urls';
 import { GlobalAppContext } from "../GlobalAppContext";
 
 const ContextPopup = ({
@@ -46,6 +46,22 @@ const ContextPopup = ({
               description: <p>Verse copied to the clipboard</p>,
               animation: 'fade up',
               icon: 'clipboard',
+          },
+        );
+    })
+  }
+
+  const downloadChapter = () => {
+    fetch(ENDPOINT_CHAPTER_DOWNLOAD(data.work.title_slug, ...getDivisionReference()))
+      // .then((res) => res.json())
+      .then(() => {
+        onClose();
+        toast(
+          {
+              title: 'Download started!',
+              description: <p>Chapter being downloaded</p>,
+              animation: 'fade up',
+              icon: 'download',
           },
         );
     })
@@ -115,6 +131,17 @@ const ContextPopup = ({
         Copy chapter
       </Menu.Item>
     );
+
+      // Add the download chapter option
+      menuItems.push(
+        <Menu.Item
+          name='chapter_download_docx'
+          onClick={downloadChapter}
+          key='chapter_download_docx'
+        >
+          Download chapter
+        </Menu.Item>
+      );
 
     if(contextType === CONTEXT_VERSE || contextType === CONTEXT_WORD ){
       if(contextData.verse) {
