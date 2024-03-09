@@ -230,11 +230,22 @@ function Search({ inverted, history, location }) {
       });
   };
 
+  // Keep track of whether this is the first render
+  const [firstRender, setFirstRender] = useState(true);
+
   useEffect(() => {
     // Use the searched key to determine if we have already searched for this page
     if (location.key !== searchedKey) {
       setSearchedKey(location.key);
-      executeSearch(getParamOrDefault(queryParams, 'page', page, CONVERT_INT));
+
+      // If this is the first render, then don't execute the search unless the user clicks the search button
+      if(!firstRender) {
+        executeSearch(getParamOrDefault(queryParams, 'page', page, CONVERT_INT));
+      }
+      else {
+        // Remember that we have run once already
+        setFirstRender(false);
+      }
     }
 
     // Remember what the history state was so that we can link back to the reading page
