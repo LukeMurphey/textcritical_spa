@@ -12,7 +12,7 @@ This is the main component that provides the interface for reading works.
 
 `updateHistory()` checks to see if the URL would be different and decides against a reload if so.
 
-## How Content menus work
+## How Context menus work
 
 ### Chapter: recognizes the click events
 
