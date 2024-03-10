@@ -1,0 +1,14 @@
+@media print {
+    .bookProgress {
+      display: none;
+    }
+}
+
+.bookProgressBar.ui.progress > .bar,
+.bookProgressBar.ui.progress {
+  border-radius: 0;
+}
+
+.bookProgressBar {
+  margin: "0 0 8px 0"
+}

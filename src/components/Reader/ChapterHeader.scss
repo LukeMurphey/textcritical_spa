@@ -1,0 +1,16 @@
+@media print {
+    .chapterDropdown {
+      display: none !important;
+    }
+
+    .chapterText {
+        display: inline;
+    }
+}
+
+@media screen {
+    .chapterText {
+      display: none;
+    }
+}
+

@@ -4,6 +4,7 @@ import {Dropdown,
   Header,
 } from "semantic-ui-react";
 import { convertDivisionsToOptions, workSearch }  from "./shortcuts";
+import './ChapterHeader.scss';
 
 const ChapterHeader = ({ inverted, data, onChangeChapter }) => {
   return (
@@ -16,6 +17,7 @@ const ChapterHeader = ({ inverted, data, onChangeChapter }) => {
           deburr
           scrolling
           search={workSearch}
+          className="chapterDropdown"
           options={convertDivisionsToOptions(
               data.divisions
             )}
@@ -23,6 +25,9 @@ const ChapterHeader = ({ inverted, data, onChangeChapter }) => {
           onChange={(event, info) =>
             onChangeChapter(event, info)}
         />
+        <div className="chapterText">
+          {data.chapter.parent_division.label}
+        </div>
         <div
           style={{
               display: "inline-block",

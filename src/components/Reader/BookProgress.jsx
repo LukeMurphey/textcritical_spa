@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Segment, Progress } from 'semantic-ui-react';
+import './BookProgress.scss';
 
 const BookProgress = ({ data, inverted }) => {
 
@@ -12,7 +13,7 @@ const BookProgress = ({ data, inverted }) => {
     }
 
     return (
-      <>
+      <div className="bookProgress">
         { data && data.total_chapters > 1 && data.total_chapters_in_book > 1 && (
           <>
             <Segment.Group
@@ -40,15 +41,14 @@ const BookProgress = ({ data, inverted }) => {
               </Segment>
             </Segment.Group>
             <Progress
-              className="bookProgress"
+              className="bookProgressBar"
               color="blue"
-              style={{ margin: "0 0 8px 0" }}
               percent={data.progress_in_book}
               size="tiny"
             />
           </>
         )}
-      </>
+      </div>
 )};
 
 BookProgress.propTypes = {
