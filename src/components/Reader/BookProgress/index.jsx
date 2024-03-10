@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Segment, Progress } from 'semantic-ui-react';
-import './BookProgress.scss';
+import './index.scss';
 
 const BookProgress = ({ data, inverted }) => {
 

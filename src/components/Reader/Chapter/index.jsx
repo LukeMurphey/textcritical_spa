@@ -1,10 +1,10 @@
 import React, { createRef, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
-import getDomReplaceFunction from './ChapterDomReplacer';
-import { getPositionRecommendation } from '../PopupDialog';
-import { getEventInfo, getVerseInfoFromEvent, getWordFromEvent, getNoteFromEvent, determineEventTargetType, CONTEXT_WORD, CONTEXT_VERSE, CONTEXT_NOTE } from './ChapterEventHandlers';
-import './Chapter.scss';
+import getDomReplaceFunction from '../ChapterDomReplacer';
+import { getPositionRecommendation } from '../../PopupDialog';
+import { getEventInfo, getVerseInfoFromEvent, getWordFromEvent, getNoteFromEvent, determineEventTargetType, CONTEXT_WORD, CONTEXT_VERSE, CONTEXT_NOTE } from '../ChapterEventHandlers';
+import './index.scss';
 
 /**
  * This class renders the content of chapter of a work.

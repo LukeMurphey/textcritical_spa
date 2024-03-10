@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import {Dropdown,
   Header,
 } from "semantic-ui-react";
-import { convertDivisionsToOptions, workSearch }  from "./shortcuts";
-import './ChapterHeader.scss';
+import { convertDivisionsToOptions, workSearch }  from "../shortcuts";
+import './index.scss';
 
 const ChapterHeader = ({ inverted, data, onChangeChapter }) => {
   return (
