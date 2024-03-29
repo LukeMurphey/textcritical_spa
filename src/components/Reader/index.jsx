@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Header, Grid, Segment, Sidebar, Icon, Portal } from "semantic-ui-react";
+import { Container, Header, Grid, Segment, Sidebar, Icon } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
@@ -8,7 +8,7 @@ import { setWorkProgress } from "../Settings/worksList";
 import { setFontAdjustment, getFontAdjustment, MAX_FONT_SIZE_ADJUSTMENT } from "../Settings/fontAdjustment";
 import { SEARCH, READ_WORK } from "../URLs";
 import { PARAMS_READ_WORK } from "../URLs/Parameters";
-import { getPlaceholder, getDialogs }  from "./shortcuts";
+import { getPlaceholder, getDialogs, MODAL_ABOUT_WORK, MODAL_DOWNLOAD_WORK, MODAL_USER_NOTES }  from "./shortcuts";
 import { scrollToTarget } from '../Utils';
 import Chapter from "./Chapter";
 import ErrorMessage from "../ErrorMessage";
@@ -421,6 +421,13 @@ const Reader = ({
   }
 
   /**
+   * Handle the request to open the notes modal.
+   */
+  const openNotes = () => {
+    setModal(MODAL_USER_NOTES);
+  };
+
+  /**
    * Handle the clicking of a word.
    *
    * @param {string} word The word to get information on
@@ -721,6 +728,14 @@ const Reader = ({
   const authors =
     data && data.authors ? data.authors.map((author) => author.name) : null;
 
+  // Determine the number of notes
+  let notesCount = null;
+
+  if(notesMetaData?.length) {
+    notesCount = 0;
+    notesCount = notesMetaData.reduce( (accumulator, notesEntry)=> accumulator + notesEntry.count, 0)
+  }
+
   return (
     <>
       <div
@@ -767,11 +782,12 @@ const Reader = ({
           <BookSidebar
             sidebarVisible={sidebarVisible}
             work={loadedWork}
-            openWorkInfoModal={() => setModal("aboutWork")}
-            openDownloadModal={() => setModal("downloadWork")}
+            openWorkInfoModal={() => setModal(MODAL_ABOUT_WORK)}
+            openDownloadModal={() => setModal(MODAL_DOWNLOAD_WORK)}
             openSearch={() =>
               openSearch(loadedWork, secondWork, divisions, history)}
             setSidebarVisible={() => setSidebarVisible()}
+            openNotes={notesMetaData?.length ? () => openNotes() : null}
           />
           <Sidebar.Pushable
             as={Segment}

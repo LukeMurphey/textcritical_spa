@@ -1,11 +1,11 @@
 import React from 'react';
-import { Sidebar, Image, Menu } from 'semantic-ui-react';
+import { Sidebar, Image, Menu, Label, LabelGroup } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {
   ENDPOINT_WORK_IMAGE,
 } from "../Endpoints/urls";
 
-const BookSidebar = ({ sidebarVisible, work, openWorkInfoModal, openDownloadModal, openSearch, setSidebarVisible }) => {
+const BookSidebar = ({ sidebarVisible, work, openWorkInfoModal, openDownloadModal, openSearch, setSidebarVisible, openNotes, notesCount }) => {
   return (
     <Sidebar
       as={Menu}
@@ -28,8 +28,22 @@ const BookSidebar = ({ sidebarVisible, work, openWorkInfoModal, openDownloadModa
       <Menu.Item as="a" onClick={() => openSearch()}>
         Search
       </Menu.Item>
+      {openNotes && (
+        <Menu.Item as="a" onClick={() => openNotes()}>
+          Notes
+          {notesCount && (
+            <Label style={{'display' : 'inline', 'float': 'initial'}}>{notesCount}</Label>)
+          }
+        </Menu.Item>
+      )}
+
     </Sidebar>
   )
+}
+
+BookSidebar.defaultProps = {
+  openNotes: null,
+  notesCount: null,
 }
 
 BookSidebar.propTypes = {
@@ -39,6 +53,8 @@ BookSidebar.propTypes = {
   openDownloadModal: PropTypes.func.isRequired,
   openSearch: PropTypes.func.isRequired,
   setSidebarVisible: PropTypes.func.isRequired,
+  openNotes: PropTypes.func,
+  notesCount: PropTypes.number,
 }
 
 export default BookSidebar;

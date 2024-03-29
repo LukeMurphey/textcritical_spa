@@ -5,6 +5,7 @@ import {
 import { toTitleCase } from "../Utils";
 import AboutWorkDialog from "../AboutWorkDialog";
 import WorkDownloadDialog from "../WorkDownloadDialog";
+import UserNoteDialog from "../UserNoteDialog";
 
 /**
  * Defines how long a division name can get before it is considered long.
@@ -126,22 +127,33 @@ export function getPlaceholder(inverted = false) {
   );
 }
 
+export const MODAL_ABOUT_WORK = "aboutWork";
+export const MODAL_DOWNLOAD_WORK = "downloadWork";
+export const MODAL_USER_NOTES = "userNotes";
+
 /**
  * Get the dialogs that ought to be rendered.
  */
 export function getDialogs(modal, data, loading, loadedWork, closeModal) {
   return (
     <>
-      {data && !loading && modal === "aboutWork" && (
+      {data && !loading && modal === MODAL_ABOUT_WORK && (
         <AboutWorkDialog
           work={loadedWork}
           onClose={() => closeModal()}
         />
       )}
-      {data && !loading && modal === "downloadWork" && (
+      {data && !loading && modal === MODAL_DOWNLOAD_WORK && (
         <WorkDownloadDialog
           work={loadedWork}
           onClose={() => closeModal()}
+        />
+      )}
+      {data && !loading && modal === MODAL_USER_NOTES && (
+        <UserNoteDialog
+          onClose={() => closeModal()}
+          work={data.work.title_slug}
+          division={data.chapter.full_descriptor.split('/')}
         />
       )}
     </>
