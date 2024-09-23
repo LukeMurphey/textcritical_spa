@@ -781,13 +781,14 @@ const Reader = ({
         <>
           <BookSidebar
             sidebarVisible={sidebarVisible}
-            work={loadedWork}
+            data={data}
             openWorkInfoModal={() => setModal(MODAL_ABOUT_WORK)}
             openDownloadModal={() => setModal(MODAL_DOWNLOAD_WORK)}
             openSearch={() =>
               openSearch(loadedWork, secondWork, divisions, history)}
             setSidebarVisible={() => setSidebarVisible()}
             openNotes={notesMetaData?.length ? () => openNotes() : null}
+            notesCount={notesMetaData?.length}
           />
           <Sidebar.Pushable
             as={Segment}
