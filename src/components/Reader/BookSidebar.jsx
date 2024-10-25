@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sidebar, Image, Menu, Label, LabelGroup } from 'semantic-ui-react';
+import { Sidebar, Image, Menu, Label } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {
   ENDPOINT_WORK_IMAGE,
