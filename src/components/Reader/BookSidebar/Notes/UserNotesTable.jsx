@@ -72,7 +72,6 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Title</Table.HeaderCell>
-              {includeCreateDate && <Table.HeaderCell>Created</Table.HeaderCell> }
               {showWorkLinks && (
                 <Table.HeaderCell>Reference</Table.HeaderCell>
               )}
@@ -92,16 +91,6 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
                         </Placeholder.Paragraph>
                       </Placeholder>
                     </Table.Cell>
-                    {includeCreateDate && (
-                      <Table.Cell>
-                        <Placeholder inverted={inverted}>
-                          <Placeholder.Paragraph>
-                            <Placeholder.Line />
-                            <Placeholder.Line />
-                          </Placeholder.Paragraph>
-                        </Placeholder>
-                      </Table.Cell>
-                    )}
                     {showWorkLinks && (
                       <Table.Cell>
                         <Placeholder inverted={inverted}>
@@ -122,15 +111,6 @@ const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectN
                   <Table.Cell>
                     <ButtonLink onClick={() => onSelectNote(note)}>{note.title}</ButtonLink>
                   </Table.Cell>
-                  {includeCreateDate && (
-                    <Table.Cell>
-                      {moment(note.date_created).format("MMMM Do YYYY, h:mm:ss a")}
-                      {' '}
-                      (
-                      {moment(note.date_created).fromNow()}
-                      )
-                    </Table.Cell>
-                  )}
                   {showWorkLinks && (
                     <Table.Cell>
                       {note.references && note.references.length > 0 && (
@@ -171,7 +151,6 @@ UserNotesTable.propTypes = {
   onSelectNote: PropTypes.func.isRequired,
   showWorkLinks: PropTypes.bool,
   pageSize: PropTypes.number,
-  includeCreateDate: PropTypes.bool,
 };
 
 UserNotesTable.defaultProps = {
@@ -181,7 +160,6 @@ UserNotesTable.defaultProps = {
   showWorkLinks: false,
   onCreateNewNote: null,
   pageSize: 10,
-  includeCreateDate: false,
 };
 
 export default UserNotesTable;

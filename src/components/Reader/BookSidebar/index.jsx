@@ -9,13 +9,14 @@ import {
   ENDPOINT_WORK_IMAGE,
 } from "../../Endpoints/urls";
 import ButtonLink from '../../ButtonLink';
+import UserNoteDialog from '../../UserNoteDialog';
 import "./index.scss";
 
 const ButtonLinkStyle = {
   display: 'block',
 };
 
-const BookSidebar = ({ sidebarVisible, data, openWorkInfoModal, openDownloadModal, openSearch, setSidebarVisible, openNotes, notesCount }) => {
+const BookSidebar = ({ sidebarVisible, data, openWorkInfoModal, openDownloadModal, openSearch, setSidebarVisible, openNotes, notesCount, inverted }) => {
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const handleClick = (e, titleProps) => {
@@ -29,7 +30,7 @@ const BookSidebar = ({ sidebarVisible, data, openWorkInfoModal, openDownloadModa
       as={Menu}
       animation="overlay"
       icon="labeled"
-      style={{ width: 400, paddingTop: 50 }}
+      style={{ width: 450, paddingTop: 50 }}
       inverted
       visible={sidebarVisible}
       onHide={() => setSidebarVisible(false)}
@@ -57,9 +58,12 @@ const BookSidebar = ({ sidebarVisible, data, openWorkInfoModal, openDownloadModa
           Notes <Label as='a'>{notesCount}</Label>
         </AccordionTitle>
         <AccordionContent active={activeIndex === 0}>
-          <p>
-            Login to see notes
-          </p>
+          <UserNoteDialog 
+            useDialog={false}
+            work={data.work.title_slug}
+            division={data.chapter.full_descriptor.split('/')}
+            inverted={inverted}
+          />
         </AccordionContent>
       </Accordion>
     </Sidebar>
@@ -70,6 +74,7 @@ BookSidebar.defaultProps = {
   openNotes: null,
   notesCount: null,
   data: null,
+  inverted: false,
 }
 
 BookSidebar.propTypes = {
@@ -91,6 +96,7 @@ BookSidebar.propTypes = {
   setSidebarVisible: PropTypes.func.isRequired,
   openNotes: PropTypes.func,
   notesCount: PropTypes.number,
+  inverted: PropTypes.bool,
 }
 
 export default BookSidebar;

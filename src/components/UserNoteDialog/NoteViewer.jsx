@@ -12,7 +12,7 @@ const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
     <Modal defaultOpen onClose={onClose}>
       <Header content="Note" />
       <Modal.Content>
-        <Header level={2}>{note  && note.title}</Header>
+        <Header level={2}>{note && note.title}</Header>
 
         <div data-color-mode="light">
           <MDEditor.Markdown

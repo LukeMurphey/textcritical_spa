@@ -789,6 +789,7 @@ const Reader = ({
             setSidebarVisible={() => setSidebarVisible()}
             openNotes={notesMetaData?.length ? () => openNotes() : null}
             notesCount={notesMetaData?.length}
+            inverted={inverted}
           />
           <Sidebar.Pushable
             as={Segment}
