@@ -45,6 +45,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.jsx'],
+    alias: {
+      src: path.resolve(__dirname, 'src/'),
+    },
   },
   plugins: [
     new CleanWebpackPlugin(), // ['dist']
