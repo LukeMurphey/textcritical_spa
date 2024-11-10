@@ -13,7 +13,7 @@ export const STATE_NO_NOTES = 3;
 
 const numberOfPlaceholderRows = 5;
 
-const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectNote, showWorkLinks, pageSize }) => {
+const UserNotesTable = ({ inverted, isLoading, notes, onCreateNewNote, onSelectNote, showWorkLinks, pageSize, includeCreateDate }) => {
 
   const [activePage, setActivePage] = useState(1);
   let state = STATE_NO_NOTES;
