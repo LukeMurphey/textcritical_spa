@@ -9,7 +9,7 @@ import {
   ENDPOINT_WORK_IMAGE,
 } from "../../Endpoints/urls";
 import ButtonLink from '../../ButtonLink';
-import UserNoteDialog from '../../UserNoteDialog';
+import Notes from './Notes';
 import "./index.scss";
 
 const ButtonLinkStyle = {
@@ -58,8 +58,7 @@ const BookSidebar = ({ sidebarVisible, data, openWorkInfoModal, openDownloadModa
           Notes <Label as='a'>{notesCount}</Label>
         </AccordionTitle>
         <AccordionContent active={activeIndex === 0}>
-          <UserNoteDialog 
-            useDialog={false}
+          <Notes
             work={data.work.title_slug}
             division={data.chapter.full_descriptor.split('/')}
             inverted={inverted}

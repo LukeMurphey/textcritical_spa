@@ -4,14 +4,14 @@ import { Message } from 'semantic-ui-react'
 import ErrorMessage from 'src/components/ErrorMessage';
 import UserNoteEditor from 'src/components/UserNoteDialog/UserNoteEditor';
 import NoteViewer from 'src/components/UserNoteDialog/NoteViewer';
-import NotesList from 'src/Notes/NotesList';
-import { deleteNote, getNotes } from "src/Endpoints";
+import NotesList from './NotesList';
+import { deleteNote, getNotes } from "src/components/Endpoints";
 
 export const STATE_LIST = 0;
 export const STATE_VIEW = 1;
 export const STATE_EDIT = 2;
 
-const UserNoteDialog = ({ onClose, work, division, inverted }) => {
+const Notes = ({ onClose, work, division, inverted }) => {
 
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
@@ -137,7 +137,6 @@ const UserNoteDialog = ({ onClose, work, division, inverted }) => {
             onCreateNewNote={onCreateNewNote}
             topContent={topContent}
             isLoading={isLoading}
-            useDialog={useDialog}
             inverted={inverted}
           />
         </>
@@ -158,12 +157,12 @@ const UserNoteDialog = ({ onClose, work, division, inverted }) => {
   );
 };
 
-UserNoteDialog.defaultProps = {
+Notes.defaultProps = {
   useDialog: true,
   inverted: false,
 }
 
-UserNoteDialog.propTypes = {
+Notes.propTypes = {
   onClose: PropTypes.func.isRequired,
   work: PropTypes.string.isRequired,
   division: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -171,4 +170,4 @@ UserNoteDialog.propTypes = {
   inverted: PropTypes.bool,
 };
 
-export default UserNoteDialog;
+export default Notes;
