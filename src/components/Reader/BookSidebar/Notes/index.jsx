@@ -148,7 +148,6 @@ const Notes = ({ onClose, work, division, inverted }) => {
       {state === STATE_VIEW && (
         <NoteView
           note={loadedNote}
-          onClose={onClose}
           onEdit={() => { setIsEditing(true); }}
           onCancel={cancelEditOrViewing}
           onDelete={(note) => { onDeleteNote(note.id) }} />

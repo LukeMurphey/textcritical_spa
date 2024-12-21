@@ -7,7 +7,7 @@ import rehypeSanitize from "rehype-sanitize";
 import NewTabLinkRewriter from 'src/components/NewTabLinkRewriter';
 import './NoteView.scss';
 
-const NoteView = ({ note, onClose, onEdit, onCancel, onDelete, inverted }) => {
+const NoteView = ({ note, onEdit, onCancel, onDelete, inverted }) => {
 
   return (
       <div class="noteView">
@@ -33,7 +33,6 @@ const NoteView = ({ note, onClose, onEdit, onCancel, onDelete, inverted }) => {
         { onCancel && (
           <Button onClick={onCancel}>Back</Button>
         )}
-        <Button onClick={onClose}>Close</Button>
       </div>
     </div>
   )
@@ -42,7 +41,6 @@ const NoteView = ({ note, onClose, onEdit, onCancel, onDelete, inverted }) => {
 NoteView.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   note: PropTypes.object.isRequired,
-  onClose: PropTypes.func.isRequired,
   onEdit: PropTypes.func,
   onCancel: PropTypes.func,
   onDelete: PropTypes.func,
