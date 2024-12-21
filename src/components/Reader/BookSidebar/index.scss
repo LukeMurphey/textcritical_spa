@@ -3,6 +3,7 @@
     text-align: left;
     background: #1B1C1D;
     padding-left: 16px;
+    border-bottom: 1px solid #666;
 }
 
 .verticalButton {
@@ -20,7 +21,8 @@
 div.bookInfo {
 
     text-align: left;
-    padding: 16px;  
+    padding: 16px;
+    border-bottom: 1px solid #666;
 
     .bookImage {
         width: 80px;

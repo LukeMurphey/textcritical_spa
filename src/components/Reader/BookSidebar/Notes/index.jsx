@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Message } from 'semantic-ui-react'
 import ErrorMessage from 'src/components/ErrorMessage';
-import UserNoteEditor from 'src/components/UserNoteDialog/UserNoteEditor';
+import UserNoteEditor from 'src/components/UserNoteEditor'
 import NoteViewer from 'src/components/UserNoteDialog/NoteViewer';
+import NoteView from './NoteView';
 import NotesList from './NotesList';
 import { deleteNote, getNotes } from "src/components/Endpoints";
 
@@ -145,6 +146,13 @@ const Notes = ({ onClose, work, division, inverted }) => {
         <UserNoteEditor note={loadedNote} work={work} division={division} onClose={onClose} onCancel={cancelEditOrViewing} onSave={onSave} />
       )}
       {state === STATE_VIEW && (
+        <NoteView
+          note={loadedNote}
+          onClose={onClose}
+          onEdit={() => { setIsEditing(true); }}
+          onCancel={cancelEditOrViewing}
+          onDelete={(note) => { onDeleteNote(note.id) }} />
+        /*
         <NoteViewer
           note={loadedNote}
           onClose={onClose}
@@ -152,6 +160,7 @@ const Notes = ({ onClose, work, division, inverted }) => {
           onCancel={cancelEditOrViewing}
           onDelete={(note) => { onDeleteNote(note.id) }}
         />
+        */
       )}
     </>
   );

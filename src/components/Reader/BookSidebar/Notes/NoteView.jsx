@@ -5,16 +5,15 @@ import PropTypes from 'prop-types'; import {
 import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from "rehype-sanitize";
 import NewTabLinkRewriter from 'src/components/NewTabLinkRewriter';
+import './NoteView.scss';
 
-const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
+const NoteView = ({ note, onClose, onEdit, onCancel, onDelete, inverted }) => {
 
   return (
-    <Modal defaultOpen onClose={onClose}>
-      <Header content="Note" />
-      <Modal.Content>
-        <Header level={2}>{note && note.title}</Header>
+      <div class="noteView">
+        <Header inverted={inverted} level={2}>{note && note.title}</Header>
 
-        <div data-color-mode="light">
+        <div data-color-mode="dark">
           <MDEditor.Markdown
             source={note && note.text}
             style={{ whiteSpace: 'pre-wrap' }}
@@ -24,8 +23,7 @@ const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
             }}
           />
         </div>
-      </Modal.Content>
-      <Modal.Actions>
+      <div class="noteViewControls">
         { onDelete && (
           <Button style={{float: 'left'}} negative onClick={() => onDelete(note)}>Delete</Button>
         )}
@@ -36,25 +34,26 @@ const UserNoteViewer = ({ note, onClose, onEdit, onCancel, onDelete }) => {
           <Button onClick={onCancel}>Back</Button>
         )}
         <Button onClick={onClose}>Close</Button>
-      </Modal.Actions>
-    </Modal>
+      </div>
+    </div>
   )
-
 };
 
-UserNoteViewer.propTypes = {
+NoteView.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   note: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
   onEdit: PropTypes.func,
   onCancel: PropTypes.func,
   onDelete: PropTypes.func,
+  inverted: PropTypes.bool,
 };
 
-UserNoteViewer.defaultProps = {
+NoteView.defaultProps = {
   onCancel: null,
   onEdit: null,
   onDelete: null,
+  inverted: true,
 }
 
-export default UserNoteViewer;
+export default NoteView;

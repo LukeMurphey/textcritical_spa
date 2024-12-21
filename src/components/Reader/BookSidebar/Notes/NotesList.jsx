@@ -18,6 +18,7 @@ export const STATE_LOADING = 0;
 export const STATE_ERROR = 1;
 export const STATE_LIST = 2;
 export const STATE_NO_NOTES = 3;
+export const STATE_EDIT = 4;
 
 const numberOfPlaceholderRows = 4;
 
@@ -109,17 +110,8 @@ const UserNotesList = ({ notes, pageSize, onSelectNote, onCreateNewNote, topCont
             )}
             {state === STATE_LIST && (
               pagedNotes.map((note) => (
-                <ListItem key={note.id}>
-                  <ListContent>
-                    <ListHeader as='a'>
-                      <ButtonLink onClick={() => onSelectNote(note)}>{note.title}</ButtonLink>
-                    </ListHeader>
-                    <ListDescription as='a'>
-                      {note.references && note.references.length > 0 && (
-                        <a href={getUrlForReference(note.references[0])}>{getNoteReferenceDescription(note.references[0])}</a>
-                      )}
-                    </ListDescription>
-                  </ListContent>
+                <ListItem class="note" key={note.id}>
+                  <ButtonLink onClick={() => onSelectNote(note)}>{note.title}</ButtonLink>
                 </ListItem>
               ))
             )}

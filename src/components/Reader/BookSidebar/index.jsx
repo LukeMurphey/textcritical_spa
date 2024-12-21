@@ -16,6 +16,13 @@ const ButtonLinkStyle = {
   display: 'block',
 };
 
+
+const SideBarStyle = {
+  borderRight: '1px solid #666',
+  width: 450,
+  paddingTop: 50,
+}
+
 const BookSidebar = ({ sidebarVisible, data, openWorkInfoModal, openDownloadModal, openSearch, setSidebarVisible, openNotes, notesCount, inverted }) => {
   const [activeIndex, setActiveIndex] = useState(-1);
 
@@ -30,12 +37,12 @@ const BookSidebar = ({ sidebarVisible, data, openWorkInfoModal, openDownloadModa
       as={Menu}
       animation="overlay"
       icon="labeled"
-      style={{ width: 450, paddingTop: 50 }}
       inverted
       visible={sidebarVisible}
       onHide={() => setSidebarVisible(false)}
       vertical
       width="thin"
+      style={SideBarStyle}
     >
       <div class={'bookInfo'}>
         <Header inverted style={{background: '#1B1C1D'}} as='h3'>{data?.work ? data.work.title : 'Loading'}</Header>

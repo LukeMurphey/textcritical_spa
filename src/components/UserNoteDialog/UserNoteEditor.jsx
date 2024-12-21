@@ -5,8 +5,7 @@ import {
 } from 'semantic-ui-react';
 import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from "rehype-sanitize";
-import ErrorMessage from '../ErrorMessage';
-import NewTabLinkRewriter from './NewTabLinkRewriter';
+import NewTabLinkRewriter from 'src/components/NewTabLinkRewriter';
 import { editNote } from "../Endpoints";
 import './index.scss';
 

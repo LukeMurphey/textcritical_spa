@@ -7,7 +7,7 @@ import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from "rehype-sanitize";
 import ErrorMessage from '../ErrorMessage';
 import { editNote } from "../Endpoints";
-import NewTabLinkRewriter from './NewTabLinkRewriter';
+import NewTabLinkRewriter from 'src/components/NewTabLinkRewriter';
 import './index.scss';
 
 const UserNoteEditor = ({ note, work, division, onClose, onCancel, onSave, useMarkdownEditor }) => {
